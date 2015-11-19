@@ -10,7 +10,7 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
 @ApplicationScoped
-class ClassCache {
+public class ClassCache {
     
     private static String[] pkgNames;
     
@@ -39,7 +39,7 @@ class ClassCache {
     //===================================================================
     
     private synchronized void reloadCache(EntityManager em){
-        if( em == null || ref.get() != null ) return ;
+        if( em == null || ref != null && ref.get() != null ) return ;
         Metamodel metamodel = em.getMetamodel();
         Map<String,Class<?>> map = new HashMap<>( metamodel.getEntities().size() + 2 );
         for( EntityType<?> entity : metamodel.getEntities() ){

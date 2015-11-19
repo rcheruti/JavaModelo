@@ -10,12 +10,10 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Deprecated
-//@WebFilter(value = "/*", dispatcherTypes = {DispatcherType.REQUEST} )
 public class RewriteFiltro implements Filter{
     
     private Pattern regexp;

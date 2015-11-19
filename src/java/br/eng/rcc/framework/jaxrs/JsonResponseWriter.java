@@ -21,8 +21,15 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-@Provider
-@ApplicationScoped
+
+/*
+    Será trocado por apenas um ObjectMapper disponibilizado
+    por ContextResolver. O Provider padrão do Jackson deverá ser
+    usado normalmente.
+*/
+
+//@Provider
+//@ApplicationScoped
 public class JsonResponseWriter implements MessageBodyWriter<Object>{
     
     
@@ -65,7 +72,7 @@ public class JsonResponseWriter implements MessageBodyWriter<Object>{
                     .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                     .writeValueAsBytes(t);
         }catch(JsonProcessingException ex){
-            Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, null, ex);
             json = new byte[0];
         }
         

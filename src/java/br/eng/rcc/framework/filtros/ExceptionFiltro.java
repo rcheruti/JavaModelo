@@ -13,10 +13,9 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
 import javax.ws.rs.core.MediaType;
 
-@WebFilter("/*")
+
 public class ExceptionFiltro implements Filter{
     
     @Inject

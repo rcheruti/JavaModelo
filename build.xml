@@ -13,11 +13,11 @@
     
     <target name="-post-dist">
         <!--  use essa tarefa pra copiar o WAR para o servidor  -->
-        <!--
-        <copy todir="" >
+        
+        <copy todir="C:/WildFly/wildfly-9.0.2.Final/standalone/deployments" >
             <fileset dir="dist" />
         </copy>
-        -->
+        <!-- -->
     </target>
     
     <!--

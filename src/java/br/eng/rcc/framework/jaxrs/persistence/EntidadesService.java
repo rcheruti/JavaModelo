@@ -36,6 +36,7 @@ import javax.annotation.PostConstruct;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
+import javax.ws.rs.core.MediaType;
 
 /**
  * 
@@ -43,6 +44,8 @@ import javax.persistence.criteria.Order;
  * @author rcheruti
  */
 @Path("/persistence")
+@Produces({ MediaType.APPLICATION_JSON })
+@Consumes({ MediaType.APPLICATION_JSON })
 @RequestScoped
 public class EntidadesService {
     private final static Map<String,Runnable> map = new HashMap<>();
@@ -200,6 +203,7 @@ public class EntidadesService {
     @POST @Path("/{entidade}")
     @Transactional
     public Object createEntidade(Object obj){
+            System.out.println("--->>>  Param obj: "+ obj.getClass() );
         if( obj == null ){
             //Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, 
             //    "O Parâmetro para 'EntidadesService.createEntidade' não pode ser nulo.");
@@ -207,7 +211,7 @@ public class EntidadesService {
                 "O Parâmetro para 'EntidadesService.createEntidade' não pode ser nulo.");
         }
         checker.check( obj.getClass(), checker.INSERT );
-        em.persist(obj);
+        //em.persist(obj);
         return new JsonResponse(true,"Objeto gravado com sucesso");
     }
     

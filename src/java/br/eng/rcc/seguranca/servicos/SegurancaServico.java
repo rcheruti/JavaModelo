@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author rcheruti
  */
 @ApplicationScoped
-public class SegurancaServico {
+public class SegurancaServico { 
     public static final int SELECT = 1;
     public static final int INSERT = 2;
     public static final int UPDATE = 4;

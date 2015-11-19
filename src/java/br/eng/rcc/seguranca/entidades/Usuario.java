@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Entity
 @Table(name="seg_usuario")
 //@Seguranca(delete = false, select = false, insert = false, update = false)
-@Seguranca
 public class Usuario implements Serializable{
     
     @Id
