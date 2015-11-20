@@ -1,11 +1,11 @@
 
-package br.eng.rcc.seguranca.jaxrs;
+package br.eng.rcc.framework.seguranca.jaxrs;
 
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
-import br.eng.rcc.seguranca.entidades.Credencial;
-import br.eng.rcc.seguranca.entidades.Usuario;
-import br.eng.rcc.seguranca.filtros.SegurancaFiltro;
+import br.eng.rcc.framework.seguranca.entidades.Credencial;
+import br.eng.rcc.framework.seguranca.entidades.Usuario;
+import br.eng.rcc.framework.seguranca.filtros.SegurancaFiltro;
 import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -37,7 +37,7 @@ public class LoginService {
      * sessão do usuário e colocará o objeto "Usuário" deste usuário quardado
      * como um atributo da sessão deste usuário.
      * 
-     * A chave para buscar o objeto "Usuário" esta guardada na classe {@link br.eng.rcc.seguranca.filtros.SegurancaFiltro SegurancaFiltro}.
+     * A chave para buscar o objeto "Usuário" esta guardada na classe {@link br.eng.rcc.framework.seguranca.filtros.SegurancaFiltro SegurancaFiltro}.
      * 
      * @param login "Login" do usuário que está entrando no sistema.
      * @param senha "Senha" do usuário que esta entrando no sistema.

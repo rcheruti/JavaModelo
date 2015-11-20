@@ -1,8 +1,8 @@
 
-package br.eng.rcc.seguranca.interceptadores;
+package br.eng.rcc.framework.seguranca.interceptadores;
 
-import br.eng.rcc.seguranca.servicos.SegurancaServico;
-import br.eng.rcc.seguranca.anotacoes.Seguranca;
+import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
+import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;

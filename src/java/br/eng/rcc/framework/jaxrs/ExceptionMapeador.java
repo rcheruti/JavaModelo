@@ -10,7 +10,7 @@ public class ExceptionMapeador implements ExceptionMapper<MsgException>{
     
     @Override
     public Response toResponse(MsgException ex) {
-        return Response.ok( new JsonResponse(false, ex.getData(), ex.getMessage()) ).build() ;
+        return Response.ok( new JsonResponse(false, ex.getCodigo(), ex.getData(), ex.getMessage()) ).build() ;
     }
     
 }

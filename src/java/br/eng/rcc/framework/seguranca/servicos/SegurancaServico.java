@@ -1,12 +1,12 @@
 
-package br.eng.rcc.seguranca.servicos;
+package br.eng.rcc.framework.seguranca.servicos;
 
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
-import br.eng.rcc.seguranca.anotacoes.Seguranca;
-import br.eng.rcc.seguranca.anotacoes.Segurancas;
-import br.eng.rcc.seguranca.entidades.Usuario;
-import br.eng.rcc.seguranca.filtros.SegurancaFiltro;
+import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
+import br.eng.rcc.framework.seguranca.anotacoes.Segurancas;
+import br.eng.rcc.framework.seguranca.entidades.Usuario;
+import br.eng.rcc.framework.seguranca.filtros.SegurancaFiltro;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -77,24 +77,24 @@ public class SegurancaServico {
     
     
     /**
-     * Este método irá procurar na classe informada a anotação {@link br.eng.rcc.seguranca.anotacoes.Seguranca Seguranca}
+     * Este método irá procurar na classe informada a anotação {@link br.eng.rcc.framework.seguranca.anotacoes.Seguranca Seguranca}
      * para verificar se o usuário atual tem esta permissão.
      * 
      * Será permitido todos o modos de segurança (SELECT, INSERT, UPDATE e DELETE).
      * 
-     * @param klass Classe em que será pesquisado se possúi anotação {@link br.eng.rcc.seguranca.anotacoes.Seguranca Seguranca}.
+     * @param klass Classe em que será pesquisado se possúi anotação {@link br.eng.rcc.framework.seguranca.anotacoes.Seguranca Seguranca}.
      */
     public void check(Class<?> klass){
         this.check(klass, SELECT | INSERT | UPDATE | DELETE );
     }
     
     /**
-     * Este método irá procurar na classe informada a anotação {@link br.eng.rcc.seguranca.anotacoes.Seguranca Seguranca}
+     * Este método irá procurar na classe informada a anotação {@link br.eng.rcc.framework.seguranca.anotacoes.Seguranca Seguranca}
      * para verificar se o usuário atual tem esta permissão.
      * 
      * Será permitido apenas o modo de segurança informado (SELECT, INSERT, UPDATE ou DELETE).
      * 
-     * @param klass Classe em que será pesquisado se possúi anotação {@link br.eng.rcc.seguranca.anotacoes.Seguranca Seguranca}.
+     * @param klass Classe em que será pesquisado se possúi anotação {@link br.eng.rcc.framework.seguranca.anotacoes.Seguranca Seguranca}.
      */
     public void check(Class<?> klass, int mode){
         Seguranca ann = klass.getAnnotation(Seguranca.class);

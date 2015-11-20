@@ -1,7 +1,7 @@
 
-package br.eng.rcc.seguranca.filtros;
+package br.eng.rcc.framework.seguranca.filtros;
 
-import br.eng.rcc.seguranca.jaxrs.LoginService;
+import br.eng.rcc.framework.seguranca.jaxrs.LoginService;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

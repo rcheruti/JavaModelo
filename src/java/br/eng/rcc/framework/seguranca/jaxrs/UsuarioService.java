@@ -1,9 +1,9 @@
 
-package br.eng.rcc.seguranca.jaxrs;
+package br.eng.rcc.framework.seguranca.jaxrs;
 
 import br.eng.rcc.framework.jaxrs.JsonResponse;
-import br.eng.rcc.seguranca.entidades.Usuario;
-import br.eng.rcc.seguranca.filtros.SegurancaFiltro;
+import br.eng.rcc.framework.seguranca.entidades.Usuario;
+import br.eng.rcc.framework.seguranca.filtros.SegurancaFiltro;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -34,7 +34,7 @@ public class UsuarioService {
     /**
      * Retorna um clone do usuário atual, mas anulando o atributo "credencial".
      * 
-     * @return {@link br.eng.rcc.seguranca.entidades.Usuario Usuario}
+     * @return {@link br.eng.rcc.framework.seguranca.entidades.Usuario Usuario}
      */
     @GET @Path("/")
     public Object carregarUsuario(){

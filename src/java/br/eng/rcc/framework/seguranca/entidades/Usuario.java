@@ -1,7 +1,7 @@
 
-package br.eng.rcc.seguranca.entidades;
+package br.eng.rcc.framework.seguranca.entidades;
 
-import br.eng.rcc.seguranca.anotacoes.Seguranca;
+import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import java.io.Serializable;
 import javax.persistence.*;
 
@@ -10,7 +10,8 @@ import javax.persistence.*;
 //@Seguranca(delete = false, select = false, insert = false, update = false)
 public class Usuario implements Serializable{
     
-    @Id
+    @Id 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     
     private String nome;

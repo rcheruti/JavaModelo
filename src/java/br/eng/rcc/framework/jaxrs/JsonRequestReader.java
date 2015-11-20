@@ -2,7 +2,6 @@
 package br.eng.rcc.framework.jaxrs;
 
 import br.eng.rcc.framework.jaxrs.persistence.ClassCache;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -11,8 +10,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.annotation.Priority;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -33,12 +34,15 @@ import javax.ws.rs.ext.Providers;
 @Provider
 @ApplicationScoped
 @Consumes({ MediaType.APPLICATION_JSON , "*/*" })
+@Priority(Integer.MAX_VALUE)
 public class JsonRequestReader implements MessageBodyReader<Object>{
     
     @Context
     private UriInfo uriInfo;
     @Inject
     private ClassCache cache;
+    @Inject
+    private EntityManager em;
     
     @Context
     private Providers providers;
@@ -52,7 +56,7 @@ public class JsonRequestReader implements MessageBodyReader<Object>{
             return true;
         }else if( Object.class.equals(type) ){
             String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
-            Class<?> klass = cache.get(entidadeName);
+            Class<?> klass = cache.get(entidadeName,em);
             if( klass == null ) return false;
         }
         return true;
@@ -71,7 +75,7 @@ public class JsonRequestReader implements MessageBodyReader<Object>{
             return x;
         }else if( Object.class.equals(type) ){
             String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
-            type = (Class<Object>) cache.get(entidadeName);
+            type = (Class<Object>) cache.get(entidadeName,em);
         }
         try{
             Object x = fromJson(entityStream,type);
@@ -89,8 +93,9 @@ public class JsonRequestReader implements MessageBodyReader<Object>{
     */
     private Object fromJson(InputStream entityStream, Class<Object> type) throws IOException{
         ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
-                                                            MediaType.APPLICATION_JSON_TYPE);
-        return resolver.getContext(ObjectMapper.class);
+                                                            MediaType.WILDCARD_TYPE);
+        ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
+        return mapper.readValue(entityStream, type);
         /*
         return new ObjectMapper()
             .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)

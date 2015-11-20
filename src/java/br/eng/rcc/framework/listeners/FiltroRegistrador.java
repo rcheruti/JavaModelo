@@ -3,7 +3,7 @@ package br.eng.rcc.framework.listeners;
 
 import br.eng.rcc.framework.filtros.ExceptionFiltro;
 import br.eng.rcc.framework.filtros.RewriteFiltro;
-import br.eng.rcc.seguranca.filtros.SegurancaFiltro;
+import br.eng.rcc.framework.seguranca.filtros.SegurancaFiltro;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

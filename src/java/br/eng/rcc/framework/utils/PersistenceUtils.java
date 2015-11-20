@@ -19,10 +19,12 @@ public class PersistenceUtils {
             String[] params){
         nullifyLazy( em, lista, params, 0);
     }
+   
+    
     public static void nullifyLazy(EntityManager em, Object[] lista, 
             String[] params, int secureLevel ){
             // Se a árvore descer demais, podemos estar em recursão infinita,
-            // temos que isso aconteça
+            // temos que evitar isso aconteça
         if( secureLevel++ >= 50 ){
             throw new IllegalArgumentException("Um dos parâmetros esta fazendo com que entremos em recursão infinita!");
         }
@@ -50,7 +52,7 @@ public class PersistenceUtils {
                     try {
                         field.set(obj, null);
                     } catch (IllegalArgumentException | IllegalAccessException ex) {
-                        Logger.getLogger(PersistenceUtils.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(PersistenceUtils.class.getName()).log(Level.WARNING, null, ex);
                         return;
                     }
                 }
@@ -62,13 +64,15 @@ public class PersistenceUtils {
                         nullifyLazy( em, ((List<Object>)field.get(obj)).toArray(), 
                                 new String[0], secureLevel );
                     } catch (IllegalArgumentException | IllegalAccessException ex) {
-                        Logger.getLogger(PersistenceUtils.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(PersistenceUtils.class.getName()).log(Level.WARNING, null, ex);
                         return;
                     }
                 }
             }
         }
     }
+   
+    
     public static boolean constainsInArray(Object[] arr, Object obj){
         if(arr == null || obj == null)return false;
         int hash = obj.hashCode();

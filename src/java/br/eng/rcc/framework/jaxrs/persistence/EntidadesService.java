@@ -3,8 +3,8 @@ package br.eng.rcc.framework.jaxrs.persistence;
 
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
-import br.eng.rcc.framework.utils.EntidadesUtils;
-import br.eng.rcc.seguranca.servicos.SegurancaServico;
+import br.eng.rcc.framework.utils.PersistenceUtils;
+import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import java.util.ArrayList;
@@ -59,8 +59,8 @@ public class EntidadesService {
     private ClassCache cache;
     @Inject
     private SegurancaServico checker;
-    @Inject
-    private EntidadesUtils emUtils;
+    //@Inject
+    //private PersistenceUtils emUtils;
     
     private final Pattern queryStringPattern = Pattern
         .compile("([\\w.]++)\\s*+(=|!=|<|>|<=|>=|(?>not)?like)\\s*+((['\"]).*?\\4|[\\w\\.]++)\\s*+([&\\|]?)");
@@ -152,7 +152,7 @@ public class EntidadesService {
             //        Level.SEVERE, "A classe do nome ''{0}'' não foi encontrada.", entidade);
             return null;
         }
-        checker.check( klass, checker.SELECT );
+        checker.check( klass, SegurancaServico.SELECT );
         
         // ----  Criando a busca ao banco:
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -179,7 +179,7 @@ public class EntidadesService {
         q.setFirstResult( pageNum*pageSize );
         q.setMaxResults( pageSize );
         Set<Object> res = new LinkedHashSet<>( q.getResultList() );
-        emUtils.nullifyLazy( em, res.toArray(), joinParams );
+        PersistenceUtils.nullifyLazy( em, res.toArray(), joinParams );
 
         // A resposta: 
         return new JsonResponse(true,res,"Lista dos objetos", pageNum, pageSize);
@@ -203,15 +203,14 @@ public class EntidadesService {
     @POST @Path("/{entidade}")
     @Transactional
     public Object createEntidade(Object obj){
-            System.out.println("--->>>  Param obj: "+ obj.getClass() );
         if( obj == null ){
             //Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, 
             //    "O Parâmetro para 'EntidadesService.createEntidade' não pode ser nulo.");
             return new JsonResponse(false,
                 "O Parâmetro para 'EntidadesService.createEntidade' não pode ser nulo.");
         }
-        checker.check( obj.getClass(), checker.INSERT );
-        //em.persist(obj);
+        checker.check( obj.getClass(), SegurancaServico.INSERT );
+        em.persist(obj);
         return new JsonResponse(true,"Objeto gravado com sucesso");
     }
     
@@ -259,7 +258,7 @@ public class EntidadesService {
             return new JsonResponse(false,
                 "A classe não foi encontrada");
         }
-        checker.check( klass, checker.UPDATE);
+        checker.check( klass, SegurancaServico.UPDATE);
         
         // ----  Criando a busca ao banco:
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -281,7 +280,7 @@ public class EntidadesService {
             querysPsNames[i] = querysPs[i][0];
         while( nodeNameIt.hasNext() ){
             String nodeName = nodeNameIt.next();
-            if( emUtils.constainsInArray(querysPsNames, nodeName) ) continue;
+            if( PersistenceUtils.constainsInArray(querysPsNames, nodeName) ) continue;
             try{
                 JsonNode node = obj.get(nodeName);
                 Object value = null;
@@ -341,7 +340,7 @@ public class EntidadesService {
             return new JsonResponse(false,
                 "A classe não foi encontrada");
         }
-        checker.check( klass, checker.DELETE);
+        checker.check( klass, SegurancaServico.DELETE);
         
         // ----  Criando a busca ao banco:
         CriteriaBuilder cb = em.getCriteriaBuilder();

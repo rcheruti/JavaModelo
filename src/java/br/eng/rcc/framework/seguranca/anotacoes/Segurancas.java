@@ -1,5 +1,5 @@
 
-package br.eng.rcc.seguranca.anotacoes;
+package br.eng.rcc.framework.seguranca.anotacoes;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import javax.interceptor.InterceptorBinding;
 
 /**
- * Esta anotação é usada para informar uma lista de {@link br.eng.rcc.seguranca.anotacoes.Seguranca Seguranca} 
+ * Esta anotação é usada para informar uma lista de {@link br.eng.rcc.framework.seguranca.anotacoes.Seguranca Seguranca} 
  * que deverão ser verificadas pelo serviço de segurança.
  * 
  * Essas anotações serão verificadas usando a operação lógica "OU": caso o usuário

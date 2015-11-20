@@ -1,5 +1,5 @@
 
-package br.eng.rcc.seguranca.anotacoes;
+package br.eng.rcc.framework.seguranca.anotacoes;
 
 import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
@@ -35,7 +35,7 @@ import javax.interceptor.InterceptorBinding;
 public @interface Seguranca {
     
     /**
-     * Este atributo guarda o nome da chave de segurança ({@link br.eng.rcc.seguranca.entidades.Permissao Permissao})
+     * Este atributo guarda o nome da chave de segurança ({@link br.eng.rcc.framework.seguranca.entidades.Permissao Permissao})
      * que o usuário logado atualmente deve ter para ter acesso a este recurso.
      * 
      * Quando é anotado um recurso CDI, o interceptador bloqueará a execução do método caso

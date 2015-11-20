@@ -1,7 +1,7 @@
 
-package br.eng.rcc.seguranca.entidades;
+package br.eng.rcc.framework.seguranca.entidades;
 
-import br.eng.rcc.seguranca.anotacoes.Seguranca;
+import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +13,7 @@ import javax.persistence.*;
 public class Credencial implements Serializable{
     
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     
     private String login;

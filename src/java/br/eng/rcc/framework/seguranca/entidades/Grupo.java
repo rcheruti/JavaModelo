@@ -1,12 +1,14 @@
 
-package br.eng.rcc.seguranca.entidades;
+package br.eng.rcc.framework.seguranca.entidades;
 
-import br.eng.rcc.seguranca.anotacoes.Seguranca;
+import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -19,6 +21,7 @@ import javax.persistence.Table;
 public class Grupo implements Serializable{
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     
     private String nome;
