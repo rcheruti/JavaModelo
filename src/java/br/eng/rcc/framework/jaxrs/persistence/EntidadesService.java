@@ -202,15 +202,16 @@ public class EntidadesService {
      */
     @POST @Path("/{entidade}")
     @Transactional
-    public Object createEntidade(Object obj){
-        if( obj == null ){
+    public Object createEntidade(List<?> obj){
+            System.out.printf("---  Objs: %s \n", obj );
+        if( obj == null || obj.isEmpty() ){
             //Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, 
             //    "O Parâmetro para 'EntidadesService.createEntidade' não pode ser nulo.");
             return new JsonResponse(false,
                 "O Parâmetro para 'EntidadesService.createEntidade' não pode ser nulo.");
         }
-        checker.check( obj.getClass(), SegurancaServico.INSERT );
-        em.persist(obj);
+        checker.check( obj.get(0).getClass(), SegurancaServico.INSERT );
+        //em.persist(obj);
         return new JsonResponse(true,"Objeto gravado com sucesso");
     }
     

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.Priority;
@@ -54,7 +56,7 @@ public class JsonRequestReader implements MessageBodyReader<Object>{
                             MediaType mediaType){
         if( JsonNode.class.equals(type) ){
             return true;
-        }else if( Object.class.equals(type) ){
+        }else if( Object.class.equals(type) || Collection.class.isAssignableFrom(type) ){
             String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
             Class<?> klass = cache.get(entidadeName,em);
             if( klass == null ) return false;
@@ -70,15 +72,20 @@ public class JsonRequestReader implements MessageBodyReader<Object>{
                         MultivaluedMap<String, String> httpHeaders, 
                         InputStream entityStream) 
             throws IOException, WebApplicationException {
+        Class<? extends Collection> typeList = null;
         if( JsonNode.class.equals(type) ){
             Object x = fromJson(entityStream,type);
             return x;
+        }else if( Collection.class.isAssignableFrom(type) ){
+            String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
+            type = (Class<Object>) cache.get(entidadeName,em);
+            typeList = List.class;
         }else if( Object.class.equals(type) ){
             String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
             type = (Class<Object>) cache.get(entidadeName,em);
         }
         try{
-            Object x = fromJson(entityStream,type);
+            Object x = fromJson(entityStream, typeList, type);
             return x;
         }catch(Exception ex){
             Logger.getLogger(this.getClass().getName()).log(Level.WARNING, null, ex);
@@ -96,12 +103,13 @@ public class JsonRequestReader implements MessageBodyReader<Object>{
                                                             MediaType.WILDCARD_TYPE);
         ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
         return mapper.readValue(entityStream, type);
-        /*
-        return new ObjectMapper()
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
-            .readValue(entityStream, type);
-        /* */
+    }
+    private Object fromJson(InputStream entityStream, Class<? extends Collection> typeList, Class<Object> type) throws IOException{
+        if( typeList == null ) return fromJson(entityStream, type);
+        ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
+                                                            MediaType.WILDCARD_TYPE);
+        ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
+        return mapper.readValue(entityStream, mapper.getTypeFactory().constructCollectionType(typeList, type) );
     }
 
 }

@@ -71,7 +71,7 @@ public class SegurancaServico {
             }
             throw new MsgException("O usuário não tem permissão para acessar este recurso");
         }catch(ClassCastException ex){
-            throw new MsgException( JsonResponse.Error_LoggedOut, null, "Não existe usuário logado");
+            throw new MsgException( JsonResponse.Error_Deslogado, null, "Não existe usuário logado");
         }
     }
     
@@ -129,7 +129,7 @@ public class SegurancaServico {
                     return ;
                 }
             }catch(MsgException ex){
-                if( ex.getCodigo() == JsonResponse.Error_LoggedOut ) throw ex;
+                if( ex.getCodigo() == JsonResponse.Error_Deslogado ) throw ex;
             }
         }
         

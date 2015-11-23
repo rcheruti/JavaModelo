@@ -6,8 +6,9 @@ import java.io.Serializable;
 public class JsonResponse implements Serializable{
     
     public static final int OK = 200;
-    public static final int Error_LoggedOut = 401;
-    public static final int Error_Unknown = 500;
+    public static final int Error_Deslogado = 401;
+    public static final int Error_Permissao = 403;
+    public static final int Error_Desconhecido = 500;
     
     public boolean status;
     public Object data;

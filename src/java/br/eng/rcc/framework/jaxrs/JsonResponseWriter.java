@@ -3,7 +3,6 @@ package br.eng.rcc.framework.jaxrs;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,11 +14,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 
 
 /*
@@ -32,6 +34,8 @@ import javax.ws.rs.ext.Provider;
 //@ApplicationScoped
 public class JsonResponseWriter implements MessageBodyWriter<Object>{
     
+    @Context
+    private Providers providers;
     
     @Override
     public boolean isWriteable( Class<?> type, 
@@ -68,9 +72,15 @@ public class JsonResponseWriter implements MessageBodyWriter<Object>{
         
         byte[] json;
         try{
+            ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
+                                                                MediaType.WILDCARD_TYPE);
+            ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
+            json = mapper.writeValueAsBytes(t);
+            /*
             json = new ObjectMapper()
                     .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                     .writeValueAsBytes(t);
+            /* */
         }catch(JsonProcessingException ex){
             Logger.getLogger(this.getClass().getName()).log(Level.WARNING, null, ex);
             json = new byte[0];

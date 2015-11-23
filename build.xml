@@ -23,7 +23,7 @@
         <echoproperties />
         <!-- C:\jBoss\wildfly-9.0.0.Final\standalone\deployments -->
         <!-- C:/WildFly/wildfly-9.0.2.Final/standalone/deployments -->
-        <copy todir="C:\jBoss\wildfly-9.0.0.Final\standalone\deployments" >
+        <copy todir="C:/WildFly/wildfly-9.0.2.Final/standalone/deployments" >
             <fileset dir="dist" />
         </copy>
         <!-- -->
