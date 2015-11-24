@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -40,10 +41,12 @@ public class JacksonObjectMapperContextResolver implements ContextResolver<Objec
     @Context 
     private UriInfo uriInfo;
     
+    private Pattern manyReq = Pattern.compile("^.*/s/persistence/many(?:[\\?;].*)?$");
     
     @Override
     public ObjectMapper getContext(Class<?> type) {
         ObjectMapper mapper = new ObjectMapper();
+        boolean isManyFrameworkRequest = manyReq.matcher( uriInfo.getPath() ).find() ;
         
         // para serialize:
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
@@ -56,8 +59,11 @@ public class JacksonObjectMapperContextResolver implements ContextResolver<Objec
         mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
         //mapper.enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
         //mapper.enable(DeserializationFeature.ACCEPT_FLOAT_AS_INT);
-        //mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-        //mapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
+        mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        if( isManyFrameworkRequest ){
+            System.out.println("---->>>   Many request!! ");
+            mapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
+        }
         
         // outras configurações:
         mapper.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);

@@ -32,6 +32,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.util.converter.FormatStringConverter;
 import javax.annotation.PostConstruct;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -63,7 +64,10 @@ public class EntidadesService {
     //private PersistenceUtils emUtils;
     
     private final Pattern queryStringPattern = Pattern
-        .compile("([\\w.]++)\\s*+(=|!=|<|>|<=|>=|(?>not)?like)\\s*+((['\"]).*?\\4|[\\w\\.]++)\\s*+([&\\|]?)");
+        .compile("([\\w.]++)\\s*+(=|!=|<|>|<=|>=|(?>not)?like)\\s*+((['\"]).*?\\4|[\\w\\.]++)\\s*+([&\\|]?)", Pattern.CASE_INSENSITIVE);
+    private final Pattern valorPattern = Pattern
+        .compile("^(['\"]).*\\1$", Pattern.CASE_INSENSITIVE);
+    
     
     /**
      * Para que este objeto possa fazer o seu trabalho, é obrigatório um 
@@ -73,11 +77,19 @@ public class EntidadesService {
     public void postConstruct(){
         if( em == null ){
             String msg = "O objeto EM é nulo! Verifique as configurações do Banco.";
-            System.out.println(msg);
+            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, msg);
             throw new MsgException(msg);
         }
     } 
     
+        
+    //=============================================================================
+    //=============================================================================
+    //=============================================================================
+    
+    /*
+        Abaixo estão os métodos que trabalharão com apenas 1 tipo de entidade por vez
+    */
     
     /** 
      * Exemplo de URL para abusca:
@@ -98,7 +110,7 @@ public class EntidadesService {
      * @return {@link br.eng.rcc.framework.jaxrs.JsonResponse JsonResponse}
      */
     @GET @Path("/{entidade}")
-    public Object getEntidade(
+    public Object buscarEntidade(
                 // Nome da classe (entidade) que iremos usar como parâmetro principal
             @PathParam("entidade") String entidade ,
                 // Apenas para coletarmos dados da requisição, não vem da URL
@@ -112,6 +124,16 @@ public class EntidadesService {
             
             @MatrixParam("order") String orderMatrix
         ){
+        
+        Class<?> klass = cache.get(entidade, em);
+        if( klass == null ){
+            return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade) );
+        }
+        checker.check( klass, SegurancaServico.SELECT );
+        
+        
+        
+        
         int pageNum, pageSize;
         try{
             pageNum = Integer.parseInt(pageNumStr);
@@ -127,32 +149,23 @@ public class EntidadesService {
         String uriQuery = ctx.getRequestUri().getQuery();
         String[][] querysPs = parseQueryString(uriQuery);
         
-        
         // ----  Interpretando os parâmetros passados: 
         MultivaluedMap<String,String> querysParams = ctx.getQueryParameters();
         //List<String> joinParams = new ArrayList<>();
         String[] joinParams;
         if( joinMatrix != null ){
-            joinParams = joinMatrix.split("[,\\s]+");
+            joinParams = joinMatrix.split(",+");
         }else{
             joinParams = new String[0];
         }
         
         String[] orderParams;
         if( orderMatrix != null ){
-            orderParams = orderMatrix.split("[,\\s]+");
+            orderParams = orderMatrix.split(",+");
         }else{
             orderParams = new String[0];
         }
         
-        
-        Class<?> klass = cache.get(entidade, em);
-        if( klass == null ){
-            //Logger.getLogger(this.getClass().getName()).log(
-            //        Level.SEVERE, "A classe do nome ''{0}'' não foi encontrada.", entidade);
-            return null;
-        }
-        checker.check( klass, SegurancaServico.SELECT );
         
         // ----  Criando a busca ao banco:
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -202,17 +215,14 @@ public class EntidadesService {
      */
     @POST @Path("/{entidade}")
     @Transactional
-    public Object createEntidade(List<?> obj){
-            System.out.printf("---  Objs: %s \n", obj );
-        if( obj == null || obj.isEmpty() ){
-            //Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, 
-            //    "O Parâmetro para 'EntidadesService.createEntidade' não pode ser nulo.");
+    public Object criarEntidade(List<?> objs, @PathParam("entidade") String entidade){
+        if( objs == null || objs.isEmpty() ){
             return new JsonResponse(false,
-                "O Parâmetro para 'EntidadesService.createEntidade' não pode ser nulo.");
+                String.format("Não encontramos nenhuma entidade para '%s'", entidade) );
         }
-        checker.check( obj.get(0).getClass(), SegurancaServico.INSERT );
-        //em.persist(obj);
-        return new JsonResponse(true,"Objeto gravado com sucesso");
+        checker.check( objs.get(0).getClass(), SegurancaServico.INSERT );
+        for( Object obj : objs ) em.persist(obj);
+        return new JsonResponse(true,null);
     }
     
     
@@ -236,14 +246,18 @@ public class EntidadesService {
      */
     @PUT @Path("/{entidade}")
     @Transactional
-    public Object editEntidade(
+    public Object editarEntidade(
             @PathParam("entidade") String entidade,
             @Context UriInfo ctx,
             JsonNode obj){ // JsonNode
-        if( obj == null ){
-            return new JsonResponse(false,
-                "O Parâmetro para 'EntidadesService.editEntidade' não pode ser nulo.");
+        
+        Class<?> klass = cache.get(entidade, em);
+        if( klass == null ){
+            return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade) );
         }
+        checker.check( klass, SegurancaServico.UPDATE);
+        
+        
         String uriQuery = ctx.getRequestUri().getQuery();
         if( uriQuery == null || uriQuery.isEmpty() ){
             return new JsonResponse(false,
@@ -251,15 +265,6 @@ public class EntidadesService {
         }
         String[][] querysPs = parseQueryString(uriQuery);
         
-        
-        Class<?> klass = cache.get(entidade, em);
-        if( klass == null ){
-            Logger.getLogger(this.getClass().getName()).log(
-                    Level.WARNING, "A classe do nome ''{0}'' não foi encontrada.", entidade);
-            return new JsonResponse(false,
-                "A classe não foi encontrada");
-        }
-        checker.check( klass, SegurancaServico.UPDATE);
         
         // ----  Criando a busca ao banco:
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -301,7 +306,7 @@ public class EntidadesService {
         
         int ups = em.createQuery(query).executeUpdate();
         
-        return new JsonResponse(true,ups, "Objetos atualizados com sucesso");
+        return new JsonResponse(true,ups, null);
     }
     
     
@@ -321,10 +326,17 @@ public class EntidadesService {
      */
     @DELETE @Path("/{entidade}")
     @Transactional
-    public Object deleteEntidade(
+    public Object deletarEntidade(
                 @PathParam("entidade") String entidade ,
                 @Context UriInfo ctx
             ){
+        
+        Class<?> klass = cache.get(entidade, em);
+        if( klass == null ){
+            return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade) );
+        }
+        checker.check( klass, SegurancaServico.DELETE);
+        
         
         String uriQuery = ctx.getRequestUri().getQuery();
         if( uriQuery == null || uriQuery.isEmpty() ){
@@ -334,14 +346,6 @@ public class EntidadesService {
         String[][] querysPs = parseQueryString(uriQuery);
         
         
-        Class<?> klass = cache.get(entidade, em);
-        if( klass == null ){
-            Logger.getLogger(this.getClass().getName()).log(
-                    Level.WARNING, "A classe do nome ''{0}'' não foi encontrada.", entidade);
-            return new JsonResponse(false,
-                "A classe não foi encontrada");
-        }
-        checker.check( klass, SegurancaServico.DELETE);
         
         // ----  Criando a busca ao banco:
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -361,9 +365,47 @@ public class EntidadesService {
         // A busca ao banco:
         int qtd = em.createQuery(query).executeUpdate();
         
-        return new JsonResponse(true,qtd,"Objeto apagado com sucesso");
+        return new JsonResponse(true,qtd,null);
     }
     
+    
+    //=============================================================================
+    //=============================================================================
+    //=============================================================================
+    
+    /*
+        Abaixo estão os métodos que trabalharão com lotes de entidades,
+        esses métodos têm que saber lidar com listas que terão vários tipo de entidades
+        diferentes misturadas
+    */
+    
+    @GET @Path("/many")
+    @Transactional
+    public Object buscarVariasEntidades(List<?> objs){
+        
+        return new JsonResponse(true, null);
+    }
+    
+    @POST @Path("/many")
+    @Transactional
+    public Object criarVariasEntidades(List<?> objs){
+        
+        return new JsonResponse(true, null);
+    }
+    
+    @PUT @Path("/many")
+    @Transactional
+    public Object editarVariasEntidades(List<?> objs){
+        
+        return new JsonResponse(true, null);
+    }
+    
+    @DELETE @Path("/many")
+    @Transactional
+    public Object deletarVariasEntidades(List<?> objs){
+        
+        return new JsonResponse(true, null);
+    }
     
     
     //===============  Privates  ==================
@@ -386,7 +428,11 @@ public class EntidadesService {
                 String valor = m.group(3);
                 String opComp = m.group(5);
                 if( attr == null || comp == null || valor == null ) continue;
-                String[] params = { attr, comp , valor ,opComp };
+                
+                boolean isValor = valorPattern.matcher(valor).find();
+                if( isValor ) valor = valor.substring(1, valor.length()-1 );
+                
+                String[] params = { attr, comp , valor , opComp, isValor?"":null };
                 //querysPs.add(params);
                 querysPs[qI++] = params;
             }
@@ -397,10 +443,26 @@ public class EntidadesService {
     }
     
     private void addOrderBy(CriteriaBuilder cb, CriteriaQuery query, String[] orders){
+        if( orders.length < 1 ) return;
         Root root = (Root) query.getRoots().iterator().next();
         List<Order> lista = new ArrayList<>(6);
-        for( String s : orders ){
-            lista.add( cb.asc( root.get(s) ) );
+        for( String s : orders ){ 
+            try{
+                String[] ordersOrder = s.trim().split("\\s+");
+                if( ordersOrder.length > 1 && ordersOrder[1].matches("(?i)desc") ) {
+                    lista.add( cb.desc(root.get( ordersOrder[0] ) ) );
+                }else lista.add( cb.asc( root.get( ordersOrder[0] ) ) );
+            }catch(IllegalArgumentException ex){
+                /*
+                Throwable ttt = ex;
+                Throwable lastttt = null; // Para proteger de loop infinito
+                while( ttt != null && ttt != lastttt ){
+                    System.out.printf("---   Ex.: %s \n", ttt.getMessage() );
+                    lastttt = ttt;
+                    ttt = ttt.getCause();
+                }
+                /* */
+            }
         }
         query.orderBy( lista );
     }

@@ -15,6 +15,7 @@ class WhereBuilder {
     }
     
     private final Map<String, CriteriaWhereBuilder> map;
+    private final char likeCuringa = '%';
 
     private WhereBuilder(){
         final Map<String, CriteriaWhereBuilder> staticMap = new HashMap<>(20);
@@ -24,8 +25,8 @@ class WhereBuilder {
         staticMap.put(">=", ( cb, exp1,  exp2) -> cb.greaterThanOrEqualTo(exp1,exp2));
         staticMap.put("<", ( cb, exp1,  exp2) -> cb.greaterThanOrEqualTo(exp1,exp2).not());
         staticMap.put(">", ( cb, exp1,  exp2) -> cb.greaterThan(exp1,exp2));
-        staticMap.put("notlike", ( cb, exp1,  exp2) -> cb.notLike(exp1,(String)exp2));
-        staticMap.put("like", ( cb, exp1,  exp2) -> cb.like(exp1,(String)exp2));
+        staticMap.put("notlike", ( cb, exp1,  exp2) -> cb.notLike(exp1,((String)exp2).replaceAll("\\*", "%") ));
+        staticMap.put("like", ( cb, exp1,  exp2) -> cb.like(exp1, ((String)exp2).replaceAll("\\*", "%") ));
         map = staticMap;
     }
     public static WhereBuilderInterface create(CriteriaBuilder cb, CriteriaQuery query){
