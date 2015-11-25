@@ -6,33 +6,12 @@ Module.provider('ResourceService',[
     this.defaults = {
         size: 20,
         page: 0,
-        url: (context?context:'') +'/s/persistence/'
+        url: '/s/persistence/'
     } ;
     
-    this.$get = ['$http','$q',function($http,$q){
+    this.$get = ['$http','$q','context',function($http,$q,context){
         
-        /**
-         * Esse é um recurso auxiliar para criar entidades e serviços que têm
-         * chamadas padrão ao lado do servidor. Ex.: Entidades de banco
-         * 
-         * post:{
-         *      data: { dados para criar a entidade }
-         * }
-         * put:{
-         *      id: { chaves da entidade },
-         *      data: { dados para atualizar a entidade }
-         * }
-         * delete:{
-         *      id: { chaves da entidade }
-         * }
-         * get:{
-         *      
-         * }
-         * 
-         * @type ResourceService
-         */
-        
-        function constantesComparacao(){
+        function constantsConstructor(){
             this.equal = '=';
             this.notEqual = '!=';
             this.lowerThanOrEqualTo = '<=';
@@ -41,17 +20,20 @@ Module.provider('ResourceService',[
             this.greaterThan = '>';
             this.notLike = 'notlike';
             this.like = 'like';
-            this.defaults = provider.defaults ;
+            
+            this.size = provider.defaults.size ;
+            this.page = provider.defaults.page ;
+            this.url = context + provider.defaults.url ;
         }
 
-        function EntidadeConstructor( nome, config ){
+        function EntityConstructor( nome, config ){
             this._etidadeNome = nome;
             if( config ){
                 this.defaults = config ;
             }
         }
-        EntidadeConstructor.prototype = new constantesComparacao();
-        EntidadeConstructor.prototype.query = function( config ){
+        EntityConstructor.prototype = new constantsConstructor();
+        EntityConstructor.prototype.query = function( config ){
             var query = new QueryConstructor();
             
             query.size( config.size );
@@ -73,13 +55,14 @@ Module.provider('ResourceService',[
             return query ;
         };
 
-        function QueryConstructor(){
-            this._size = this.defaults.size ;
-            this._page = this.defaults.page ;
+        function QueryConstructor( config ){
+            this._size = config.size ;
+            this._page = config.page ;
             this._order = [] ;
             this._join = [] ;
-            this._url = this.defaults.url ;
+            this._url = config.url ;
             this._param = [] ;
+            this.config = config ;
         }
         QueryConstructor.prototype.order = function( vals ){
             if( vals instanceof Array ){
@@ -90,9 +73,10 @@ Module.provider('ResourceService',[
             }else if(typeof vals==='string'){
                 this._order.push( vals );
             }
+            return this;
         };
-        QueryConstructor.prototype.size = function(val){ this._size = (typeof val==='number')? val : this.defaults.size ; };
-        QueryConstructor.prototype.page = function(val){ this._page = (typeof val==='number')? val : this.defaults.page ; };
+        QueryConstructor.prototype.size = function(val){ if(typeof val==='number')this._size = val; return this; };
+        QueryConstructor.prototype.page = function(val){ if(typeof val==='number')this._page = val; return this; };
         QueryConstructor.prototype.join = function( vals ){
             if( vals instanceof Array ){
                 for( var g in vals ){
@@ -102,18 +86,20 @@ Module.provider('ResourceService',[
             }else if(typeof vals==='string'){
                 this._join.push( vals );
             }
+            return this;
         };
         QueryConstructor.prototype.param = function( paramOrNome, comp, val, logicOp, quoteVal ){
             if( !paramOrNome ) return null;
             if( !logicOp ) logicOp = '&'; // Padão para E se for falso
             else if( logicOp !== '&' && logicOp !== '|' ) logicOp = '|'; // Padão para OU se for verdadeiro
             if( quoteVal === undefined ){ // se não for definido verificaremos o valor para tentar sempre usar as aspas
-                if( val.indexOf('"') != 0 && val.indexOf("'") != 0 ) val = '"'+val;
-                if( val.lastIndexOf('"') != val.length-1 && val.lastIndexOf("'") != val.length-1 ) val = val+'"';
+                if( val.indexOf('"') !== 0 && val.indexOf("'") !== 0 ) val = '"'+val;
+                if( val.lastIndexOf('"') !== val.length-1 && val.lastIndexOf("'") !== val.length-1 ) val = val+'"';
             }else if( quoteVal ){
                 val = '"'+val+'"';
             }
             this._param.push( paramOrNome+' '+comp+' '+val+logicOp );
+            return this;
         };
         QueryConstructor.prototype.get = function( params ){
             
@@ -142,7 +128,7 @@ Module.provider('ResourceService',[
 
         var ref = {
             entidade:function( nome ){
-                var entidade = new EntidadeConstructor( nome );
+                var entidade = new EntityConstructor( nome );
             }
         };
         return ref;
