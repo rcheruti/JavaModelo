@@ -5,6 +5,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Titulo</title>
         
+            <!--  Polyfills  -->
+        <script src="js/polyfill/requestAnimationFrame.js" type="text/javascript"></script>
+        
         <link href="${pageContext.request.contextPath}/css/index.css" rel="stylesheet" type="text/css" />
         
         <script src="${pageContext.request.contextPath}/js/libs/angular.min.js" ></script>
