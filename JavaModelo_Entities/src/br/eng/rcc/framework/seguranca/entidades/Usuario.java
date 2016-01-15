@@ -37,10 +37,11 @@ public class Usuario implements Serializable, UsuarioInterface{
         return null;
     }
     
-    
+    @Override
     public boolean hasPermissao(String chave){
         return this.getCredencial().hasPermissao(chave);
     }
+    @Override
     public boolean hasGrupo(String chave){
         return this.getCredencial().hasGrupo(chave);
     }
