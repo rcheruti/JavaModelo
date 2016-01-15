@@ -2,12 +2,10 @@
 package br.eng.rcc.framework.websocket;
 
 import java.util.Arrays;
-import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
-import javax.websocket.Decoder;
 import javax.websocket.DeploymentException;
 import javax.websocket.server.ServerContainer;
 import javax.websocket.server.ServerEndpointConfig;
@@ -27,7 +25,7 @@ public class Instalador implements ServletContextListener{
             String urlParam = ctx.getInitParameter("websocket.url");
             if( urlParam == null ) urlParam = "/websocket";
             ws.addEndpoint( ServerEndpointConfig.Builder
-                .create(Borda.class, urlParam )
+                .create(Socket.class, urlParam )
                 .configurator( new Configurador() )
                 .decoders( Arrays.asList( JsonDecoder.class ) )
                 .encoders( Arrays.asList( JsonEncoder.class ) )

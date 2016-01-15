@@ -10,13 +10,6 @@
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <web-module-libraries>
                 <library dirs="200">
-                    <file>${libs.Apache Commons Codec.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
-                </library>
-                <library dirs="200">
-                    <file>${libs.Jackson 2.5.0.classpath}</file>
-                </library>
-                <library dirs="200">
                     <file>${reference.JavaModelo_Framework.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
@@ -38,7 +31,7 @@
             </test-roots>
         </data>
         <libraries xmlns="http://www.netbeans.org/ns/ant-project-libraries/1">
-            <definitions>.\lib\nblibraries.properties</definitions>
+            <definitions>../libs\nblibraries.properties</definitions>
         </libraries>
         <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
             <reference>
