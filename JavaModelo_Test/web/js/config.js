@@ -1,7 +1,9 @@
 
-window.Module = angular.module('Module',['ngAnimate','ui.router','JavaModelo']);
+window.Module = angular.module('Module',['ngAnimate','ngTouch','ngRoute','ui.router','JavaModelo']);
 
-Module.config([
-    function(){
+Module.config(['contextProvider',
+    function(contextProvider){
+  
+  contextProvider.context('/s');
   
 }]);

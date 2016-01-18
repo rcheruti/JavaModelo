@@ -10,7 +10,6 @@ import javax.persistence.EntityManager;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  * Esta classe fornece funções para acessar o usuário que está disponível na
@@ -45,8 +44,10 @@ public class UsuarioService {
   }
   
   public String criptografar(String s){
-    return DigestUtils.sha1Hex(s);
+    return s;
+    //return DigestUtils.sha1Hex(s);
   }
+  
   public void checkLogin(){
     HttpSession session = req.getSession(false);
     if( session != null ){
@@ -63,5 +64,10 @@ public class UsuarioService {
     }
     throw new MsgException("O usuário não está logado");
   }
+  
+  
+  
+  
+  
   
 }

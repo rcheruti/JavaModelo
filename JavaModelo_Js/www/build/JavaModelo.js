@@ -2,7 +2,7 @@
 (function(window){
 
 
-var Module = angular.module('JavaModelo',[]);
+var Module = angular.module('JavaModelo',['ng']);
 
   // Configuração dos interceptadores desse módule
 Module.config(['$httpProvider',
@@ -17,8 +17,8 @@ Module.config(['$httpProvider',
     
     //HostInterProvider.url = 'http://127.0.0.1:8080';
     
-    $httpProvider.interceptadores.push( 'LoginInter' );
-    $httpProvider.interceptadores.push( 'HostInter' );
+    $httpProvider.interceptors.push( 'LoginInter' );
+    $httpProvider.interceptors.push( 'HostInter' );
     
 }]);
 
@@ -168,16 +168,17 @@ Module.provider('HostInter',[function(){
 
   var provider = this;
 
-  provider.use = false;
+  provider.use = true;
   provider.url = '';
 
-  provider.$get = [function(){
+  provider.$get = ['context',function(context){
 
     var ref = {
       request:function( request ){
         if( provider.use ){
-          request.url = provider.url + request.url ;
+          request.url = provider.url + context + request.url ;
         }
+        console.log('Requisição para ', request.url );
         return request;
       }
     };
@@ -186,14 +187,14 @@ Module.provider('HostInter',[function(){
   }];
 
 }]);
-Module.provider('LoginInter',['$window',function($window){
+Module.provider('LoginInter',[function(){
 
   var provider = this;
 
   provider.url = '/login.jsp';
   provider.ERRORCODE_LOGIN = 401 ;
 
-  provider.$get = ['context',function(context){
+  provider.$get = ['context','$window',function(context,$window){
     /**
      * Esse interceptador redireciona o usuário para a página de login
      * caso o servidor informe o código de erro de usuário não logado.
@@ -201,8 +202,8 @@ Module.provider('LoginInter',['$window',function($window){
      */
 
     var ref = {
-      response:function( reponse ){
-        if( reponse.data && reponse.data.code === provider.ERRORCODE_LOGIN ){
+      response:function( response ){
+        if( response.data && response.data.code === provider.ERRORCODE_LOGIN ){
           var origin = $window.location.origin ;
           $window.location = origin + context + provider.url ;
         }

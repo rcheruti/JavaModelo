@@ -18,8 +18,16 @@
     </target>
     
     <target name="-post-dist">
-      <echoproperties />
+      <!-- <echoproperties /> -->
       <copy file="${dist.ear.war}" todir="${j2ee.server.domain}/deployments" />
+    </target>
+    
+    <!--  sobreescrevendo quem não será utilizado para compilar mais rápido  -->
+    <target name="undeploy-clean">
+      
+    </target>
+    <target name="run">
+      <echo message="Não execute RUN! Faça o deploy manualmente." />
     </target>
     
     

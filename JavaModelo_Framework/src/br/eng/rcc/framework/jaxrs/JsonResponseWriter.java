@@ -1,8 +1,11 @@
 
 package br.eng.rcc.framework.jaxrs;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -12,30 +15,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
 
-/*
-    Será trocado por apenas um ObjectMapper disponibilizado
-    por ContextResolver. O Provider padrão do Jackson deverá ser
-    usado normalmente.
-*/
-
-//@Provider
-//@ApplicationScoped
+@Provider
+@ApplicationScoped
 public class JsonResponseWriter implements MessageBodyWriter<Object>{
     
-    @Context
-    private Providers providers;
+    //@Context
+    //private Providers providers;
+    @Inject
+    private JacksonObjectMapperContextResolver resolver;
     
     @Override
     public boolean isWriteable( Class<?> type, 
@@ -63,17 +65,20 @@ public class JsonResponseWriter implements MessageBodyWriter<Object>{
                             MultivaluedMap<String, Object> httpHeaders, 
                             OutputStream entityStream) 
             throws IOException, WebApplicationException {
-        List<Object> lista = httpHeaders.get("Content-Type");
-        if( lista == null ){
-            lista = new ArrayList<>(4);
-            httpHeaders.put("Content-Type", lista);
+        if( httpHeaders != null ){
+          List<Object> lista = httpHeaders.get("Content-Type") ;
+          if( lista == null ){
+              lista = new ArrayList<>(4);
+              httpHeaders.put("Content-Type", lista);
+          }
+          lista.add(MediaType.APPLICATION_JSON+"; charset=utf-8");
         }
-        lista.add(MediaType.APPLICATION_JSON+"; charset=utf-8");
+        
         
         byte[] json;
         try{
-            ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
-                                                                MediaType.WILDCARD_TYPE);
+            //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
+            //                                                    MediaType.WILDCARD_TYPE);
             ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
             json = mapper.writeValueAsBytes(t);
             /*
@@ -103,5 +108,6 @@ public class JsonResponseWriter implements MessageBodyWriter<Object>{
             return ""; 
         }
     }
+    
     
 }

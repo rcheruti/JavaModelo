@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -30,15 +31,16 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
-@Provider
-@RequestScoped
+//@Provider
+//@RequestScoped
+@ApplicationScoped
 public class JacksonObjectMapperContextResolver implements ContextResolver<ObjectMapper>{
     
     @Inject
     private EntityManager em;
     @Inject
     private ClassCache cache;
-    @Context 
+    @Context
     private UriInfo uriInfo;
     
     private Pattern manyReq = Pattern.compile("^.*/s/persistence/many(?:[\\?;].*)?$");
@@ -46,7 +48,8 @@ public class JacksonObjectMapperContextResolver implements ContextResolver<Objec
     @Override
     public ObjectMapper getContext(Class<?> type) {
         ObjectMapper mapper = new ObjectMapper();
-        boolean isManyFrameworkRequest = manyReq.matcher( uriInfo.getPath() ).find() ;
+        //boolean isManyFrameworkRequest = manyReq.matcher( uriInfo.getPath() ).find() ;
+        boolean isManyFrameworkRequest = false ;
         
         // para serialize:
         mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);

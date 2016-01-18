@@ -3,7 +3,6 @@ package br.eng.rcc.framework.filtros;
 
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.JsonResponseWriter;
-import br.eng.rcc.framework.jaxrs.MsgException;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import javax.inject.Inject;

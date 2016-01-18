@@ -42,8 +42,10 @@ public class JsonRequestReader implements MessageBodyReader<Object>{
     @Inject
     private EntityManager em;
     
-    @Context
-    private Providers providers;
+    //@Context
+    //private Providers providers;
+    @Inject
+    private JacksonObjectMapperContextResolver resolver;
     
     @Override
     public boolean isReadable(Class<?> type, 
@@ -95,30 +97,30 @@ public class JsonRequestReader implements MessageBodyReader<Object>{
         será movido para outro lugar mais tarde.
     */
     public Object fromJson(InputStream entityStream, Class<Object> type) throws IOException{
-        ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
-                                                            MediaType.WILDCARD_TYPE);
+        //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class,  
+        //                                                    MediaType.WILDCARD_TYPE);
         ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
         return mapper.readValue(entityStream, type);
     }
     public Object fromJson(InputStream entityStream, Class<? extends Collection> typeList, Class<Object> type) throws IOException{
         if( typeList == null ) return fromJson(entityStream, type);
-        ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
-                                                            MediaType.WILDCARD_TYPE);
+        //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class,  
+        //                                                    MediaType.WILDCARD_TYPE);
         ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
         return mapper.readValue(entityStream, mapper.getTypeFactory().constructCollectionType(typeList, type) );
     }
     
     
     public Object fromJson(Reader entityStream, Class<? extends Object> type) throws IOException{
-        ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
-                                                            MediaType.WILDCARD_TYPE);
+        //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
+        //                                                    MediaType.WILDCARD_TYPE);
         ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
         return mapper.readValue(entityStream, type);
     }
     public Object fromJson(Reader entityStream, Class<? extends Collection> typeList, Class<? extends Object> type) throws IOException{
         if( typeList == null ) return fromJson(entityStream, type);
-        ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
-                                                            MediaType.WILDCARD_TYPE);
+        //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
+        //                                                    MediaType.WILDCARD_TYPE);
         ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
         return mapper.readValue(entityStream, mapper.getTypeFactory().constructCollectionType(typeList, type) );
     }

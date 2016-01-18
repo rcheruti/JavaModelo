@@ -1,11 +1,11 @@
-Module.provider('LoginInter',['$window',function($window){
+Module.provider('LoginInter',[function(){
 
   var provider = this;
 
   provider.url = '/login.jsp';
   provider.ERRORCODE_LOGIN = 401 ;
 
-  provider.$get = ['context',function(context){
+  provider.$get = ['context','$window',function(context,$window){
     /**
      * Esse interceptador redireciona o usuário para a página de login
      * caso o servidor informe o código de erro de usuário não logado.
@@ -13,8 +13,8 @@ Module.provider('LoginInter',['$window',function($window){
      */
 
     var ref = {
-      response:function( reponse ){
-        if( reponse.data && reponse.data.code === provider.ERRORCODE_LOGIN ){
+      response:function( response ){
+        if( response.data && response.data.code === provider.ERRORCODE_LOGIN ){
           var origin = $window.location.origin ;
           $window.location = origin + context + provider.url ;
         }

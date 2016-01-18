@@ -1,5 +1,5 @@
 
-var Module = angular.module('JavaModelo',[]);
+var Module = angular.module('JavaModelo',['ng']);
 
   // Configuração dos interceptadores desse módule
 Module.config(['$httpProvider',
@@ -14,8 +14,8 @@ Module.config(['$httpProvider',
     
     //HostInterProvider.url = 'http://127.0.0.1:8080';
     
-    $httpProvider.interceptadores.push( 'LoginInter' );
-    $httpProvider.interceptadores.push( 'HostInter' );
+    $httpProvider.interceptors.push( 'LoginInter' );
+    $httpProvider.interceptors.push( 'HostInter' );
     
 }]);
 
