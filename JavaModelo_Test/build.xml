@@ -10,6 +10,19 @@
 <project name="JavaModelo_Test" default="default" basedir=".">
     <description>Builds, tests, and runs the project JavaModelo_Test.</description>
     <import file="nbproject/build-impl.xml"/>
+    
+    
+    <target name="-pre-compile">
+      <delete file="web/js/libs/JavaModelo.js" />
+      <copy file="../JavaModelo_Js/dist/JavaModelo.js" tofile="web/js/libs/JavaModelo.js" />
+    </target>
+    
+    <target name="-post-dist">
+      <echoproperties />
+      <copy file="${dist.ear.war}" todir="${j2ee.server.domain}/deployments" />
+    </target>
+    
+    
     <!--
 
     There exist several targets which are by default empty and which can be 
