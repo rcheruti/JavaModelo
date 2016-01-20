@@ -1,7 +1,8 @@
 
 package br.eng.rcc.framework.seguranca.filtros;
 
-import br.eng.rcc.framework.seguranca.servicos.UsuarioService;
+import br.eng.rcc.framework.config.Configuracoes;
+import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,31 +18,17 @@ import javax.servlet.http.HttpServletResponse;
 
 public class SegurancaFiltro implements Filter{
   
-  private final static String defaultPattern = 
-      "(?i:^/?img|^/?css|^/?js|^/?s/seguranca/login|^/?login.html|^/?login.jsp)";
-  private final static String defaultRedirectPage = "/login.jsp";
-  
-  //------------------------------------------------------------
   
   private Pattern pattern;
   private String redirectPage;
   
   @Inject
-  private UsuarioService usuarioService;
+  private UsuarioServico usuarioService;
   
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
-    String patternStr = filterConfig.getServletContext()
-        .getInitParameter("SegurancaFiltro.pattern");
-    if( patternStr == null ){
-      patternStr = defaultPattern;
-    }
-    pattern = Pattern.compile(patternStr);
-      //  ---
-    
-    String redirectPageStr = filterConfig.getServletContext()
-        .getInitParameter("SegurancaFiltro.redirectPage");
-    redirectPage = (redirectPageStr == null)? defaultRedirectPage : redirectPageStr;
+    pattern = Pattern.compile( Configuracoes.segurancaRegExp );
+    redirectPage = Configuracoes.loginPath;
   }
 
   @Override

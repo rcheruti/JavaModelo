@@ -9,6 +9,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
@@ -16,20 +18,21 @@ import javax.persistence.Table;
 @Entity
 @Table(name="seg_permissao")
 @Seguranca(delete = false, select = false, insert = false, update = false)
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class Permissao implements Serializable{
     
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    protected int id;
     
-    private String nome;
+    protected String nome;
     
-    
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "permissoes")
-    private Set<Grupo> grupos;
     
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "permissoes")
-    private Set<Credencial> credenciais;
+    protected Set<Grupo> grupos;
+    
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "permissoes")
+    protected Set<Credencial> credenciais;
     
     
     

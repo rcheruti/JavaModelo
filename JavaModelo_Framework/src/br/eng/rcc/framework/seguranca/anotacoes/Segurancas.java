@@ -7,6 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import javax.interceptor.InterceptorBinding;
+import javax.enterprise.util.Nonbinding;
 
 /**
  * Esta anotação é usada para informar uma lista de {@link br.eng.rcc.framework.seguranca.anotacoes.Seguranca Seguranca} 
@@ -28,6 +29,6 @@ import javax.interceptor.InterceptorBinding;
 @InterceptorBinding
 public @interface Segurancas {
     
-    Seguranca[] value() default {};
+    @Nonbinding Seguranca[] value() default {};
     
 }

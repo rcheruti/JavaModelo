@@ -6,7 +6,7 @@ Module.provider('HostInter',[function(){
 
   var provider = this;
 
-  provider.use = true;
+  provider.use = false;
   provider.url = '';
 
   provider.$get = ['context',function(context){
@@ -14,7 +14,7 @@ Module.provider('HostInter',[function(){
     var ref = {
       request:function( request ){
         if( provider.use ){
-          request.url = provider.url + context + request.url ;
+          request.url = provider.url + context.services + request.url ;
         }
         return request;
       }

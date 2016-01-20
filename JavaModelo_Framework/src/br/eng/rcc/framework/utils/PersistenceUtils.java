@@ -3,6 +3,7 @@ package br.eng.rcc.framework.utils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -61,7 +62,7 @@ public class PersistenceUtils {
             for(Field field : fieldsDownNullify){
                 for(Object obj : lista){
                     try {
-                        nullifyLazy( em, ((List<Object>)field.get(obj)).toArray(), 
+                        nullifyLazy( em, ((Collection<Object>)field.get(obj)).toArray(), 
                                 new String[0], secureLevel );
                     } catch (IllegalArgumentException | IllegalAccessException ex) {
                         Logger.getLogger(PersistenceUtils.class.getName()).log(Level.WARNING, null, ex);

@@ -1,7 +1,7 @@
 
 package br.eng.rcc.framework.jaxrs;
 
-import br.eng.rcc.framework.jaxrs.persistence.ClassCache;
+import br.eng.rcc.framework.jaxrs.persistencia.ClassCache;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -23,15 +23,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
 
 
 @Provider
 @ApplicationScoped
-@Consumes({ MediaType.APPLICATION_JSON , "*/*" })
+//@Consumes({ MediaType.APPLICATION_JSON , "*/*" })
+@Consumes({ "application/json-persistence" })
 @Priority(Integer.MAX_VALUE) // Tenta substituir os provedores padrão (Jackson/Jettison)
 public class JsonRequestReader implements MessageBodyReader<Object>{
     
@@ -99,14 +98,14 @@ public class JsonRequestReader implements MessageBodyReader<Object>{
     public Object fromJson(InputStream entityStream, Class<Object> type) throws IOException{
         //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class,  
         //                                                    MediaType.WILDCARD_TYPE);
-        ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
+        ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
         return mapper.readValue(entityStream, type);
     }
     public Object fromJson(InputStream entityStream, Class<? extends Collection> typeList, Class<Object> type) throws IOException{
         if( typeList == null ) return fromJson(entityStream, type);
         //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class,  
         //                                                    MediaType.WILDCARD_TYPE);
-        ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
+        ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
         return mapper.readValue(entityStream, mapper.getTypeFactory().constructCollectionType(typeList, type) );
     }
     
@@ -114,14 +113,14 @@ public class JsonRequestReader implements MessageBodyReader<Object>{
     public Object fromJson(Reader entityStream, Class<? extends Object> type) throws IOException{
         //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
         //                                                    MediaType.WILDCARD_TYPE);
-        ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
+        ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
         return mapper.readValue(entityStream, type);
     }
     public Object fromJson(Reader entityStream, Class<? extends Collection> typeList, Class<? extends Object> type) throws IOException{
         if( typeList == null ) return fromJson(entityStream, type);
         //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
         //                                                    MediaType.WILDCARD_TYPE);
-        ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
+        ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
         return mapper.readValue(entityStream, mapper.getTypeFactory().constructCollectionType(typeList, type) );
     }
     

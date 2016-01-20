@@ -1,8 +1,20 @@
-    /*
-        Estilos padrão, de componentes reutilizáveis e gerais
-    */
-*:not(button):not(input){ border:none; background: transparent; margin:0; padding:0; }
-body{ top:0; left:0; position:absolute; width:100%; height:100%; }
+
+*:not(button):not(input){ 
+  border:none; 
+  background: transparent; 
+  margin:0; 
+  padding:0; 
+  opacity: 1;
+}
+html,body{ 
+  top:0; 
+  left:0; 
+  position:absolute; 
+  width:100%; 
+  height:100%;
+  font-size: 16px;
+  font-family: "Lucida Sans Unicode";
+}
 
 
 

@@ -1,11 +1,9 @@
 
 package br.eng.rcc.framework.jaxrs;
 
-import com.fasterxml.jackson.core.JsonParser;
+import br.eng.rcc.framework.config.Configuracoes;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -15,22 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
 
 
 @Provider
+@Produces({ "*/*" })
 @ApplicationScoped
 public class JsonResponseWriter implements MessageBodyWriter<Object>{
     
@@ -74,18 +69,10 @@ public class JsonResponseWriter implements MessageBodyWriter<Object>{
           lista.add(MediaType.APPLICATION_JSON+"; charset=utf-8");
         }
         
-        
         byte[] json;
         try{
-            //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
-            //                                                    MediaType.WILDCARD_TYPE);
-            ObjectMapper mapper = (ObjectMapper) resolver.getContext(ObjectMapper.class);
+            ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
             json = mapper.writeValueAsBytes(t);
-            /*
-            json = new ObjectMapper()
-                    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                    .writeValueAsBytes(t);
-            /* */
         }catch(JsonProcessingException ex){
             Logger.getLogger(this.getClass().getName()).log(Level.WARNING, null, ex);
             json = new byte[0];

@@ -1,12 +1,11 @@
 
 Module.config(['$stateProvider','$routeProvider',
     function($stateProvider,$routeProvider){
+      
+  $routeProvider.otherwise('/carro');
   
-  $routeProvider.otherwise('/');
-  
-  $stateProvider.state('',{
-    url: '',
-    views:{ conteudo:{ templateUrl:'' } }
-  });
+  $stateProvider.state('carro',
+    { url: '/carro', views:{conteudo:{ templateUrl:'paginas/carro.html' }}}
+  );
   
 }]);

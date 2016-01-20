@@ -4,6 +4,16 @@ window.Module = angular.module('Module',['ngAnimate','ngTouch','ngRoute','ui.rou
 Module.config(['contextProvider',
     function(contextProvider){
   
-  contextProvider.context('/s');
+  contextProvider.root('/');
+  contextProvider.services('/s');
+  contextProvider.websocket('/websocket');
+  
+}]);
+
+Module.run(['ResourceService','$window',
+    function(ResourceService,$window){
+  
+  $window.Carro = ResourceService.entidade('Carro');
+  $window.Cor = ResourceService.entidade('Cor');
   
 }]);

@@ -17,5 +17,7 @@ Module.config(['$httpProvider',
     $httpProvider.interceptors.push( 'LoginInter' );
     $httpProvider.interceptors.push( 'HostInter' );
     
+    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    
 }]);
 

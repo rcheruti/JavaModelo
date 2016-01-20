@@ -1,9 +1,9 @@
 
 package br.eng.rcc.framework.filtros;
 
+import br.eng.rcc.framework.config.Configuracoes;
 import java.io.IOException;
 import java.util.regex.Pattern;
-import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -13,18 +13,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@Deprecated
+
 public class RewriteFiltro implements Filter{
     
     private Pattern regexp;
-    private static final String defaultRegexp = 
-            "^/?s/|^/?css/|^/?js/|^/?img/|^/?index\\.html|^/?login\\.html|^/?index\\.jsp|^/?login\\.jsp";
     
     @Override
     public void init(FilterConfig fc) throws ServletException {
-        String regexpStr = fc.getInitParameter("regexp");
-        if( regexpStr == null ) regexpStr = defaultRegexp;
-        regexp = Pattern.compile(regexpStr);
+        regexp = Pattern.compile( Configuracoes.rewriteRegExp );
     }
 
     @Override
@@ -45,7 +41,7 @@ public class RewriteFiltro implements Filter{
                 || regexp.matcher(uri).find() ){
             fc.doFilter(sr, sr1);
         }else{
-            req.getRequestDispatcher("/index.jsp").forward(sr, sr1);
+            req.getRequestDispatcher( Configuracoes.indexPath ).forward(sr, sr1);
         }
     }
 

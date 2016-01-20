@@ -7,7 +7,9 @@
     <title>JavaModelo Test: Login</title>
     
     <link href="${pageContext.servletContext.contextPath}/css/index.css" type="text/css" rel="stylesheet"/>
+    <link href="${pageContext.servletContext.contextPath}/css/styles.css" type="text/css" rel="stylesheet"/>
     <link href="${pageContext.servletContext.contextPath}/css/login.css" type="text/css" rel="stylesheet"/>
+    <link href="${pageContext.servletContext.contextPath}/css/informacoes.css" type="text/css" rel="stylesheet"/>
     
     <script src="${pageContext.servletContext.contextPath}/js/libs/angular/angular.min.js"></script>
     <script src="${pageContext.servletContext.contextPath}/js/libs/angular/angular-animate.min.js"></script>
@@ -20,10 +22,33 @@
     <script src="${pageContext.servletContext.contextPath}/js/config.js"></script>
     
     <script>
-      Module.controller('LoginForm',['$scope','$http',
-          function($scope,$http){
+      Module.controller('LoginForm',['$scope','$http','$timeout','$window','context',
+          function($scope,$http,$timeout,$window,context){
+        $scope.msg = '';
+        $scope.msgClasses = 'fade right';
+        var timeOut = null;
         $scope.entrar = function(){
-          $http.post('/seguranca/login', { login: $scope.login, senha: $scope.senha } );
+          $http
+            .post( context.services+ '/seguranca/login', { login: $scope.login, senha: $scope.senha } )
+            .then(function(data){
+              $timeout.cancel( timeOut );
+              data = data.data;
+              if(data.status){
+                $scope.msg = data.msg ;
+                $scope.msgClasses = '';
+                timeOut = $timeout(function(){ 
+                  var url = $window.location.origin + context.root ;
+                  $window.location = url;
+                }, 1000);
+              }else{
+                $scope.msgClasses = '';
+                $scope.msg = data.msg ;
+                timeOut = $timeout(function(){
+                  $scope.msgClasses = 'fade right';
+                  timeOut = $timeout(function(){ $scope.msg = ''; },200);
+                }, 2500 );
+              }
+            });
         };
       }]);
     </script>
@@ -31,7 +56,7 @@
   </head>
   <body ng-app="Module" ng-strict-di="true">
     
-    <form class="loginForm" ng-controller="LoginForm">
+    <div class="loginForm" ng-controller="LoginForm">
       <label>
         <span>Login</span>
         <input ng-model="login"/>
@@ -47,7 +72,10 @@
       <br/><br/>
       
       <button type="button" ng-click="entrar()">Log in</button>
-    </form>
+      <br/><br/>
+      
+      <div class="msg trans" ng-class="msgClasses">{{ msg }}</div>
+    </div>
     
   </body>
 </html>

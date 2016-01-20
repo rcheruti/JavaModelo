@@ -16,7 +16,7 @@ Module.provider('LoginInter',[function(){
       response:function( response ){
         if( response.data && response.data.code === provider.ERRORCODE_LOGIN ){
           var origin = $window.location.origin ;
-          $window.location = origin + context + provider.url ;
+          $window.location = origin + context.services + provider.url ;
         }
         return response ;
       }

@@ -10,6 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
@@ -18,21 +20,22 @@ import javax.persistence.Table;
 @Entity
 @Table(name="seg_grupo")
 @Seguranca(delete = false, select = false, insert = false, update = false)
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class Grupo implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    protected int id;
     
-    private String nome;
-    private String chave;
+    protected String nome;
+    protected String chave;
     
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "grupos")
-    private Set<Credencial> credenciais;
+    protected Set<Credencial> credenciais;
     
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "seg_fk_grupo_permissao")
-    private Set<Permissao> permissoes;
+    protected Set<Permissao> permissoes;
     
     
     //========================================================================
@@ -43,6 +46,7 @@ public class Grupo implements Serializable{
         copia.id = this.getId(  );
         copia.nome = this.getNome(  );
         copia.chave = this.getChave(  );
+        copia.credenciais = null;
         
         Set<Permissao> permissoesC = this.getPermissoes();
         if( permissoesC != null ){

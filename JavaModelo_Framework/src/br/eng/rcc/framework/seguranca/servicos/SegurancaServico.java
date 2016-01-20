@@ -5,10 +5,10 @@ import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.anotacoes.Segurancas;
-import br.eng.rcc.framework.seguranca.interfaces.UsuarioInterface;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
+import br.eng.rcc.framework.interfaces.IUsuario;
 
 
 /**
@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 public class SegurancaServico { 
     
     @Inject
-    private HttpServletRequest req;
+    protected HttpServletRequest req;
     
     
     /**
@@ -52,7 +52,7 @@ public class SegurancaServico {
         }
         
         try{
-            UsuarioInterface usuario = (UsuarioInterface) req.getAttribute( UsuarioInterface.usuarioKey );
+            IUsuario usuario = (IUsuario) req.getAttribute(IUsuario.USUARIO_KEY );
             if( usuario == null ){
                 throw new MsgException("Não existe usuário logado");
             }
@@ -64,7 +64,7 @@ public class SegurancaServico {
             }
             throw new MsgException("O usuário não tem permissão para acessar este recurso");
         }catch(ClassCastException ex){
-            throw new MsgException( JsonResponse.Error_Deslogado, null, "Não existe usuário logado");
+            throw new MsgException( JsonResponse.ERROR_DESLOGADO, null, "Não existe usuário logado");
         }
     }
     
@@ -124,7 +124,7 @@ public class SegurancaServico {
                     return ;
                 }
             }catch(MsgException ex){
-                if( ex.getCodigo() == JsonResponse.Error_Deslogado ) throw ex;
+                if( ex.getCodigo() == JsonResponse.ERROR_DESLOGADO ) throw ex;
             }
         }
         
