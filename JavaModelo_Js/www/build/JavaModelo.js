@@ -41,7 +41,6 @@ Module.provider('ResourceService', [
       page: 0,
       url: null //'/s/persistence/'
     };
-    console.log('provider', provider);
 
     this.$get = ['$http', '$q', 'context', 'entidades',
       function ($http, $q, context, entidades) {
@@ -76,7 +75,6 @@ Module.provider('ResourceService', [
         EntityConstructor.prototype = new constantsConstructor();
         var proto = EntityConstructor.prototype;
         proto.query = function (config) {
-          console.log('configThis', this);
           config = angular.extend( {}, this, config ); 
           var query = new QueryConstructor( config );
 
@@ -94,8 +92,8 @@ Module.provider('ResourceService', [
             }
           } else {
             for (var g in config) {
-              if (g === 'size' || g === 'page' || g === 'url')
-                continue;
+              //if (g === 'size' || g === 'page' || g === 'url')
+              if( g in this ) continue;
               query.param(g, this.equal, config[g]);
             }
           }
@@ -168,14 +166,13 @@ Module.provider('ResourceService', [
         proto.get = function (params) {
 
           // Montar Query String:
-          this.param(params);
+          //this.param(params);
           var queryStr = '';
           for (var g in this._param) {
             queryStr += this._param[g];
           }
-          queryStr.replace(/[&\|]+\s*$/, '');
-          if (queryStr)
-            queryStr = '?' + queryStr;
+          queryStr = queryStr.replace(/[&\|\s]+$/, '');
+          if (queryStr) queryStr = '?' + queryStr;
 
           // Montar Matrix Params:
           var matrix = [

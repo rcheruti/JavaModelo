@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -192,7 +192,7 @@ public class EntidadesService {
         Query q = em.createQuery(query);
         q.setFirstResult( pageNum*pageSize );
         q.setMaxResults( pageSize );
-        Set<Object> res = new LinkedHashSet<>( q.getResultList() );
+        Set<Object> res = new HashSet<>( q.getResultList() );
         PersistenceUtils.nullifyLazy( em, res.toArray(), joinParams );
 
         // A resposta: 

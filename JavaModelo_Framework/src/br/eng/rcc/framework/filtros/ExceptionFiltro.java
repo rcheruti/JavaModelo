@@ -33,7 +33,8 @@ public class ExceptionFiltro implements Filter{
         try{
             fc.doFilter(sr, sr1);
         }catch(Exception ex){
-            ex.printStackTrace();
+            //ex.printStackTrace();
+            //System.out.println("=======   Exceção: "+ ex.getMessage() );
             JsonResponse res = new JsonResponse(false, ex.getMessage());
             writer.writeTo(res, res.getClass(), null, 
                         new Annotation[0], MediaType.APPLICATION_JSON_TYPE, null, 

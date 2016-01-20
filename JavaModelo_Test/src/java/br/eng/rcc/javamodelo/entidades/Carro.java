@@ -9,15 +9,18 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
+@ToString(exclude = {"cores"})
 public class Carro implements Serializable{
   
   @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   protected int id;
-  protected String cor;
+  
+  protected String nome;
   
   @OneToMany(mappedBy = "carro")
   protected List<Cor> cores;

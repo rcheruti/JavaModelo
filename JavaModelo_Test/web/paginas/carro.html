@@ -5,10 +5,16 @@
     <div class="titulo">Cores</div>
     <div>
       <ul>
-        <li ng-repeat="x in cores">
-          {{ x.nome }} ({{ x.rgb }}) [{{ x.hex }}]
+        <li ng-repeat="c in carros">
+          <span>{{ c.nome }}</span>
+          <ul>
+            <li ng-repeat="x in c.cores">
+              {{ x.nome }} ({{ x.rgb }}) [{{ x.hex }}]
+            </li>
+          </ul>
         </li>
       </ul>
+      
     </div>
   </div>
   
