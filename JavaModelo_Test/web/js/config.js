@@ -3,8 +3,8 @@ window.Module = angular.module('Module',['ngAnimate','ngTouch','ngRoute','ui.rou
 
 Module.config(['contextProvider',
     function(contextProvider){
-  
-  contextProvider.root('/');
+
+  contextProvider.root( window.contextRoot );
   contextProvider.services('/s');
   contextProvider.websocket('/websocket');
   

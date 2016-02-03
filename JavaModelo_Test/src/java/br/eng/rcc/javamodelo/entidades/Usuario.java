@@ -6,12 +6,14 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper=false)
 @DiscriminatorValue(value="1")
-@ToString(exclude = {"DTYPE","credencial"})
+@ToString(exclude = {"DTYPE"}) // ,"credencial"
 public class Usuario extends SegUsuario{ 
   
   

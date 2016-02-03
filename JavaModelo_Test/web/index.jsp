@@ -9,6 +9,7 @@
     <link href="${pageContext.servletContext.contextPath}/css/index.css" type="text/css" rel="stylesheet"/>
     <link href="${pageContext.servletContext.contextPath}/css/styles.css" type="text/css" rel="stylesheet"/>
     <link href="${pageContext.servletContext.contextPath}/css/informacoes.css" type="text/css" rel="stylesheet"/>
+    <link href="${pageContext.servletContext.contextPath}/css/carros.css" type="text/css" rel="stylesheet"/>
     
     <script src="${pageContext.servletContext.contextPath}/js/libs/angular/angular.min.js"></script>
     <script src="${pageContext.servletContext.contextPath}/js/libs/angular/angular-animate.min.js"></script>
@@ -24,6 +25,10 @@
     
     <script src="${pageContext.servletContext.contextPath}/js/controladores/Menu.js"></script>
     <script src="${pageContext.servletContext.contextPath}/js/controladores/Carro.js"></script>
+    
+    <script>
+        window.contextRoot = '${pageContext.servletContext.contextPath}';
+    </script>
     
   </head>
   <body ng-app="Module" ng-strict-di="true">

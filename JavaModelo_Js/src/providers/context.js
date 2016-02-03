@@ -54,7 +54,7 @@ Module.provider('context',[function(){
     angular.extend( this, _funcs );
     
     function corrigirUrl(str){
-      return str.replace(/\/\//g,'/');
+      return str.replace(/\/\/+/g,'/');
     }
     
     this.$get = [function(){

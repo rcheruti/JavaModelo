@@ -33,10 +33,20 @@ Module.service('entidades',[function(){
 
 Module.provider('ResourceService', [
   function () {
-
+    function _getObjByPath( obj, path ){
+      if( !path ) return obj;
+      if( typeof path === 'string' ) path = path.split('.');
+      for(var i =0; i < path.length; i++){
+        obj = obj[path[i]] || (obj[path[i]] = {});
+      }
+      return  obj;
+    }
+    
     var provider = this;
 
     provider.defaults = {
+      contentType: 'application/json-persistencia',
+      dataPath: 'data.data',
       size: 20,
       page: 0,
       url: null //'/s/persistence/'
@@ -44,6 +54,11 @@ Module.provider('ResourceService', [
 
     this.$get = ['$http', '$q', 'context', 'entidades',
       function ($http, $q, context, entidades) {
+        var headers = {
+          headers: {
+            'Content-Type': provider.defaults.contentType
+          }
+        };
 
         if (provider.defaults.url === null) {
           provider.defaults.url = context.services + '/persistencia';
@@ -62,11 +77,13 @@ Module.provider('ResourceService', [
           this.size = provider.defaults.size;
           this.page = provider.defaults.page;
           this.url = provider.defaults.url;
+          this.dataPath = provider.defaults.dataPath;
         }
 
         function EntityConstructor(nome, config) {
           config = config||{};
           this._entidadeNome = nome;
+          this.dataPath = config.dataPath || this.dataPath;
           
           this.size = config.size||this.size;
           this.page = config.page||this.page;
@@ -75,16 +92,10 @@ Module.provider('ResourceService', [
         EntityConstructor.prototype = new constantsConstructor();
         var proto = EntityConstructor.prototype;
         proto.query = function (config) {
-          config = angular.extend( {}, this, config ); 
-          var query = new QueryConstructor( config );
-
-          //query.size(config.size);
-          //query.page(config.page);
-          if (config.url)
-            query._url = config.url;
-          else
-            query._url += this._entidadeNome;
-
+          if(!config) config = {};
+          //config = angular.extend( {}, this, config ); 
+          var query = new QueryConstructor( this );
+          
           var entidades = config.entidades;
           if (entidades instanceof Array) {
             for (var g in entidades) {
@@ -93,13 +104,17 @@ Module.provider('ResourceService', [
           } else {
             for (var g in config) {
               //if (g === 'size' || g === 'page' || g === 'url')
-              if( g in this ) continue;
+              //if( g in this ) continue;
               query.param(g, this.equal, config[g]);
             }
           }
           return query;
         };
-
+        proto.post = function(obj){
+          //if( !(obj instanceof Array) ) obj = [obj];
+          return $http.post( this.url, obj, headers );
+        };
+        
         function QueryConstructor(config) {
           if( !config ) config = {};
           this._size = config.size || 0;
@@ -108,6 +123,7 @@ Module.provider('ResourceService', [
           this._join = [];
           this._url = config.url || '';
           this._param = [];
+          this.dataPath = config.dataPath || null;
           //this.config = config;
         }
         var proto = QueryConstructor.prototype; 
@@ -145,8 +161,8 @@ Module.provider('ResourceService', [
           }
           return this;
         };
-        proto.param = function (paramOrNome, comp, val, logicOp, quoteVal) {
-          if (!paramOrNome)
+        proto.param = function (nome, comp, val, logicOp, quoteVal) {
+          if (!nome)
             return null;
           if (!logicOp)
             logicOp = '&'; // Padão para E se for falso
@@ -160,13 +176,11 @@ Module.provider('ResourceService', [
           } else if (quoteVal) {
             val = '"' + val + '"';
           }
-          this._param.push(paramOrNome + ' ' + comp + ' ' + val + logicOp);
+          this._param.push(nome + ' ' + comp + ' ' + val + logicOp);
           return this;
         };
-        proto.get = function (params) {
-
+        proto.get = function () {
           // Montar Query String:
-          //this.param(params);
           var queryStr = '';
           for (var g in this._param) {
             queryStr += this._param[g];
@@ -188,9 +202,31 @@ Module.provider('ResourceService', [
             matrix = ';' + matrix;
 
           // Buscar:
-          return $http.get(this._url + matrix + queryStr);
+          return $http.get(this._url + matrix + queryStr, headers);
         };
-
+        proto.getIn = function( obj, key, config ){
+          if( !key ) key = this._entidadeNome;
+          key = key.split('.');
+          var objToBind = _getObjByPath( obj, key.slice(0,key.length-1) );
+          key = key[key.length-1];
+          var that = this;
+          return this.get().then(function(data){
+            objToBind[key] = _getObjByPath( data, that.dataPath );
+            return data;
+          });
+        };
+        proto.put = function(obj){
+          // Montar Query String:
+          var queryStr = '';
+          for (var g in this._param) {
+            queryStr += this._param[g];
+          }
+          queryStr = queryStr.replace(/[&\|\s]+$/, '');
+          if (queryStr) queryStr = '?' + queryStr;
+          
+          $http.put( this._url + queryStr, obj, headers );
+        };
+        
         var ref = {
           entidade: function (nome, config) {
             entidades[nome] = new EntityConstructor(nome, config);
@@ -311,7 +347,7 @@ Module.provider('context',[function(){
     angular.extend( this, _funcs );
     
     function corrigirUrl(str){
-      return str.replace(/\/\//g,'/');
+      return str.replace(/\/\/+/g,'/');
     }
     
     this.$get = [function(){

@@ -22,6 +22,10 @@
     <script src="${pageContext.servletContext.contextPath}/js/config.js"></script>
     
     <script>
+        window.contextRoot = '${pageContext.servletContext.contextPath}';
+    </script>
+    
+    <script>
       Module.controller('LoginForm',['$scope','$http','$timeout','$window','context',
           function($scope,$http,$timeout,$window,context){
         $scope.msg = '';

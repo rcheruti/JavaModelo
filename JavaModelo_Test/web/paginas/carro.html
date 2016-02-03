@@ -1,11 +1,25 @@
 <div class="carro" ng-controller="Carro">
   
+  <div class="form">
+    <input ng-model="carro.nome" placeholder="Nome" />
+    
+    <br/><br/>
+    <button ng-click="postCarro()">Gravar</button>
+  </div>
   
   <div>
-    <div class="titulo">Cores</div>
-    <div>
+    <div class="titulo">Cores </div>
       <ul>
-        <li ng-repeat="c in carros">
+        <li ng-repeat="x in cores">
+          {{ x.nome }} ({{ x.rgb }}) [{{ x.hex }}]
+        </li>
+      </ul>
+  </div>
+  
+  <div>
+    <div class="titulo">Carros: </div>
+      <ul>
+        <li ng-repeat="c in coisas.carros">
           <span>{{ c.nome }}</span>
           <ul>
             <li ng-repeat="x in c.cores">
@@ -14,8 +28,6 @@
           </ul>
         </li>
       </ul>
-      
-    </div>
   </div>
   
   

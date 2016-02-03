@@ -46,8 +46,8 @@ import javax.ws.rs.core.MediaType;
  * @author rcheruti
  */
 @Path("/persistencia")
-@Produces({ Configuracoes.JSON_PERCISTENCIA })
-@Consumes({ Configuracoes.JSON_PERCISTENCIA })
+@Produces({ Configuracoes.JSON_PERSISTENCIA })
+@Consumes({ Configuracoes.JSON_PERSISTENCIA })
 @RequestScoped
 public class EntidadesService {
     private final static Map<String,Runnable> map = new HashMap<>();

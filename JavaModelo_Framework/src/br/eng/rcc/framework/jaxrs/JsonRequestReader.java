@@ -1,6 +1,7 @@
 
 package br.eng.rcc.framework.jaxrs;
 
+import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.jaxrs.persistencia.ClassCache;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,7 +31,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @ApplicationScoped
 //@Consumes({ MediaType.APPLICATION_JSON , "*/*" })
-@Consumes({ "application/json-persistence" })
+@Consumes({ Configuracoes.JSON_PERSISTENCIA, MediaType.APPLICATION_JSON })
 @Priority(Integer.MAX_VALUE) // Tenta substituir os provedores padrão (Jackson/Jettison)
 public class JsonRequestReader implements MessageBodyReader<Object>{
     
