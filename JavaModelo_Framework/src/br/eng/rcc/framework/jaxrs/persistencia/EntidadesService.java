@@ -385,28 +385,28 @@ public class EntidadesService {
     @Transactional
     public Object buscarVariasEntidades(List<?> objs){
         
-        return new JsonResponse(true, null);
+        return new JsonResponse(false, null);
     }
     
     @POST @Path("/many")
     @Transactional
     public Object criarVariasEntidades(List<?> objs){
         
-        return new JsonResponse(true, null);
+        return new JsonResponse(false, null);
     }
     
     @PUT @Path("/many")
     @Transactional
     public Object editarVariasEntidades(List<?> objs){
         
-        return new JsonResponse(true, null);
+        return new JsonResponse(false, null);
     }
     
     @DELETE @Path("/many")
     @Transactional
     public Object deletarVariasEntidades(List<?> objs){
         
-        return new JsonResponse(true, null);
+        return new JsonResponse(false, null);
     }
     
     
