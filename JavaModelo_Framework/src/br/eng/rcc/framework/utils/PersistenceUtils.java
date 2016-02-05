@@ -46,8 +46,8 @@ public class PersistenceUtils {
 
       Metamodel meta = em.getMetamodel();
       EntityType type = meta.entity(lista[0].getClass());
-      Set<Attribute> pluralAttrs = type.getDeclaredAttributes();
-      for (Attribute attr : pluralAttrs) {
+      Set<Attribute> attrs = type.getDeclaredAttributes();
+      for (Attribute attr : attrs) {
         if (!attr.isAssociation()) {
           continue;
         }
@@ -76,8 +76,16 @@ public class PersistenceUtils {
       for (Field field : fieldsDownNullify) {
         for (Object obj : lista) {
           try {
-            nullifyLazy(em, ((Collection<Object>) field.get(obj)).toArray(),
+            Object campoValor = field.get(obj) ;
+            if( campoValor instanceof Collection ){
+              nullifyLazy(em, ((Collection)campoValor).toArray(),
                     new String[0], secureLevel);
+            }else{
+              Object[] campoValorArr = { campoValor };
+              nullifyLazy(em, campoValorArr,
+                    new String[0], secureLevel);
+            }
+            
           } catch (IllegalArgumentException | IllegalAccessException ex) {
             Logger.getLogger(PersistenceUtils.class.getName()).log(Level.WARNING, null, ex);
             return;
