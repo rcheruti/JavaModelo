@@ -1,5 +1,5 @@
 
-package br.eng.rcc.framework.jaxrs.persistencia;
+package br.eng.rcc.framework.jaxrs.persistencia.builders;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +8,7 @@ import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 
-class WhereBuilder {
+public class WhereBuilder {
     private static WhereBuilder instance;
     static{
         instance = new WhereBuilder();

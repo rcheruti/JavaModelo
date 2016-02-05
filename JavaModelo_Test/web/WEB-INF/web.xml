@@ -10,9 +10,4 @@
         </session-timeout>
     </session-config>
     
-    <context-param>
-      <param-name>Configuracoes.encriptionActive</param-name>
-      <param-value>false</param-value>
-    </context-param>
-    
 </web-app>

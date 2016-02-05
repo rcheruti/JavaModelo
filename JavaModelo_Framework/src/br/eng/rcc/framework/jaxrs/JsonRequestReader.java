@@ -1,10 +1,10 @@
-
 package br.eng.rcc.framework.jaxrs;
 
 import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.jaxrs.persistencia.ClassCache;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -27,102 +27,111 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
-
 @Provider
 @ApplicationScoped
 //@Consumes({ MediaType.APPLICATION_JSON , "*/*" })
-@Consumes({ Configuracoes.JSON_PERSISTENCIA, MediaType.APPLICATION_JSON })
+@Consumes({Configuracoes.JSON_PERSISTENCIA, MediaType.APPLICATION_JSON})
 @Priority(Integer.MAX_VALUE) // Tenta substituir os provedores padrão (Jackson/Jettison)
-public class JsonRequestReader implements MessageBodyReader<Object>{
-    
-    @Context
-    private UriInfo uriInfo;
-    @Inject
-    private ClassCache cache;
-    @Inject
-    private EntityManager em;
-    
-    //@Context
-    //private Providers providers;
-    @Inject
-    private JacksonObjectMapperContextResolver resolver;
-    
-    @Override
-    public boolean isReadable(Class<?> type, 
-                            Type genericType, 
-                            Annotation[] annotations, 
-                            MediaType mediaType){
-        if( JsonNode.class.equals(type) ){
-            return true;
-        }else if( Object.class.equals(type) || Collection.class.isAssignableFrom(type) ){
-            String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
-            Class<?> klass = cache.get(entidadeName,em);
-            if( klass == null ) return false;
-        }
-        return true;
-    }
+public class JsonRequestReader implements MessageBodyReader<Object> {
 
-    @Override
-    public Object readFrom(Class<Object> type, 
-                        Type genericType, 
-                        Annotation[] annotations, 
-                        MediaType mediaType, 
-                        MultivaluedMap<String, String> httpHeaders, 
-                        InputStream entityStream) 
-            throws IOException, WebApplicationException {
-        Class<? extends Collection> typeList = null;
-        if( JsonNode.class.equals(type) ){
-            Object x = fromJson(entityStream,type);
-            return x;
-        }else if( Collection.class.isAssignableFrom(type) ){
-            String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
-            type = (Class<Object>) cache.get(entidadeName,em);
-            typeList = List.class;
-        }else if( Object.class.equals(type) ){
-            String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
-            type = (Class<Object>) cache.get(entidadeName,em);
-        }
-        try{
-            Object x = fromJson(entityStream, typeList, type);
-            return x;
-        }catch(Exception ex){
-            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, null, ex);
-            return null;
-        }
+  @Context
+  private UriInfo uriInfo;
+  @Inject
+  private ClassCache cache;
+  @Inject
+  private EntityManager em;
+
+  //@Context
+  //private Providers providers;
+  @Inject
+  private JacksonObjectMapperContextResolver resolver;
+
+  @Override
+  public boolean isReadable(Class<?> type,
+          Type genericType,
+          Annotation[] annotations,
+          MediaType mediaType) {
+    if (JsonNode.class.equals(type)) {
+      return true;
+    } else if (Object.class.equals(type) || Collection.class.isAssignableFrom(type)) {
+      String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
+      Class<?> klass = cache.get(entidadeName, em);
+      if (klass == null) {
+        return false;
+      }
     }
-    
-    //========================================================================
-    /*
+    return true;
+  }
+
+  @Override
+  public Object readFrom(Class<Object> type,
+          Type genericType,
+          Annotation[] annotations,
+          MediaType mediaType,
+          MultivaluedMap<String, String> httpHeaders,
+          InputStream entityStream)
+          throws IOException, WebApplicationException {
+    Class<? extends Collection> typeList = null;
+    if (JsonNode.class.equals(type)) {
+      Object x = fromJson(entityStream, type);
+      return x;
+    } else if (Collection.class.isAssignableFrom(type)) {
+      String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
+      type = (Class<Object>) cache.get(entidadeName, em);
+      typeList = List.class;
+    } else if (Object.class.equals(type)) {
+      String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
+      type = (Class<Object>) cache.get(entidadeName, em);
+    }
+    try {
+      Object x = fromJson(entityStream, typeList, type);
+      return x;
+    } catch (UnrecognizedPropertyException ex) {
+      Logger.getLogger(this.getClass().getName()).log(Level.WARNING, ex.getMessage() );
+      throw new MsgException( ex.getMessage(), ex );
+    } catch (Exception ex) {
+      Logger.getLogger(this.getClass().getName()).log(Level.WARNING, null, ex);
+      return null;
+    }
+  }
+
+  //========================================================================
+  /*
         Esse método existe para criar uma forma padrão de leitura do JSON.
         será movido para outro lugar mais tarde.
-    */
-    public Object fromJson(InputStream entityStream, Class<Object> type) throws IOException{
-        //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class,  
-        //                                                    MediaType.WILDCARD_TYPE);
-        ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
-        return mapper.readValue(entityStream, type);
+   */
+  public Object fromJson(InputStream entityStream, Class<Object> type) throws IOException {
+    //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class,  
+    //                                                    MediaType.WILDCARD_TYPE);
+    ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
+    return mapper.readValue(entityStream, type);
+  }
+
+  public Object fromJson(InputStream entityStream, Class<? extends Collection> typeList, Class<Object> type) throws IOException {
+    if (typeList == null) {
+      return fromJson(entityStream, type);
     }
-    public Object fromJson(InputStream entityStream, Class<? extends Collection> typeList, Class<Object> type) throws IOException{
-        if( typeList == null ) return fromJson(entityStream, type);
-        //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class,  
-        //                                                    MediaType.WILDCARD_TYPE);
-        ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
-        return mapper.readValue(entityStream, mapper.getTypeFactory().constructCollectionType(typeList, type) );
+    //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class,  
+    //                                                    MediaType.WILDCARD_TYPE);
+    ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
+    return mapper.readValue(entityStream, mapper.getTypeFactory().constructCollectionType(typeList, type));
+  }
+
+  public Object fromJson(Reader entityStream, Class<? extends Object> type) throws IOException {
+    //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
+    //                                                    MediaType.WILDCARD_TYPE);
+    ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
+    return mapper.readValue(entityStream, type);
+  }
+
+  public Object fromJson(Reader entityStream, Class<? extends Collection> typeList, Class<? extends Object> type) throws IOException {
+    if (typeList == null) {
+      return fromJson(entityStream, type);
     }
-    
-    
-    public Object fromJson(Reader entityStream, Class<? extends Object> type) throws IOException{
-        //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
-        //                                                    MediaType.WILDCARD_TYPE);
-        ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
-        return mapper.readValue(entityStream, type);
-    }
-    public Object fromJson(Reader entityStream, Class<? extends Collection> typeList, Class<? extends Object> type) throws IOException{
-        if( typeList == null ) return fromJson(entityStream, type);
-        //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
-        //                                                    MediaType.WILDCARD_TYPE);
-        ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
-        return mapper.readValue(entityStream, mapper.getTypeFactory().constructCollectionType(typeList, type) );
-    }
-    
+    //ContextResolver resolver = providers.getContextResolver(ObjectMapper.class, 
+    //                                                    MediaType.WILDCARD_TYPE);
+    ObjectMapper mapper = resolver.getContext(ObjectMapper.class);
+    return mapper.readValue(entityStream, mapper.getTypeFactory().constructCollectionType(typeList, type));
+  }
+
 }

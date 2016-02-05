@@ -1,6 +1,8 @@
 
 package br.eng.rcc.framework.jaxrs.persistencia;
 
+import br.eng.rcc.framework.jaxrs.persistencia.builders.WhereBuilderInterface;
+import br.eng.rcc.framework.jaxrs.persistencia.builders.WhereBuilder;
 import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
@@ -9,7 +11,11 @@ import br.eng.rcc.framework.utils.PersistenceUtils;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.HashSet;
@@ -32,19 +38,20 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.annotation.PostConstruct;
+import javax.persistence.CascadeType;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.PluralAttribute;
 import javax.ws.rs.core.MediaType;
 
-/**
- * 
- * 
- * @author rcheruti
- */
+
 @Path("/persistencia")
 @Produces({ Configuracoes.JSON_PERSISTENCIA })
 @Consumes({ Configuracoes.JSON_PERSISTENCIA })
@@ -61,18 +68,11 @@ public class EntidadesService {
     private ClassCache cache;
     @Inject
     private SegurancaServico checker;
-    //@Inject
-    //private PersistenceUtils emUtils;
-    
-    private final Pattern queryStringPattern = Pattern
-        .compile("([\\w.]++)\\s*+(=|!=|<|>|<=|>=|(?>not)?like)\\s*+((['\"]).*?\\4|[\\w\\.]++)\\s*+([&\\|]?)", Pattern.CASE_INSENSITIVE);
-    private final Pattern valorPattern = Pattern
-        .compile("^(['\"]).*\\1$", Pattern.CASE_INSENSITIVE);
     
     
     /**
      * Para que este objeto possa fazer o seu trabalho, é obrigatório um 
-     * {@link javax.persistence.EntityManager EntityManager} para acessar o banco.
+     * {@link EntityManager EntityManager} para acessar o banco.
      */
     @PostConstruct
     public void postConstruct(){
@@ -148,7 +148,7 @@ public class EntidadesService {
         }
         
         String uriQuery = ctx.getRequestUri().getQuery();
-        String[][] querysPs = parseQueryString(uriQuery);
+        String[][] querysPs = PersistenceUtils.parseQueryString(uriQuery);
         
         // ----  Interpretando os parâmetros passados: 
         MultivaluedMap<String,String> querysParams = ctx.getQueryParameters();
@@ -209,7 +209,17 @@ public class EntidadesService {
      * Atributos que não estejam presentes receberão o seu valor padrão (valor padrão da instrução "new"),
      * e atributos que não pertençam a esta entidade serão ignorados.
      * 
-     * Apenas uma entidade de cada vez é permitida para este método.
+     * - Para gravar relações "OneToOne" é necessário adicionar "cascade = PERSIST/ALL".
+     * - Para gravar relações "ManyToMany" não é permitido adicionar "cascade = PERSIST/ALL"
+     * na relação.
+     * - Para gravar relações "OneToMany" é necessário adicionar a todos os itens do 
+     * outro lado da relação (que terá uma coleção por ser "ManyToOne") uma referência
+     * a este objeto. Isso pode ser feito no método GET.
+     * Necessário adicionar "cascade = PERSIST/ALL".
+     * - - Atenção: caso esteja usando Lombok a persistência pode dispara um loop infinito
+     * por causa dos métodos "toString", "hascode" ou "equals". Caso veja "StackOverflowError" no 
+     * console verifique esses métodos.
+     * 
      * 
      * @param objs Lista de objetos para persistência no banco de dados
      * @param entidade Nome da entidade de banco de dados
@@ -218,13 +228,147 @@ public class EntidadesService {
     @POST @Path("/{entidade}")
     @Transactional
     public Object criarEntidade(List<?> objs, @PathParam("entidade") String entidade){
+        System.out.println("Iniciando: \n" );
+        System.out.printf("Iniciando: flush \n" ).flush();
         if( objs == null || objs.isEmpty() ){
             return new JsonResponse(false,
                 String.format("Não encontramos nenhuma entidade para '%s'", entidade) );
         }
         checker.check( objs.get(0).getClass(), Seguranca.INSERT );
+        
+        
+        //-------------------------------------------------
+        /*
+        Class<?> klass = cache.get(entidade);
+        Metamodel mm = em.getMetamodel();
+        EntityType et = mm.entity(klass);
+        Set<PluralAttribute> plurals = et.getDeclaredPluralAttributes();
+        
+        //List<Method> cascadeCalls = new ArrayList<>();
+        Map<Method,List<Method>> mapCascade = new HashMap<>();
+        System.out.printf("Iniciando: plurals: %d \n", plurals.size() ).flush();
+        for( PluralAttribute pAttr : plurals ){
+          System.out.printf("-------------------- \n" ).flush();
+          System.out.printf("PluralAttribute: %s \n", pAttr.getName() ).flush();
+          if( !pAttr.isAssociation() ) continue; // ----------  não processar esse
+          
+          Field field = null;
+          try{
+            field = pAttr.getDeclaringType().getJavaType().getDeclaredField( pAttr.getName() );
+          }catch( NoSuchFieldException ex ){
+            System.out.printf("Não existe esse campo na classe: %s\n", pAttr.getName()).flush();
+            continue;
+          }
+          String attrName = null;
+          
+          // ====  pegar nome de atributo e se devemos propagar a chamada (cascade):
+          boolean cascade = false;
+          CascadeType[] cascadeArr = null;
+          ManyToMany mTmAnn = (ManyToMany)field.getAnnotation( ManyToMany.class );
+          if( mTmAnn != null ){
+            cascadeArr = mTmAnn.cascade();
+            attrName = mTmAnn.mappedBy();
+          }else{
+            OneToMany oTmAnn = (OneToMany)field.getAnnotation( OneToMany.class );
+            if( oTmAnn != null ){
+              cascadeArr = oTmAnn.cascade();
+              attrName = oTmAnn.mappedBy();
+            }
+          }
+          System.out.printf("Classe: %s, Campo: %s, attrName: %s, cascadeArr: %s \n", 
+                  klass.getName(), field.getName() ,attrName, cascadeArr ).flush();
+          if( attrName == null || attrName.isEmpty() || cascadeArr == null ) continue;
+          for( CascadeType cT : cascadeArr ){
+            if( cT.equals( CascadeType.ALL ) || cT.equals( CascadeType.PERSIST ) ){
+              cascade = true;
+              break;
+            }
+          }
+          System.out.printf("cascade: %b \n", cascade).flush();
+          if( !cascade ) continue; // ----------  não processar esse
+              //  --- 
+          
+          Method mGet = null;
+          String mName = null;
+          try{
+            mName = pAttr.getName().replaceFirst(pAttr.getName().substring(0,1), 
+                                pAttr.getName().substring(0,1).toUpperCase() );
+            mGet = pAttr.getDeclaringType().getJavaType().getMethod("get"+ mName);
+            List<Method> methods = new ArrayList<>();
+            mapCascade.put( mGet, methods );
+            
+            Method mmm = null;
+            Class<?> typeClass = pAttr.getElementType().getJavaType();
+            EntityType refEt = mm.entity( typeClass );
+            
+            System.out.printf("attrName: %s\n", attrName ).flush();
+            Attribute refAttr = refEt.getDeclaredAttribute(attrName);
+            
+            System.out.printf("refAttr: %s\n", refEt.getName() ).flush();
+            if( refAttr == null ) continue; // ----------  não processar esse
+            
+            if( refAttr.isCollection() ){
+              System.out.printf("refAttr: Plural \n" ).flush();
+              mName = refAttr.getName().replaceFirst(refAttr.getName().substring(0,1), 
+                                refAttr.getName().substring(0,1).toUpperCase() );
+              mmm = typeClass.getMethod("get"+ mName);
+              methods.add(mmm);
+              
+              mmm = Collection.class.getMethod("add", Object.class );
+              methods.add(mmm);
+            }else{
+              System.out.printf("refAttr: Singular \n" ).flush();
+              mName = "set"+ refAttr.getName().replaceFirst(refAttr.getName().substring(0,1), 
+                                refAttr.getName().substring(0,1).toUpperCase() );
+              System.out.printf("typeClass: %s, mName: %s \n", typeClass.getName(), mName ).flush();
+              mmm = typeClass.getMethod( mName, klass);
+              methods.add(mmm);
+            }
+            
+            
+            //Method mSet = pAttr.getJavaType().getMethod("set"+ mName, pAttr.getJavaType());
+            //mapCascade.put(mGet,mSet);
+          }catch( NoSuchMethodException ex ){
+            System.out.printf("removendo alguem!!  NoSuchMethodException: %s \n",mName ).flush();
+            if( mGet != null ) mapCascade.remove(mGet);
+          }
+        }
+        
+        System.out.printf("mapCascade.size: %d\n", mapCascade.size() ).flush();
+        
+        for( Object obj : objs ){
+          
+          for( Method get : mapCascade.keySet() ){
+            try{
+              System.out.printf("Chamar '%s' em '%s' \n", get, obj ).flush();
+              Collection lista = (Collection)get.invoke(obj);
+              if( lista == null || lista.isEmpty() ) continue;
+              List<Method> sets = mapCascade.get(get);
+              Method set;
+              int i=0; 
+              System.out.printf("sets.size: %d \n", sets.size() ).flush();
+              for( Object alvo : lista ){
+                if( sets.size() > 1 ) for( ; i < sets.size()-1; i++ ){
+                  set = sets.get(i);
+                  alvo = set.invoke( alvo );
+                }
+                set = sets.get(i);
+                System.out.printf("Chamar '%s' em '%s' com '%s' \n", set, alvo, obj ).flush();
+                set.invoke( alvo , obj);
+              }
+            }catch( IllegalAccessException | InvocationTargetException ex ){
+              System.out.printf("Esse sistema não tem permissão para fazer chamadas Reflectivas em objetos.").flush();
+            }catch( NullPointerException ex ){
+              System.out.printf("NullPointerException para: %s \n", get.getName() ).flush();
+            }
+          }
+        }
+          /* */
+          
+        
         for( Object obj : objs ) em.persist(obj);
-        return new JsonResponse(true,null);
+        
+        return new JsonResponse(true,null,null );
     }
     
     
@@ -265,7 +409,7 @@ public class EntidadesService {
             return new JsonResponse(false,
                 "Para editar registros é necessário informar os parâmetros de filtragem na QueryString.");
         }
-        String[][] querysPs = parseQueryString(uriQuery);
+        String[][] querysPs = PersistenceUtils.parseQueryString(uriQuery);
         
         
         // ----  Criando a busca ao banco:
@@ -345,7 +489,7 @@ public class EntidadesService {
             return new JsonResponse(false,
                 "Para apagar registros é necessário informar os parâmetros de filtragem na QueryString.");
         }
-        String[][] querysPs = parseQueryString(uriQuery);
+        String[][] querysPs = PersistenceUtils.parseQueryString(uriQuery);
         
         
         
@@ -371,79 +515,8 @@ public class EntidadesService {
     }
     
     
-    //=============================================================================
-    //=============================================================================
-    //=============================================================================
-    
-    /*
-        Abaixo estão os métodos que trabalharão com lotes de entidades,
-        esses métodos têm que saber lidar com listas que terão vários tipo de entidades
-        diferentes misturadas
-    */
-    
-    @GET @Path("/many")
-    @Transactional
-    public Object buscarVariasEntidades(List<?> objs){
-        
-        return new JsonResponse(false, null);
-    }
-    
-    @POST @Path("/many")
-    @Transactional
-    public Object criarVariasEntidades(List<?> objs){
-        
-        return new JsonResponse(false, null);
-    }
-    
-    @PUT @Path("/many")
-    @Transactional
-    public Object editarVariasEntidades(List<?> objs){
-        
-        return new JsonResponse(false, null);
-    }
-    
-    @DELETE @Path("/many")
-    @Transactional
-    public Object deletarVariasEntidades(List<?> objs){
-        
-        return new JsonResponse(false, null);
-    }
-    
     
     //===============  Privates  ==================
-    /**
-     * Este método é usado internamente para criar os itens de filtragem das buscas.
-     * 
-     * @param uriQuery
-     * @return 
-     */
-    public String[][] parseQueryString(String uriQuery){
-        // Interpretando "Query String" (parâmetros de busca no banco [WHERE])
-        //List<String[]> querysPs = new ArrayList<>();
-        int qI = 0, qLimit = 30;
-        String[][] querysPs = new String[qLimit][];
-        if( uriQuery != null ){
-            Matcher m = queryStringPattern.matcher(uriQuery);
-            while( m.find() ){
-                String attr = m.group(1);
-                String comp = m.group(2);
-                String valor = m.group(3);
-                String opComp = m.group(5);
-                if( attr == null || comp == null || valor == null ) continue;
-                
-                boolean isValor = valorPattern.matcher(valor).find();
-                if( isValor ) valor = valor.substring(1, valor.length()-1 );
-                
-                String[] params = { attr, comp , valor , opComp, isValor?"":null };
-                //querysPs.add(params);
-                querysPs[qI++] = params;
-            }
-        }
-        String[][] resQueryPs = new String[qI][];
-        System.arraycopy(querysPs, 0, resQueryPs, 0, qI);
-        return resQueryPs;
-    }
-    
     private void addOrderBy(CriteriaBuilder cb, CriteriaQuery query, String[] orders){
         if( orders.length < 1 ) return;
         Root root = (Root) query.getRoots().iterator().next();

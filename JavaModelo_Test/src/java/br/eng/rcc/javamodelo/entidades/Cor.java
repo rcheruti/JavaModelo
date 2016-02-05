@@ -2,19 +2,26 @@
 package br.eng.rcc.javamodelo.entidades;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Set;
 import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Entity
 @Data
 @Cacheable(true)
-@ToString(exclude = {"carro"})
+@ToString(exclude = {"carros"})
+@EqualsAndHashCode(exclude={"rgb", "carros","hex","nome","rgb"})
 public class Cor implements Serializable{
   
   @Id
@@ -24,7 +31,11 @@ public class Cor implements Serializable{
   protected String hex;
   protected String rgb;
   
-  @ManyToOne
-  protected Carro carro;
+  @ManyToMany()
+  @JoinTable(name = "ref_carro_cor",           
+          joinColumns = @JoinColumn(name="cor_id"),
+          inverseJoinColumns = @JoinColumn(name="carro_id")
+  )
+  protected Set<Carro> carros;
   
 }

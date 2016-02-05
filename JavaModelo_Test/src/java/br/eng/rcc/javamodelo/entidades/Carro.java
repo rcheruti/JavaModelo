@@ -2,18 +2,28 @@
 package br.eng.rcc.javamodelo.entidades;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.PostPersist;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Entity
 @Data
-@ToString(exclude = {"cores"})
+@ToString(exclude = {"cores"})  
+@EqualsAndHashCode(exclude={"cores", "portas","valor"})
 public class Carro implements Serializable{
   
   @Id
@@ -22,8 +32,24 @@ public class Carro implements Serializable{
   
   protected String nome;
   
-  @OneToMany(mappedBy = "carro")
-  protected List<Cor> cores;
+  @OneToOne(cascade = CascadeType.ALL)
+  protected Valor valor;
+  
+  @OneToMany(cascade = CascadeType.ALL, mappedBy = "carro")
+  protected Set<Porta> portas;
+    public void setPortas(Set<Porta> xs){
+      portas = xs;
+      for(Porta x : xs) x.setCarro(this);
+    }
+  
+  
+  @ManyToMany() // cascade = CascadeType.ALL
+  @JoinTable(name = "ref_carro_cor",
+          joinColumns = @JoinColumn(name="carro_id"),
+          inverseJoinColumns = @JoinColumn(name="cor_id")
+  )
+  protected Set<Cor> cores;
+  
   
   
 }

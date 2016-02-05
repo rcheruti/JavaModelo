@@ -1,25 +1,25 @@
 
-package br.eng.rcc.framework.jaxrs.persistencia;
+package br.eng.rcc.framework.jaxrs.persistencia.builders;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-public class WhereCriteria implements WhereBuilderInterface{
+public class WhereDelete implements WhereBuilderInterface{
     
     private final Map<String, CriteriaWhereBuilder> map;
     private CriteriaBuilder cbObj;
-    private CriteriaQuery query;
+    private CriteriaDelete query;
     private List<Predicate> exps;
     
     
-    WhereCriteria(CriteriaBuilder cb_, 
-                CriteriaQuery query,
+    WhereDelete(CriteriaBuilder cb_, 
+                CriteriaDelete query,
                 Map<String, CriteriaWhereBuilder> stcMap
             ){
         this.map = stcMap;
@@ -31,13 +31,13 @@ public class WhereCriteria implements WhereBuilderInterface{
     
     
     
-    public WhereCriteria add(String[] vet){
-        Root root = (Root)query.getRoots().iterator().next();
+    public WhereDelete add(String[] vet){
+        Root root = query.getRoot();
         exps.add( map.get(vet[1]).apply( cbObj, root.get(vet[0]), vet[2] ) );
         return this;
     }
-    public WhereCriteria addArray( String[][] arr ){
-        Root root = (Root)query.getRoots().iterator().next();
+    public WhereDelete addArray( String[][] arr ){
+        Root root = query.getRoot();
         Expression exp = null;
         for(String[] vet : arr){
             if( vet == null 

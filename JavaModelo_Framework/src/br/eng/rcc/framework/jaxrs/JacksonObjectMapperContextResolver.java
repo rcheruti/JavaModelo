@@ -30,7 +30,7 @@ public class JacksonObjectMapperContextResolver implements ContextResolver<Objec
         mapper.enable(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS);
         
         // para deserialize:
-        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        mapper.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
         //mapper.enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
         //mapper.enable(DeserializationFeature.ACCEPT_FLOAT_AS_INT);

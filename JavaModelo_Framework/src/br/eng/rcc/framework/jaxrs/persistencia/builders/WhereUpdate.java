@@ -1,5 +1,5 @@
 
-package br.eng.rcc.framework.jaxrs.persistencia;
+package br.eng.rcc.framework.jaxrs.persistencia.builders;
 
 import java.util.ArrayList;
 import java.util.List;
