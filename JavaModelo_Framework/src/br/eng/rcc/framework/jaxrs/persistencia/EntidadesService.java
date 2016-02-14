@@ -11,11 +11,7 @@ import br.eng.rcc.framework.utils.PersistenceUtils;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.HashSet;
@@ -39,9 +35,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.annotation.PostConstruct;
-import javax.persistence.CascadeType;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Order;
@@ -49,7 +42,6 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
-import javax.ws.rs.core.MediaType;
 
 
 @Path("/persistencia")
@@ -91,6 +83,37 @@ public class EntidadesService {
     /*
         Abaixo estão os métodos que trabalharão com apenas 1 tipo de entidade por vez
     */
+    
+    @GET @Path("/tipo/{entidade}")
+    public Object tipo(
+            @PathParam("entidade") String entidade
+      ){
+      Class<?> klass = cache.get(entidade, em);
+      if( klass == null ){
+        return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade) );
+      }
+      checker.check( klass, Seguranca.SELECT | Seguranca.INSERT 
+                          | Seguranca.DELETE | Seguranca.UPDATE );
+      
+      Metamodel meta = this.em.getMetamodel();
+      EntityType entity = meta.entity(klass);
+      
+      Map<String,String> map = new HashMap<>(20);
+      Set<Attribute> attrs = entity.getDeclaredAttributes();
+      for( Attribute attr : attrs ){
+        if( attr.isCollection() ){
+          PluralAttribute pAttr = (PluralAttribute) attr;
+          map.put( pAttr.getName(), String.format("%s<%s>",
+                  pAttr.getJavaType().getSimpleName(), 
+                  pAttr.getElementType().getJavaType().getSimpleName()  ) );
+        }else{
+          map.put( attr.getName(), attr.getJavaType().getSimpleName() );
+        }
+      }
+      
+      return new JsonResponse(true, map, "Busca do tipo");
+    }
+    
     
     /** 
      * Exemplo de URL para abusca:

@@ -16,4 +16,8 @@ Module.run(['ResourceService','$window',
   $window.Carro = ResourceService.entidade('Carro');
   $window.Cor = ResourceService.entidade('Cor');
   
+  ResourceService.entidade('Porta');
+  ResourceService.entidade('Usuario');
+  ResourceService.entidade('Valor');
+  
 }]);

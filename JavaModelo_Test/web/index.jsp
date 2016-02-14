@@ -25,6 +25,7 @@
     
     <script src="${pageContext.servletContext.contextPath}/js/controladores/Menu.js"></script>
     <script src="${pageContext.servletContext.contextPath}/js/controladores/Carro.js"></script>
+    <script src="${pageContext.servletContext.contextPath}/js/controladores/Tipo.js"></script>
     
     <script>
         window.contextRoot = '${pageContext.servletContext.contextPath}';
@@ -39,6 +40,7 @@
         <button ng-click="logout()">Logout</button>
         <span>{{ logoutMsg }}</span>
         <a ui-sref="carro">Carros</a>
+        <a ui-sref="tipo">Tipos</a>
       </div>
 
       <h1>Hello World!</h1>

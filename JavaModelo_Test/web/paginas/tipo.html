@@ -1,0 +1,29 @@
+<div class="tipo" ng-controller="Tipo">
+  
+  <form class="form">
+    <label>
+      <input type="checkbox" ng-model="override" />
+      Override
+    </label>
+    
+    <br/><br/>
+    <!--
+    <div>
+      <select ng-options="x for x in entidadeLista | orderBy:x" ng-model="entidade"
+              ng-change="mostrarTipo(x)"></select>
+    </div>
+    -->
+    <div ng-repeat="x in entidadeLista | orderBy:x">
+      <label>
+        <input type="radio" name="ent" ng-model="$parent.entidade" ng-value="x" 
+               ng-change="mostrarTipo(x)"/>
+        {{ x }}
+      </label>
+    </div>
+  </form>
+  
+  <div>Override: "{{ override }}"</div>
+  <div>Tipo da entidade: "{{ entidade }}"</div>
+  <pre>{{ tipo | json }}</pre>
+  
+</div>

@@ -77,15 +77,16 @@ public class PersistenceUtils {
         for (Object obj : lista) {
           try {
             Object campoValor = field.get(obj) ;
-            if( campoValor instanceof Collection ){
-              nullifyLazy(em, ((Collection)campoValor).toArray(),
-                    new String[0], secureLevel);
-            }else{
-              Object[] campoValorArr = { campoValor };
-              nullifyLazy(em, campoValorArr,
-                    new String[0], secureLevel);
+            if( campoValor != null ){
+              if( campoValor instanceof Collection ){
+                nullifyLazy(em, ((Collection)campoValor).toArray(),
+                      new String[0], secureLevel);
+              }else{
+                Object[] campoValorArr = { campoValor };
+                nullifyLazy(em, campoValorArr,
+                      new String[0], secureLevel);
+              } 
             }
-            
           } catch (IllegalArgumentException | IllegalAccessException ex) {
             Logger.getLogger(PersistenceUtils.class.getName()).log(Level.WARNING, null, ex);
             return;

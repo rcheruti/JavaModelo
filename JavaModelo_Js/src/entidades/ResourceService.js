@@ -26,6 +26,7 @@ Module.provider('ResourceService', [
             'Content-Type': provider.defaults.contentType
           }
         };
+        var tiposCache = {};
 
         if (provider.defaults.url === null) {
           provider.defaults.url = context.services + '/persistencia';
@@ -80,6 +81,30 @@ Module.provider('ResourceService', [
         proto.post = function(obj){
           //if( !(obj instanceof Array) ) obj = [obj];
           return $http.post( this.url, obj, headers );
+        };
+        proto.tipo = function(override){
+          // as urls não estavam preparadas para isso, necessário organizar:
+          var that = this;
+          if( override || !tiposCache[that._entidadeNome] ){
+            return $http.get( provider.defaults.url + '/tipo/' + this._entidadeNome, headers )
+                .then(function(data){
+              var tipo  = _getObjByPath( data, that.dataPath );
+              tiposCache[that._entidadeNome] = tipo;
+              return tipo;
+            });
+          }
+          return $q(function(res){ res( tiposCache[that._entidadeNome] ); });
+        };
+        proto.tipoIn = function( obj, key, override){
+          if( !key ) key = this._entidadeNome;
+          key = key.split('.');
+          var objToBind = _getObjByPath( obj, key.slice(0,key.length-1) );
+          key = key[key.length-1];
+          return this.tipo(override).then(function(data){
+            objToBind[key] = data;
+            if( obj.$digest && !obj.$$phase ) obj.$digest() ;
+            return data;
+          });
         };
         
         function QueryConstructor(config) {
@@ -171,7 +196,7 @@ Module.provider('ResourceService', [
           // Buscar:
           return $http.get(this._url + matrix + queryStr, headers);
         };
-        proto.getIn = function( obj, key, config ){
+        proto.getIn = function( obj, key ){
           if( !key ) key = this._entidadeNome;
           key = key.split('.');
           var objToBind = _getObjByPath( obj, key.slice(0,key.length-1) );
@@ -179,6 +204,7 @@ Module.provider('ResourceService', [
           var that = this;
           return this.get().then(function(data){
             objToBind[key] = _getObjByPath( data, that.dataPath );
+            if( obj.$digest && !obj.$$phase ) obj.$digest() ;
             return data;
           });
         };
@@ -195,8 +221,8 @@ Module.provider('ResourceService', [
         };
         
         var ref = {
-          entidade: function (nome, config) {
-            entidades[nome] = new EntityConstructor(nome, config);
+          entidade: function (nome, config, override) {
+            if(!entidades[nome] || override) entidades[nome] = new EntityConstructor(nome, config);
             return entidades[nome];
           }
         };

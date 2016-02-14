@@ -6,6 +6,8 @@ Module.config(['$stateProvider','$routeProvider',
   
   $stateProvider.state('carro',
     { url: '/carro', views:{conteudo:{ templateUrl:'paginas/carro.html' }}}
+  ).state('tipo',
+    { url: '/tipo', views:{conteudo:{ templateUrl:'paginas/tipo.html' }}}
   );
   
 }]);
