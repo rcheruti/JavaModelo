@@ -17,10 +17,7 @@ public class SegurancaInterceptador {
     
     @AroundInvoke
     public Object seguranca(InvocationContext ctx) throws Exception{
-        Seguranca klass = ctx.getMethod().getAnnotation(Seguranca.class);
-        String valor = klass.value();
-        String grupo = klass.grupo();
-        check.check(valor,grupo);
+        check.check( ctx.getMethod() );
         return ctx.proceed();
     }
     

@@ -31,6 +31,9 @@
                 <library dirs="200">
                     <file>${libs.javaee-api-7.0.classpath}</file>
                 </library>
+                <library dirs="200">
+                    <file>${libs.javaee-endorsed-api-7.0.classpath}</file>
+                </library>
             </web-module-libraries>
             <web-module-additional-libraries/>
             <source-roots>

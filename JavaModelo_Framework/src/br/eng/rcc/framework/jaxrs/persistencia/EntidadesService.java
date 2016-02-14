@@ -197,7 +197,6 @@ public class EntidadesService {
         Root root = query.from( klass );
         query.select(root);
         
-        
         // Cláusula JOIN FETCH da JPQL:
         for(String s : joinParams){
             root.fetch(s, JoinType.LEFT);
@@ -210,6 +209,8 @@ public class EntidadesService {
         // Cláusula WHERE do banco:
         WhereBuilderInterface wb = WhereBuilder.create(cb, query);
         query.where( wb.addArray( querysPs ).build() );
+        
+        checker.checkPersistencia(klass, cb, query);
         
         // A busca ao banco:
         Query q = em.createQuery(query);
@@ -257,7 +258,8 @@ public class EntidadesService {
             return new JsonResponse(false,
                 String.format("Não encontramos nenhuma entidade para '%s'", entidade) );
         }
-        checker.check( objs.get(0).getClass(), Seguranca.INSERT );
+        Class klass = objs.get(0).getClass();
+        checker.check( klass, Seguranca.INSERT );
         
         
         //-------------------------------------------------
@@ -389,7 +391,10 @@ public class EntidadesService {
           /* */
           
         
-        for( Object obj : objs ) em.persist(obj);
+        for( Object obj : objs ){
+          checker.checkPersistencia(klass, obj);
+          em.persist(obj);
+        }
         
         return new JsonResponse(true,null,null );
     }
@@ -473,6 +478,8 @@ public class EntidadesService {
             }catch(Exception ex){  }
         }
         
+        checker.checkPersistencia(klass, cb, query);
+        
         int ups = em.createQuery(query).executeUpdate();
         
         return new JsonResponse(true,ups, null);
@@ -530,6 +537,7 @@ public class EntidadesService {
         }
         query.where( preds );
         
+        checker.checkPersistencia(klass, cb, query);
         
         // A busca ao banco:
         int qtd = em.createQuery(query).executeUpdate();
