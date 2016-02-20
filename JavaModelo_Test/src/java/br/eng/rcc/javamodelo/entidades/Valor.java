@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import lombok.Data;
 
 @Entity
@@ -17,5 +18,8 @@ public class Valor implements Serializable{
   private int id;
   
   private double valor;
+  
+  @OneToOne()
+  private Carro carro;
   
 }

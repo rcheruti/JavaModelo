@@ -12,10 +12,14 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.annotation.Priority;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.ws.rs.Consumes;
@@ -28,8 +32,7 @@ import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-@ApplicationScoped
-//@Consumes({ MediaType.APPLICATION_JSON , "*/*" })
+@RequestScoped
 @Consumes({Configuracoes.JSON_PERSISTENCIA, MediaType.APPLICATION_JSON})
 @Priority(Integer.MAX_VALUE) // Tenta substituir os provedores padrão (Jackson/Jettison)
 public class JsonRequestReader implements MessageBodyReader<Object> {
@@ -39,27 +42,28 @@ public class JsonRequestReader implements MessageBodyReader<Object> {
   @Inject
   private ClassCache cache;
   @Inject
-  private EntityManager em;
-
-  //@Context
-  //private Providers providers;
-  @Inject
   private JacksonObjectMapperContextResolver resolver;
+  
+  private static final Pattern persistenciaPattern = Pattern.compile(
+    "/persistencia(?!/many)");
 
   @Override
   public boolean isReadable(Class<?> type,
           Type genericType,
           Annotation[] annotations,
           MediaType mediaType) {
+    /*
     if (JsonNode.class.equals(type)) {
       return true;
     } else if (Object.class.equals(type) || Collection.class.isAssignableFrom(type)) {
-      String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
+      List<String> params = uriInfo.getPathParameters().get("entidade");
+      String entidadeName = params.get(0);
       Class<?> klass = cache.get(entidadeName, em);
       if (klass == null) {
         return false;
       }
     }
+    */
     return true;
   }
 
@@ -71,18 +75,27 @@ public class JsonRequestReader implements MessageBodyReader<Object> {
           MultivaluedMap<String, String> httpHeaders,
           InputStream entityStream)
           throws IOException, WebApplicationException {
-    Class<? extends Collection> typeList = null;
+    
     if (JsonNode.class.equals(type)) {
       Object x = fromJson(entityStream, type);
       return x;
-    } else if (Collection.class.isAssignableFrom(type)) {
-      String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
-      type = (Class<Object>) cache.get(entidadeName, em);
-      typeList = List.class;
-    } else if (Object.class.equals(type)) {
-      String entidadeName = uriInfo.getPathParameters().get("entidade").get(0);
-      type = (Class<Object>) cache.get(entidadeName, em);
+    } 
+    
+    Class<? extends Collection> typeList = 
+                List.class.isAssignableFrom(type)? List.class 
+              : Set.class.isAssignableFrom(type)? Set.class
+              : Collection.class.isAssignableFrom(type)? List.class // padrão para list
+              : null; // não é lista
+    
+    Matcher matcher = persistenciaPattern.matcher( uriInfo.getPath() );
+    if( matcher.find() ){
+      List<String> params = uriInfo.getPathParameters().get("entidade");
+      if( params != null && params.size() > 0 ){
+        type = (Class<Object>) cache.get( params.get(0) );
+      }
     }
+    
+    System.out.println("Disponivel: "+ entityStream.available() );
     try {
       Object x = fromJson(entityStream, typeList, type);
       return x;
@@ -90,7 +103,7 @@ public class JsonRequestReader implements MessageBodyReader<Object> {
       Logger.getLogger(this.getClass().getName()).log(Level.WARNING, ex.getMessage() );
       throw new MsgException( ex.getMessage(), ex );
     } catch (Exception ex) {
-      Logger.getLogger(this.getClass().getName()).log(Level.WARNING, null, ex);
+      //Logger.getLogger(this.getClass().getName()).log(Level.WARNING, null, ex);
       return null;
     }
   }

@@ -15,7 +15,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.PostPersist;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -32,10 +31,10 @@ public class Carro implements Serializable{
   
   protected String nome;
   
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "carro" )
   protected Valor valor;
   
-  @OneToMany(cascade = CascadeType.ALL, mappedBy = "carro")
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "carro")
   protected Set<Porta> portas;
     public void setPortas(Set<Porta> xs){
       portas = xs;

@@ -23,7 +23,7 @@ public class PersistenceUtilsTest {
   }
   
   @Before
-  public 'void setUp() {
+  public void setUp() {
   }
   
   @After

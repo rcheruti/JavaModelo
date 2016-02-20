@@ -1,4 +1,4 @@
-Module.controller('Tipo',['$scope','Entidades',
+Module.controller('TipoMany',['$scope','Entidades',
     function($scope,Entidades){
   
   $scope.tipo = null;

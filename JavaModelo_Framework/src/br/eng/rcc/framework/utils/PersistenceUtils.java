@@ -2,6 +2,7 @@ package br.eng.rcc.framework.utils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -53,17 +54,19 @@ public class PersistenceUtils {
         }
         String name = attr.getName();
         Field member = (Field) attr.getJavaMember();
-        if (!constainsInArray(params, name)) {
+        if (!nullifyInArray(params, name)) {
           fieldsToNullify.add(member);
         } else {
           // Descer a arvore para nullify
           fieldsDownNullify.add(member);
         }
       }
+      params = copyWithoutNulls(params);
 
       // Aplicar valor NULL nas lista que são LAZY:
       for (Field field : fieldsToNullify) {
         for (Object obj : lista) {
+          if( obj == null ) continue;
           try {
             field.set(obj, null);
           } catch (IllegalArgumentException | IllegalAccessException ex) {
@@ -75,16 +78,17 @@ public class PersistenceUtils {
       // Descer a arvore para nullify:
       for (Field field : fieldsDownNullify) {
         for (Object obj : lista) {
+          if( obj == null ) continue;
           try {
             Object campoValor = field.get(obj) ;
             if( campoValor != null ){
               if( campoValor instanceof Collection ){
                 nullifyLazy(em, ((Collection)campoValor).toArray(),
-                      new String[0], secureLevel);
+                      params, secureLevel);
               }else{
                 Object[] campoValorArr = { campoValor };
                 nullifyLazy(em, campoValorArr,
-                      new String[0], secureLevel);
+                      params, secureLevel);
               } 
             }
           } catch (IllegalArgumentException | IllegalAccessException ex) {
@@ -101,12 +105,37 @@ public class PersistenceUtils {
       return false;
     }
     int hash = obj.hashCode();
-    for (Object x : arr) {
+    for (int i = 0; i < arr.length; i ++) {
+      Object x = arr[i];
+      if( x == null )continue;
       if (hash == x.hashCode() && obj.equals(x)) {
         return true;
       }
     }
     return false;
+  }
+  public static boolean nullifyInArray(Object[] arr, Object obj) {
+    if (arr == null || obj == null) {
+      return false;
+    }
+    int hash = obj.hashCode();
+    for (int i = 0; i < arr.length; i ++) {
+      Object x = arr[i];
+      if( x == null )continue;
+      if (hash == x.hashCode() && obj.equals(x)) {
+        arr[i] = null;
+        return true;
+      }
+    }
+    return false;
+  }
+  public static <T> T[] copyWithoutNulls( T[] arr ){
+    if( arr == null ) return null;
+    List<T> newArr = new ArrayList<>( arr.length /2 );
+    for(int i = 0; i < arr.length; i++){
+      if( arr[i] != null ) newArr.add( arr[i] );
+    }
+    return newArr.toArray(arr);
   }
   
   /**

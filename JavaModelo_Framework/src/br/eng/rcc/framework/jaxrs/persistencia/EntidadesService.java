@@ -85,7 +85,7 @@ public class EntidadesService {
     */
     
     @GET @Path("/tipo/{entidade}")
-    public Object tipo(
+    public JsonResponse tipo(
             @PathParam("entidade") String entidade
       ){
       Class<?> klass = cache.get(entidade, em);
@@ -134,7 +134,7 @@ public class EntidadesService {
      * @return {@link br.eng.rcc.framework.jaxrs.JsonResponse JsonResponse}
      */
     @GET @Path("/{entidade}")
-    public Object buscarEntidade(
+    public JsonResponse buscar(
                 // Nome da classe (entidade) que iremos usar como parâmetro principal
             @PathParam("entidade") String entidade ,
                 // Apenas para coletarmos dados da requisição, não vem da URL
@@ -173,8 +173,6 @@ public class EntidadesService {
         String uriQuery = ctx.getRequestUri().getQuery();
         String[][] querysPs = PersistenceUtils.parseQueryString(uriQuery);
         
-        // ----  Interpretando os parâmetros passados: 
-        MultivaluedMap<String,String> querysParams = ctx.getQueryParameters();
         //List<String> joinParams = new ArrayList<>();
         String[] joinParams;
         if( joinMatrix != null ){
@@ -251,9 +249,7 @@ public class EntidadesService {
      */
     @POST @Path("/{entidade}")
     @Transactional
-    public Object criarEntidade(List<?> objs, @PathParam("entidade") String entidade){
-        System.out.println("Iniciando: \n" );
-        System.out.printf("Iniciando: flush \n" ).flush();
+    public JsonResponse criar(List<?> objs, @PathParam("entidade") String entidade){
         if( objs == null || objs.isEmpty() ){
             return new JsonResponse(false,
                 String.format("Não encontramos nenhuma entidade para '%s'", entidade) );
@@ -420,7 +416,7 @@ public class EntidadesService {
      */
     @PUT @Path("/{entidade}")
     @Transactional
-    public Object editarEntidade(
+    public JsonResponse editar(
             @PathParam("entidade") String entidade,
             @Context UriInfo ctx,
             JsonNode obj){ // JsonNode
@@ -502,7 +498,7 @@ public class EntidadesService {
      */
     @DELETE @Path("/{entidade}")
     @Transactional
-    public Object deletarEntidade(
+    public JsonResponse deletar(
                 @PathParam("entidade") String entidade ,
                 @Context UriInfo ctx
             ){

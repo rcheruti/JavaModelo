@@ -3,11 +3,11 @@ insert into seg_usuario( DTYPE, email, nome ) values( 1, 'rafael@someone.com','R
 
 insert into seg_credencial( bloqueado, erros, login, renovarSenha, senha, usuario_id ) values( 0, 0, 'rafael', 0, 'ok', 1 );
 
-insert into valor(valor) values(75.50);
-insert into valor(valor) values(130.80);
+insert into carro(nome) values('Volks');
+insert into carro(nome) values('Nissan');
 
-insert into carro(nome,valor_id) values('Volks',1);
-insert into carro(nome,valor_id) values('Nissan',2);
+insert into valor(valor,carro_id) values(75.50,1);
+insert into valor(valor,carro_id) values(130.80,2);
 
 insert into cor(nome,rgb,hex) values ('Amarelo','rgb(255,255,0)','#ffff00');
 insert into cor(nome,rgb,hex) values ('Vermelho','rgb(255,0,0)','#ff0000');

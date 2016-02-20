@@ -41,6 +41,7 @@
         <span>{{ logoutMsg }}</span>
         <a ui-sref="carro">Carros</a>
         <a ui-sref="tipo">Tipos</a>
+        <a ui-sref="tipoMany">Tipos Many</a>
       </div>
 
       <h1>Hello World!</h1>

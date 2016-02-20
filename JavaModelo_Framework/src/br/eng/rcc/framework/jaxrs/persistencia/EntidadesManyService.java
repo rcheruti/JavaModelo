@@ -4,7 +4,10 @@ import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
+import com.fasterxml.jackson.databind.JsonNode;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -32,6 +35,8 @@ public class EntidadesManyService {
   private ClassCache cache;
   @Inject
   private SegurancaServico checker;
+  @Inject
+  private EntidadesService entidadesService;
   
   /**
     * Para que este objeto possa fazer o seu trabalho, é obrigatório um 
@@ -46,11 +51,29 @@ public class EntidadesManyService {
       }
   } 
   
+  /**
+  * Este método retorna os tipos das entidades passadas no vetor JSON.
+  * 
+  * @param entidades Um vetor JSON com os nomes das entidades: ["Carro","Pessoa",...]
+  * @return {@link JsonResponse}
+  */
+  @GET
+  @Path("/tipo")
+  @Transactional
+  public JsonResponse tipo(List<String> entidades) {
+    checkNull(entidades);
+    Map<String, Object> resposta = new HashMap<>( entidades.size() + 2, 1 );
+    for(String ent : entidades){
+      JsonResponse resp = entidadesService.tipo(ent);
+      resposta.put( ent, resp.data );
+    }
+    return new JsonResponse(true, resposta, "Many Tipo");
+  }
   
   @GET
   @Path("/")
   @Transactional
-  public Object buscarVariasEntidades(List<?> objs) {
+  public JsonResponse buscar(JsonNode node) {
 
     return new JsonResponse(false, null);
   }
@@ -58,7 +81,7 @@ public class EntidadesManyService {
   @POST
   @Path("/")
   @Transactional
-  public Object criarVariasEntidades(List<?> objs) {
+  public JsonResponse criar(JsonNode node) {
 
     return new JsonResponse(false, null);
   }
@@ -66,7 +89,7 @@ public class EntidadesManyService {
   @PUT
   @Path("/")
   @Transactional
-  public Object editarVariasEntidades(List<?> objs) {
+  public JsonResponse editar(JsonNode node) {
 
     return new JsonResponse(false, null);
   }
@@ -74,9 +97,17 @@ public class EntidadesManyService {
   @DELETE
   @Path("/")
   @Transactional
-  public Object deletarVariasEntidades(List<?> objs) {
+  public JsonResponse deletar(JsonNode node) {
 
     return new JsonResponse(false, null);
   }
-
+  
+  
+  //===========================================================================
+  private void checkNull(Object obj){
+    if( obj == null ) throw new MsgException(false,"Para usar estes serviços é necessário enviar uma mensagem JSON para o servidor");
+  }
+  
+  
+  
 }

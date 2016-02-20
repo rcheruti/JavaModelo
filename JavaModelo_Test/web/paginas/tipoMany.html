@@ -1,0 +1,23 @@
+<div class="tipoMany" ng-controller="TipoMany">
+  
+  <form class="form">
+    <label>
+      <input type="checkbox" ng-model="override" />
+      Override
+    </label>
+    
+    <br/><br/>
+    <div ng-repeat="x in entidadeLista | orderBy:x">
+      <label>
+        <input type="checkbox" ng-model="entidade"  
+               ng-change="mostrarTipo($index)"/>
+        {{ x }}
+      </label>
+    </div>
+  </form>
+  
+  <div>Override: "{{ override }}"</div>
+  <div>Tipo da entidade: "{{ entidade }}"</div>
+  <pre>{{ tipo | json }}</pre>
+  
+</div>

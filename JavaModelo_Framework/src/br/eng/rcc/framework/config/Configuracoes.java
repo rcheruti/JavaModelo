@@ -14,7 +14,7 @@ import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
 public class Configuracoes {
   
   // constantes do sistema
-  public static final String JSON_PERSISTENCIA = "application/json-persistencia";
+  public static final String JSON_PERSISTENCIA = "application/json";
   
   /*
     Todas as propriedades/atributos colocados nesta classe que forem "public static" serão

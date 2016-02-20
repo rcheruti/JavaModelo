@@ -10,14 +10,14 @@ Module.config(['contextProvider',
   
 }]);
 
-Module.run(['ResourceService','$window',
-    function(ResourceService,$window){
+Module.run(['Entidades','$window',
+    function(Entidades,$window){
   
-  $window.Carro = ResourceService.entidade('Carro');
-  $window.Cor = ResourceService.entidade('Cor');
+  $window.Carro = Entidades.entidade('Carro');
+  $window.Cor = Entidades.entidade('Cor');
   
-  ResourceService.entidade('Porta');
-  ResourceService.entidade('Usuario');
-  ResourceService.entidade('Valor');
+  Entidades.entidade('Porta');
+  Entidades.entidade('Usuario');
+  Entidades.entidade('Valor');
   
 }]);
