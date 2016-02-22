@@ -32,7 +32,6 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import javax.annotation.PostConstruct;
 import javax.persistence.criteria.CriteriaDelete;
@@ -84,7 +83,7 @@ public class EntidadesService {
         Abaixo estão os métodos que trabalharão com apenas 1 tipo de entidade por vez
     */
     
-    @GET @Path("/tipo/{entidade}")
+    @GET @Path("/{entidade}/tipo")
     public JsonResponse tipo(
             @PathParam("entidade") String entidade
       ){

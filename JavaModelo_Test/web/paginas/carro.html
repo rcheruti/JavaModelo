@@ -1,45 +1,36 @@
 <div class="carro" ng-controller="Carro">
-  
-  <div class="form">
-    <input ng-model="carro.nome" placeholder="Nome" />
-    <br/>
-    <input ng-model="carro.portas.cor" placeholder="Cor da porta" />
-    
-    <br/><br/>
-    <select ng-options="c.nome for c in cores" ng-model="carro.cores">
-      <option value="">--------------</option>
-    </select>
-    
-    <br/><br/>
-    <input ng-model="carro.valor.valor" placeholder="Valor" />
-    
-    <br/><br/>
-    <button ng-click="postCarro()">Gravar</button>
-  </div>
-  
-  <div>
-    <div class="titulo">Cores </div>
-      <ul>
-        <li ng-repeat="x in cores">
-          {{ x.nome }} ({{ x.rgb }}) [{{ x.hex }}]
-        </li>
-      </ul>
-  </div>
-  
-  <div>
-    <div class="titulo">Carros: </div>
-      <ul>
-        <li ng-repeat="c in coisas.carros">
-          <button ng-click="deleteCarro(c)">Deletar</button>
-          <span>{{ c.nome }}</span>
-          <ul>
-            <li ng-repeat="x in c.cores">
-              {{ x.nome }} ({{ x.rgb }}) [{{ x.hex }}]
-            </li>
-          </ul>
-        </li>
-      </ul>
-  </div>
-  
-  
-</div>
+      <div class="form">
+        <input ng-model="carro.nome" placeholder="Nome">
+        <br>
+        <input ng-model="carro.portas.cor" placeholder="Cor da porta">
+        <br>
+        <br>
+        <select ng-options="c.nome for c in cores" ng-model="carro.cores">
+          <option value="">--------------</option>
+        </select>
+        <br>
+        <br>
+        <input ng-model="carro.valor.valor" placeholder="Valor">
+        <br>
+        <br>
+        <button ng-click="postCarro()">Gravar</button>
+      </div>
+      <div>
+        <div class="titulo">Cores</div>
+        <ul>
+          <li ng-repeat="x in cores">{{ x.nome }} ({{ x.rgb }}) [{{ x.hex }}]</li>
+        </ul>
+      </div>
+      <div>
+        <div class="titulo">Carros:</div>
+        <ul>
+          <li ng-repeat="c in coisas.carros">
+            <button ng-click="deleteCarro(c)">Deletar</button>
+            <span>{{ c.nome }}</span>
+            <ul>
+              <li ng-repeat="x in c.cores">{{ x.nome }} ({{ x.rgb }}) [{{ x.hex }}]</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>

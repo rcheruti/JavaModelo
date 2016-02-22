@@ -33,9 +33,9 @@ import javax.persistence.criteria.CriteriaUpdate;
  */
 @ApplicationScoped
 public class SegurancaServico {
-
+  
   @Inject
-  protected HttpServletRequest req;
+  protected UsuarioServico uServico;
 
   protected Map<Class, Supplier> suppliers = new HashMap<>(30);
   protected Map<AnnotatedElement, Seguranca[]> segurancas = new HashMap<>(50);
@@ -69,13 +69,14 @@ public class SegurancaServico {
     }
 
     try {
-      IUsuario usuario = (IUsuario) req.getAttribute(IUsuario.USUARIO_KEY);
+      IUsuario usuario = uServico.getUsuario();
       if (usuario == null) {
         throw new MsgException(JsonResponse.ERROR_DESLOGADO, null, "Não existe usuário logado");
       }
       boolean temPermissao = 
         (valor == null || Seguranca.emptyString.equals(valor) || usuario.hasPermissao(valor)) &&
         (grupoK == null || Seguranca.emptyString.equals(grupoK) || usuario.hasGrupo(grupoK));
+      
       if( temPermissao )return;
       
       throw new MsgException(JsonResponse.ERROR_PERMISSAO, null, "O usuário não tem permissão para acessar este recurso");
@@ -100,8 +101,11 @@ public class SegurancaServico {
    * {@link br.eng.rcc.framework.seguranca.anotacoes.Seguranca Seguranca}.
    */
   public void check(AnnotatedElement annotated) {
-    this.check(annotated, Seguranca.SELECT | Seguranca.INSERT
-            | Seguranca.UPDATE | Seguranca.DELETE);
+    this.check(annotated, 
+            Seguranca.SELECT 
+            | Seguranca.INSERT
+            | Seguranca.UPDATE 
+            | Seguranca.DELETE);
   }
 
   /**

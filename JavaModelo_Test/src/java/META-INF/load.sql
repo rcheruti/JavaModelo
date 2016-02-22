@@ -1,7 +1,13 @@
 
 insert into seg_usuario( DTYPE, email, nome ) values( 1, 'rafael@someone.com','Rafael' );
+insert into seg_usuario( DTYPE, email, nome ) values( 1, 'rafael@someone.com','Rafael' );
 
 insert into seg_credencial( bloqueado, erros, login, renovarSenha, senha, usuario_id ) values( 0, 0, 'rafael', 0, 'ok', 1 );
+insert into seg_credencial( bloqueado, erros, login, renovarSenha, senha, usuario_id ) values( 0, 0, 'alguem', 0, 'ok', 2 );
+
+insert into seg_permissao( nome ) values( 'url_tipo' );
+insert into seg_fk_credencial_permissao( credenciais_id, permissoes_id ) values( 1, 1 );
+
 
 insert into carro(nome) values('Volks');
 insert into carro(nome) values('Nissan');

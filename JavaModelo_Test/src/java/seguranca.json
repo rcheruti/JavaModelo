@@ -1,0 +1,10 @@
+{
+  "enderecos":{
+    "persistencia/.+?/tipo":{
+      "permissao":"url_tipo"
+    }
+  },
+  "entidades":{
+    
+  }
+}

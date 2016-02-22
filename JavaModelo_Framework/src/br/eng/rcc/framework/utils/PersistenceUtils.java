@@ -4,16 +4,20 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.persistence.EmbeddedId;
 import javax.persistence.EntityManager;
+import javax.persistence.Id;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.SingularAttribute;
 
 public class PersistenceUtils {
   
@@ -175,5 +179,44 @@ public class PersistenceUtils {
     System.arraycopy(querysPs, 0, resQueryPs, 0, qI);
     return resQueryPs;
   }
-
+  
+  
+  public static Set<SingularAttribute> getIds(EntityManager em, Class<?> klass){
+    Metamodel meta = em.getMetamodel();
+    EntityType entity = meta.entity( klass );
+    
+    try{
+      return entity.getIdClassAttributes();
+    }catch(IllegalArgumentException ex){
+      Set<SingularAttribute> ids = new HashSet<>(4);
+      for( Attribute attr : (Set<Attribute>)entity.getAttributes() ){
+        Field field = (Field)attr.getJavaMember();
+        Id id = field.getAnnotation( Id.class );
+        if( id != null ){
+          ids.add( (SingularAttribute)attr );
+        }
+        /*
+        EmbeddedId embId = field.getAnnotation( EmbeddedId.class );
+        if( embId != null ){
+          Class c = attr.getJavaType();
+          try{
+            for( Field f : c.getDeclaredFields() ){
+              id = f.getAnnotation(Id.class);
+              if( id != null ){
+                ids.add( (SingularAttribute)attr );
+                continue;
+              }
+            }
+          }catch(SecurityException exS){
+            
+          }
+        }
+          /* */
+      }
+    }
+    
+    return null;
+  }
+  
+  
 }

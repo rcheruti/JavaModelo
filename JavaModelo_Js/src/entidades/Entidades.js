@@ -44,7 +44,7 @@
   }
   
   function Query( ents ){
-    this.entidade = ents instanceof Array? ents[0] : ents;
+    this.entidade = ents instanceof Array? ents[0] : ents || {};
     this._size = this.entidade.size;
     this._page = this.entidade.page;
     this._param = [];
@@ -55,7 +55,9 @@
     this._method = '';
     this.$scope = null;
     this._build = false;
+    this._path = '';
   }
+  
   var proto = Query.prototype;
     
   proto.size = function( x ){
@@ -117,6 +119,10 @@
     this._method = x;
     return this;
   };
+  proto.path = function( x ){
+    this._path = x;
+    return this;
+  };
   
   proto.build = function( force ){
     if( this._build && !force ) return this;
@@ -142,12 +148,16 @@
       matrix = ';' + matrix;
     
     // Montar url:
-    var url = this._url +'/' +this.entidade.nome ;
+    var url = this._url +'/' +this.entidade.nome +this._path ;
     this._url = url + matrix + queryStr ;
     this._build = true;
     return this;
   };
-  proto.request = function(){
+  proto.clearBuild - function(){
+    this._build = false;
+    return this;
+  };
+  proto.send = function(){
     var that = this;
     return $http({
       method: this._method,
@@ -167,8 +177,7 @@
     var that = this;
     var cached = tiposCache[that.entidade.nome] ;
     if( !cached || override  ){
-      that._url += '/tipo';
-      return that.method('GET').build().request().then(function(data){
+      return that.path('/tipo').method('GET').build().send().then(function(data){
         return tiposCache[that.entidade.nome] = data;
       });
     }
@@ -188,7 +197,7 @@
   
   function __construirRequisicao( nomeFunc, method ){
     proto[nomeFunc] = function( _data ){
-      return this.data( _data ).method( method ).build().request();
+      return this.data( _data ).method( method ).build().send();
     };
   }
   function __construirRequisicaoIn( nomeFunc, methodFunc ){
