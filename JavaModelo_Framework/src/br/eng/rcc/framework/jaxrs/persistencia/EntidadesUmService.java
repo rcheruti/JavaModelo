@@ -43,7 +43,7 @@ import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
 
 
-@Path("/persistencia")
+@Path("/persistencia/{entidade}")
 @Produces({ Configuracoes.JSON_PERSISTENCIA })
 @Consumes({ Configuracoes.JSON_PERSISTENCIA })
 @RequestScoped
@@ -83,7 +83,7 @@ public class EntidadesUmService {
         Abaixo estão os métodos que trabalharão com apenas 1 tipo de entidade por vez
     */
     
-    @GET @Path("/{entidade}/tipo")
+    @GET @Path("/tipo")
     public JsonResponse tipo(
             @PathParam("entidade") String entidade
       ){
@@ -132,7 +132,8 @@ public class EntidadesUmService {
      * @param orderMatrix Este parâmetro informa quais atributos serão usados para a ordenação (cláusula ORDER BY).
      * @return {@link br.eng.rcc.framework.jaxrs.JsonResponse JsonResponse}
      */
-    @GET @Path("/{entidade}")
+    @GET @Path("/")
+    @Transactional
     public JsonResponse buscar(
                 // Nome da classe (entidade) que iremos usar como parâmetro principal
             @PathParam("entidade") String entidade ,
@@ -215,7 +216,8 @@ public class EntidadesUmService {
         q.setFirstResult( pageNum*pageSize );
         q.setMaxResults( pageSize );
         Set<Object> res = new HashSet<>( q.getResultList() );
-        PersistenciaUtils.nullifyLazy( em, res.toArray(), joinParams );
+        this.em.clear();
+        PersistenciaUtils.anularLazy(cache, res.toArray(), joinParams );
 
         // A resposta: 
         return new JsonResponse(true,res,"Lista dos objetos", pageNum, pageSize);
@@ -247,7 +249,7 @@ public class EntidadesUmService {
      * @param entidade Nome da entidade de banco de dados
      * @return {@link br.eng.rcc.framework.jaxrs.JsonResponse JsonResponse}
      */
-    @POST @Path("/{entidade}")
+    @POST @Path("/")
     @Transactional
     public JsonResponse criar(List<?> objs, @PathParam("entidade") String entidade){
         if( objs == null || objs.isEmpty() ){
@@ -414,7 +416,7 @@ public class EntidadesUmService {
      * @param obj
      * @return {@link br.eng.rcc.framework.jaxrs.JsonResponse JsonResponse}
      */
-    @PUT @Path("/{entidade}")
+    @PUT @Path("/")
     @Transactional
     public JsonResponse editar(
             @PathParam("entidade") String entidade,
@@ -496,7 +498,7 @@ public class EntidadesUmService {
      * @param ctx
      * @return {@link br.eng.rcc.framework.jaxrs.JsonResponse JsonResponse}
      */
-    @DELETE @Path("/{entidade}")
+    @DELETE @Path("/")
     @Transactional
     public JsonResponse deletar(
                 @PathParam("entidade") String entidade ,

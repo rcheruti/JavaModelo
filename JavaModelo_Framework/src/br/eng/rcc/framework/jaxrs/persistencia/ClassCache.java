@@ -89,6 +89,7 @@ public class ClassCache {
         for( String nome : map.keySet() ){
             // primeiro pegar os nomes dos atributos que precisamos:
           Map<String,BeanUtil> mapInfoProps = mapInfo.get(nome);
+            // pode ainda não existir esse mapa:
           if( mapInfoProps == null ){
             mapInfoProps = new HashMap<>(12);
             mapInfo.put(nome, mapInfoProps);
@@ -103,10 +104,12 @@ public class ClassCache {
               for( PropertyDescriptor propDesc : propDescs ){
                 if( !attr.getName().equals( propDesc.getName() ) ) continue;
                 BeanUtil beanUtil = new BeanUtil();
+                beanUtil.nome = attr.getName();
                 beanUtil.getter = propDesc.getReadMethod();
                 beanUtil.setter = propDesc.getWriteMethod();
                 beanUtil.associacao = attr.isAssociation();
                 if( attr.isCollection() ){
+                  beanUtil.colecao = attr.isCollection();
                   Class<?> cColl = attr.getJavaType();
                   if( Collection.class.isAssignableFrom(cColl) ){
                     beanUtil.add = cColl.getMethod("add", Object.class);
@@ -141,7 +144,9 @@ public class ClassCache {
     
     public static class BeanUtil {
       
+      private String nome;
       private boolean associacao;
+      private boolean colecao;
       private Method getter;
       private Method setter;
       private Method add;
@@ -149,10 +154,12 @@ public class ClassCache {
       
       
       public boolean isAssociacao(){ return associacao; }
+      public boolean isColecao(){ return colecao; }
       public Method getGetter(){ return getter; }
       public Method getSetter(){ return setter; }
       public Method getAdd(){ return add; }
       public Method getRemove(){ return remove; }
+      public String getNome(){ return nome; }
       
       public Object get(Object that) 
               throws IllegalAccessException, InvocationTargetException{ 

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,13 +26,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -57,7 +54,7 @@ public class EntidadesUmIdService {
   private ClassCache cache;
   @Inject
   private SegurancaServico checker;
-
+  
   /**
    * Para que este objeto possa fazer o seu trabalho, é obrigatório um
    * {@link EntityManager EntityManager} para acessar o banco.
@@ -70,7 +67,7 @@ public class EntidadesUmIdService {
       throw new MsgException(msg);
     }
   }
-
+  
   //=====================================================================
   @POST
   @Path("/buscar")
@@ -147,7 +144,7 @@ public class EntidadesUmIdService {
     
     return new JsonResponse(true, resposta, "Busca por IDs");
   }
-
+  
   public JsonResponse editar(
           @PathParam("entidade") String entidade,
           JsonNode obj
@@ -182,7 +179,7 @@ public class EntidadesUmIdService {
         
     return null;
   }
-
+  
   //===============  Privates  ==================
   private void addOrderBy(CriteriaBuilder cb, CriteriaQuery query, String[] orders) {
     if (orders.length < 1) {

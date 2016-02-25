@@ -82,6 +82,8 @@ public class Configuracoes {
    */
   public static boolean encriptionActive = true;
   
+  
+  
   /**
    * Informa qual o limite de entidades que podem ser retornadas nas requisições
    * de Entidades_Service.
@@ -90,6 +92,15 @@ public class Configuracoes {
    * banco em uma única requisição.
    */
   public static int limiteEntidadesSize = 100;
+  /**
+   * Informa qual é o tamanho padrão de uma busca (cláusula LIMIT do banco de dados).
+   */
+  public static int sizeEntidadeDefault = 30;
+  /**
+   * Informa qual a página inicial padrão de uma busca (para encontrar a 
+   * cláusula OFFSET do banco de dados).
+   */
+  public static int pageEntidadeDefault = 0;
   
   // configurações do filtro de CORS
   

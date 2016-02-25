@@ -8,6 +8,7 @@ public class JsonResponse implements Serializable {
   public static final int ERROR_DESLOGADO = 401;
   public static final int ERROR_PERMISSAO = 403;
   public static final int ERROR_DESCONHECIDO = 500;
+  public static final int ERROR_EXCECAO = 600;
 
   public boolean status;
   public Object data;
