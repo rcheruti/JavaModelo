@@ -7,7 +7,7 @@ import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
-import br.eng.rcc.framework.utils.PersistenceUtils;
+import br.eng.rcc.framework.utils.PersistenciaUtils;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
@@ -47,7 +47,7 @@ import javax.persistence.metamodel.PluralAttribute;
 @Produces({ Configuracoes.JSON_PERSISTENCIA })
 @Consumes({ Configuracoes.JSON_PERSISTENCIA })
 @RequestScoped
-public class EntidadesService {
+public class EntidadesUmService {
     private final static Map<String,Runnable> map = new HashMap<>();
     
     private final int pageNumDefault = 0;
@@ -168,9 +168,10 @@ public class EntidadesService {
         }catch(Exception ex){
             pageSize = pageSizeDefault;
         }
+        if( pageSize > Configuracoes.limiteEntidadesSize ) pageSize = Configuracoes.limiteEntidadesSize;
         
         String uriQuery = ctx.getRequestUri().getQuery();
-        String[][] querysPs = PersistenceUtils.parseQueryString(uriQuery);
+        String[][] querysPs = PersistenciaUtils.parseQueryString(uriQuery);
         
         //List<String> joinParams = new ArrayList<>();
         String[] joinParams;
@@ -214,7 +215,7 @@ public class EntidadesService {
         q.setFirstResult( pageNum*pageSize );
         q.setMaxResults( pageSize );
         Set<Object> res = new HashSet<>( q.getResultList() );
-        PersistenceUtils.nullifyLazy( em, res.toArray(), joinParams );
+        PersistenciaUtils.nullifyLazy( em, res.toArray(), joinParams );
 
         // A resposta: 
         return new JsonResponse(true,res,"Lista dos objetos", pageNum, pageSize);
@@ -432,7 +433,7 @@ public class EntidadesService {
             return new JsonResponse(false,
                 "Para editar registros é necessário informar os parâmetros de filtragem na QueryString.");
         }
-        String[][] querysPs = PersistenceUtils.parseQueryString(uriQuery);
+        String[][] querysPs = PersistenciaUtils.parseQueryString(uriQuery);
         
         
         // ----  Criando a busca ao banco:
@@ -455,7 +456,7 @@ public class EntidadesService {
             querysPsNames[i] = querysPs[i][0];
         while( nodeNameIt.hasNext() ){
             String nodeName = nodeNameIt.next();
-            if( PersistenceUtils.constainsInArray(querysPsNames, nodeName) ) continue;
+            if( PersistenciaUtils.constainsInArray(querysPsNames, nodeName) ) continue;
             try{
                 JsonNode node = obj.get(nodeName);
                 Object value = null;
@@ -514,7 +515,7 @@ public class EntidadesService {
             return new JsonResponse(false,
                 "Para apagar registros é necessário informar os parâmetros de filtragem na QueryString.");
         }
-        String[][] querysPs = PersistenceUtils.parseQueryString(uriQuery);
+        String[][] querysPs = PersistenciaUtils.parseQueryString(uriQuery);
         
         
         

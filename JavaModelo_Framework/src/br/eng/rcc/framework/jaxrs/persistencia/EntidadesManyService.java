@@ -6,6 +6,7 @@ import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -36,7 +37,7 @@ public class EntidadesManyService {
   @Inject
   private SegurancaServico checker;
   @Inject
-  private EntidadesService entidadesService;
+  private EntidadesUmService entidadesService;
   
   /**
     * Para que este objeto possa fazer o seu trabalho, é obrigatório um 
@@ -70,11 +71,20 @@ public class EntidadesManyService {
     return new JsonResponse(true, resposta, "Many Tipo");
   }
   
-  @GET
-  @Path("/")
+  @POST
+  @Path("/buscar")
   @Transactional
   public JsonResponse buscar(JsonNode node) {
 
+    Iterator<String> itNomes = node.fieldNames();
+    while( itNomes.hasNext() ){
+      String nome = itNomes.next();
+      JsonNode json = node.get(nome);
+      if( json == null || !json.isObject() ) continue;
+      
+      
+      
+    }
     return new JsonResponse(false, null);
   }
 

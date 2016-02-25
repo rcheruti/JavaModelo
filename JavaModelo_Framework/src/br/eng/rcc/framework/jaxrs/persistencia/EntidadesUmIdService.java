@@ -5,10 +5,16 @@ import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
-import br.eng.rcc.framework.utils.PersistenceUtils;
+import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,11 +29,13 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -64,8 +72,8 @@ public class EntidadesUmIdService {
   }
 
   //=====================================================================
-  //@GET
-  //@Path("/")
+  @POST
+  @Path("/buscar")
   public JsonResponse buscar(
           @PathParam("entidade") String entidade,
           // 'Pagina' da busca, cláusula OFFSET do banco
@@ -84,12 +92,60 @@ public class EntidadesUmIdService {
     checker.check(klass, Seguranca.SELECT);
     
     // Pegando os ids da classe
-    Set<SingularAttribute> ids = PersistenceUtils.getIds(em, klass);
+    Set<SingularAttribute> ids = PersistenciaUtils.getIds(em, klass);
+    if( ids == null ){
+      System.out.printf("---  Ids eh NULL \n");
+    }else{
+      System.out.printf("---  ids.size: \n", ids.size() );
+      for( SingularAttribute attr : ids ){
+        System.out.printf("---  - ID: %s   \n", attr.getName() );
+      }
+    }
     if (ids == null || ids.isEmpty()) {
       return new JsonResponse(false, "Não encontramos os campos de Id dessa classe");
     }
-
-    return null;
+    
+    // O JSON deve ser um Array, com as entidades dentro
+    if( node == null || !node.isArray() ){
+      return new JsonResponse(false,"A mensagem deve ser um Array JSON.");
+    }
+    
+    List resposta = new ArrayList<>();
+    List<SingularAttribute> idLista = new ArrayList<>();
+    List<Predicate> wheres = new ArrayList<>();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    
+    iteracaoObjs:
+    for(JsonNode json : node){
+      if( json == null || !json.isObject() ) continue;
+      idLista.clear();
+      wheres.clear();
+      
+      CriteriaQuery query = cb.createQuery();
+      Root root = query.from( klass );
+      query.select(root);
+      
+      iteracaoIds:
+      for( SingularAttribute idAttr : ids ){
+        JsonNode prop = json.get(idAttr.getName());
+        if( prop == null /* ... comp do tipo do ID */ ) continue;
+        idLista.add(idAttr);
+        System.out.printf("---  Root.get: %s, prop.VALOR: %s, idAttr.getJavaType: %s \n", 
+                idAttr.getName(), as(prop, idAttr.getJavaType()), idAttr.getJavaType() );
+        wheres.add( cb.equal( root.get(idAttr.getName()) , as(prop, idAttr.getJavaType()) ) );
+      }
+      if( wheres.isEmpty() ){
+        System.out.printf("---  wheres.isEmpty \n");
+        continue;
+      }
+      
+      query.where(wheres.toArray(new Predicate[0]));
+      List lista = em.createQuery(query).setMaxResults(1).getResultList();
+      if( lista != null ) for( Object x : lista ) resposta.add(x);
+      
+    }
+    
+    return new JsonResponse(true, resposta, "Busca por IDs");
   }
 
   public JsonResponse editar(
@@ -110,7 +166,7 @@ public class EntidadesUmIdService {
     }
         
         // Pegando os ids da classe
-        Set<SingularAttribute> ids = PersistenceUtils.getIds(em, klass);
+        Set<SingularAttribute> ids = PersistenciaUtils.getIds(em, klass);
         if (ids == null || ids.isEmpty()) {
           return new JsonResponse(false, "Não encontramos os campos de Id dessa classe");
         }
@@ -156,5 +212,45 @@ public class EntidadesUmIdService {
     }
     query.orderBy(lista);
   }
-
+  
+  private static final Map<Class,Integer> mapConvercao = new HashMap<>(20);
+  static{
+    // 0: byte
+    // 1: int
+    // 2: long
+    // 3: double
+    // 4: datas -> String para interpretar, usando padrão ISO
+    mapConvercao.put( Boolean.class, 0);
+    mapConvercao.put( boolean.class, 0);
+    mapConvercao.put( Byte.class, 1);
+    mapConvercao.put( byte.class, 1);
+    mapConvercao.put( Short.class, 1);
+    mapConvercao.put( short.class, 1);
+    mapConvercao.put( Integer.class, 1);
+    mapConvercao.put( int.class, 1);
+    mapConvercao.put( Long.class, 2);
+    mapConvercao.put( long.class, 2);
+    mapConvercao.put( BigInteger.class, 2);
+    mapConvercao.put( Float.class, 3);
+    mapConvercao.put( float.class, 3);
+    mapConvercao.put( Double.class, 3);
+    mapConvercao.put( double.class, 3);
+    mapConvercao.put( BigDecimal.class, 3);
+    mapConvercao.put( Date.class, 4);
+    mapConvercao.put( Time.class, 4);
+    mapConvercao.put( Calendar.class, 4);
+  }
+  private Object as( JsonNode node, Class<?> tipo ){
+    if( tipo == null || node == null ) return null;
+    if( Integer.class.isAssignableFrom(tipo) || int.class.isAssignableFrom(tipo) ) return node.asInt();
+    if( Long.class.isAssignableFrom(tipo) ) return node.asLong();
+    if( Double.class.isAssignableFrom(tipo) ) return node.asDouble();
+    if( Number.class.isAssignableFrom(tipo) ) return node.asLong();
+    if( String.class.isAssignableFrom(tipo) ) return node.asText();
+    if( Date.class.isAssignableFrom(tipo) ) throw new MsgException("Fazer impl. de Json para Date");
+    
+    return null;
+  }
+  
+  
 }

@@ -4,6 +4,8 @@ package br.eng.rcc.framework.config;
 import br.eng.rcc.framework.filtros.RewriteFiltro;
 import br.eng.rcc.framework.seguranca.filtros.SegurancaFiltro;
 import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
+import javax.persistence.EntityManager;
+import javax.persistence.metamodel.Metamodel;
 
 /**
  * As configurações do sistema poderão ser carregadas a partir de um arquivo 
@@ -48,7 +50,7 @@ public class Configuracoes {
    * {@link loginPath}.
    */
   public static String segurancaRegExp = 
-      "(?i:^/?img|^/?css|^/?js|^/?s/seguranca/login|^/?login.html|^/?login.jsp)" ;
+      "(?i:^/?(?:img|css|js|s/seguranca/login|login.html|login.jsp))" ;
   
   
   /**
@@ -80,8 +82,21 @@ public class Configuracoes {
    */
   public static boolean encriptionActive = true;
   
+  /**
+   * Informa qual o limite de entidades que podem ser retornadas nas requisições
+   * de Entidades_Service.
+   * 
+   * Esse limite é usado por proteção, para não buscar informações demais do 
+   * banco em uma única requisição.
+   */
+  public static int limiteEntidadesSize = 100;
   
   // configurações do filtro de CORS
   
+  /**
+   * Informa se o cache de classes, carregado usando o {@link Metamodel} do
+   * {@link EntityManager}, deve ser preenchido logo que o sistema iniciar.
+   */
+  public static boolean preCarregarCache = false;
   
 }

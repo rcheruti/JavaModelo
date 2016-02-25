@@ -3,6 +3,7 @@ package br.eng.rcc.framework.filtros;
 
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.JsonResponseWriter;
+import br.eng.rcc.framework.jaxrs.MsgException;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import javax.inject.Inject;
@@ -32,6 +33,11 @@ public class ExceptionFiltro implements Filter{
             throws IOException, ServletException {
         try{
             fc.doFilter(sr, sr1);
+        }catch(MsgException ex){
+          JsonResponse res = new JsonResponse(false, ex.getCodigo(), ex.getData(), ex.getMessage());
+          writer.writeTo(res, res.getClass(), null, 
+                        new Annotation[0], MediaType.APPLICATION_JSON_TYPE, null, 
+                        sr1.getOutputStream() );
         }catch(Exception ex){
             JsonResponse res = new JsonResponse(false, JsonResponse.ERROR_DESCONHECIDO, null, ex.getMessage());
             writer.writeTo(res, res.getClass(), null, 

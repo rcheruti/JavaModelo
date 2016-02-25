@@ -2,7 +2,6 @@ package br.eng.rcc.framework.utils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -11,7 +10,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.persistence.EmbeddedId;
 import javax.persistence.EntityManager;
 import javax.persistence.Id;
 import javax.persistence.metamodel.Attribute;
@@ -19,7 +17,7 @@ import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.SingularAttribute;
 
-public class PersistenceUtils {
+public class PersistenciaUtils {
   
   private static final Pattern queryStringPattern = Pattern
        .compile("([\\w.]++)\\s*+(=|!=|<|>|<=|>=|(?>not)?like)\\s*+((['\"]).*?\\4|[\\w\\.]++)\\s*+([&\\|]?)", Pattern.CASE_INSENSITIVE);
@@ -28,27 +26,40 @@ public class PersistenceUtils {
 
   
   
-  
+  public static void nullifyLazy(EntityManager em, Object obj,
+          String[] params){
+    Object[] lista = { obj };
+    nullifyLazy(em, lista);
+  }
   public static void nullifyLazy(EntityManager em, Object[] lista,
-          String[] params) {
-    nullifyLazy(em, lista, params, 0);
+          String... params) {
+    nullifyLazy(em, lista, 0, params);
   }
 
   public static void nullifyLazy(EntityManager em, Object[] lista,
-          String[] params, int secureLevel) {
+          int secureLevel, String... params ) {
     // Se a árvore descer demais, podemos estar em recursão infinita,
     // temos que evitar isso aconteça
     if (lista == null) {
       return;
     }
-    if (secureLevel++ >= 50) {
+    if (secureLevel++ >= 30) {
       throw new IllegalArgumentException("Um dos parâmetros esta fazendo com que entremos em recursão infinita!");
     }
     if (lista.length > 0) {
-
+      /*
+      BeanInfo info;
+      try{
+        info = Introspector.getBeanInfo( lista[0].getClass() );
+      }catch(IntrospectionException ex){
+        throw new IllegalStateException("Não podemos ler as informções dessa Classe", ex);
+      }
+      PropertyDescriptor[] propDescs = info.getPropertyDescriptors();
+      /* */
+      
       List<Field> fieldsToNullify = new ArrayList<>();
       List<Field> fieldsDownNullify = new ArrayList<>();
-
+      
       Metamodel meta = em.getMetamodel();
       EntityType type = meta.entity(lista[0].getClass());
       Set<Attribute> attrs = type.getDeclaredAttributes();
@@ -74,7 +85,7 @@ public class PersistenceUtils {
           try {
             field.set(obj, null);
           } catch (IllegalArgumentException | IllegalAccessException ex) {
-            Logger.getLogger(PersistenceUtils.class.getName()).log(Level.WARNING, null, ex);
+            Logger.getLogger(PersistenciaUtils.class.getName()).log(Level.WARNING, null, ex);
             return;
           }
         }
@@ -88,15 +99,15 @@ public class PersistenceUtils {
             if( campoValor != null ){
               if( campoValor instanceof Collection ){
                 nullifyLazy(em, ((Collection)campoValor).toArray(),
-                      params, secureLevel);
+                      secureLevel, params );
               }else{
                 Object[] campoValorArr = { campoValor };
                 nullifyLazy(em, campoValorArr,
-                      params, secureLevel);
+                      secureLevel, params );
               } 
             }
           } catch (IllegalArgumentException | IllegalAccessException ex) {
-            Logger.getLogger(PersistenceUtils.class.getName()).log(Level.WARNING, null, ex);
+            Logger.getLogger(PersistenciaUtils.class.getName()).log(Level.WARNING, null, ex);
             return;
           }
         }
@@ -213,9 +224,8 @@ public class PersistenceUtils {
         }
           /* */
       }
+      return ids;
     }
-    
-    return null;
   }
   
   

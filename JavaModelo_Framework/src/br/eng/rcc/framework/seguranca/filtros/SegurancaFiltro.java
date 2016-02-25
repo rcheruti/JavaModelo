@@ -62,7 +62,6 @@ public class SegurancaFiltro implements Filter{
     
     String ctxPath = req.getContextPath();
     String uri = req.getRequestURI().substring( ctxPath.length() );
-    System.out.printf("-----  Request URI: %s \n", uri );
     
     Matcher matcher = pattern.matcher(uri);
     
@@ -72,50 +71,36 @@ public class SegurancaFiltro implements Filter{
       return;
     }
     
-    try{
-      usuarioService.checkLogin();
-      
-      Boolean bool = urlCacheBoolean.get(uri);
-      
-      System.out.printf("---  bool: %s \n", bool );
-      if( bool == null ){
-        SegurancaRootNode node = SegurancaConfig.getSegurancas();
-        Map<String,List<SegurancaNode>> map = node.getEnderecos();
-        UrlSeguranca seg = new UrlSeguranca();
-        for( String regex : map.keySet() ){
-          Pattern patternSeg = Pattern.compile( regex );
-          Matcher matcherSeg = patternSeg.matcher( uri );
-          if( matcherSeg.find() ){
-            bool = true;
-            for( Seguranca s : map.get(regex) ) seg.getList().add(s);
-          }
-        }
-        if( bool == null ) bool = false;
-        if( bool ) urlCache.put( uri, seg);
-        urlCacheBoolean.put(uri, bool);
-      }
-      
-      if( bool ){
-        segurancaServico.check( urlCache.get(uri) );
-      }
-      
-    }catch(MsgException ex){
-      HttpServletResponse resp = (HttpServletResponse) response;
-      resp.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-      resp.addHeader("Pragma", "no-cache");
-      resp.addHeader("Expires", "0"); 
-      JsonResponse res = new JsonResponse( false, ex.getCodigo(), ex.getData(), ex.getMensagem() );
-      writer.writeTo(res, res.getClass(), null, 
-                        new Annotation[0], MediaType.APPLICATION_JSON_TYPE, null, 
-                        response.getOutputStream() );
-      return;
-    }catch(Exception ex){
+    
+    if( !usuarioService.checkLogin(true) ){
       HttpServletResponse resp = (HttpServletResponse) response;
       resp.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
       resp.addHeader("Pragma", "no-cache");
       resp.addHeader("Expires", "0");
       req.getRequestDispatcher( redirectPage ).forward(request, response);
       return; // Sair, pois nao podemos deixar processar a requisição
+    }
+
+    Boolean bool = urlCacheBoolean.get(uri);
+    if( bool == null ){
+      SegurancaRootNode node = SegurancaConfig.getSegurancas();
+      Map<String,List<SegurancaNode>> map = node.getEnderecos();
+      UrlSeguranca seg = new UrlSeguranca();
+      for( String regex : map.keySet() ){
+        Pattern patternSeg = Pattern.compile( regex );
+        Matcher matcherSeg = patternSeg.matcher( uri );
+        if( matcherSeg.find() ){
+          bool = true;
+          for( Seguranca s : map.get(regex) ) seg.getList().add(s);
+        }
+      }
+      if( bool == null ) bool = false;
+      if( bool ) urlCache.put( uri, seg);
+      urlCacheBoolean.put(uri, bool);
+    }
+
+    if( bool ){
+      segurancaServico.check( urlCache.get(uri) );
     }
     
     // Tudo ok aqui

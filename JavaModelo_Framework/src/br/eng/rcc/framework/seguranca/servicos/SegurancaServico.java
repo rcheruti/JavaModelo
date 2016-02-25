@@ -6,7 +6,6 @@ import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.anotacoes.Segurancas;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 import br.eng.rcc.framework.interfaces.IUsuario;
 import br.eng.rcc.framework.interfaces.SegurancaPersistenciaInterceptador;
 import java.lang.reflect.AnnotatedElement;
