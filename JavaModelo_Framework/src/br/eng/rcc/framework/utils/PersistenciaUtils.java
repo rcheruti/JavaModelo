@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.persistence.EmbeddedId;
 import javax.persistence.EntityManager;
 import javax.persistence.Id;
 import javax.persistence.metamodel.Attribute;
@@ -39,11 +40,19 @@ public class PersistenciaUtils {
   }
   public static void anularLazy(ClassCache cache, Object[] lista, 
           int secureLevel, String... params){
-    if( lista == null || lista.length == 0 ) return;
     if (secureLevel++ >= 30) {
       throw new IllegalArgumentException("Um dos parâmetros esta fazendo com que entremos em recursão infinita!");
     }
-    Map<String, ClassCache.BeanUtil> map = cache.getInfo( lista[0].getClass().getSimpleName() );
+    if( lista == null || lista.length == 0 ) return;
+    Class klass = null;
+    for( Object ooo : lista ){
+      if( ooo != null ){
+        klass = ooo.getClass();
+        break;
+      }
+    }
+    if( klass == null ) return;
+    Map<String, ClassCache.BeanUtil> map = cache.getInfo( klass.getSimpleName() );
     List<ClassCache.BeanUtil> fieldsToNullify = new ArrayList<>();
     List<ClassCache.BeanUtil> fieldsDownNullify = new ArrayList<>();
       
@@ -76,8 +85,10 @@ public class PersistenciaUtils {
           anularLazy(cache, novoLista, secureLevel, novoParams);
         }
       }
+    }catch(NullPointerException ex){
+      throw new RuntimeException("Algum dos métodos Setter JavaBeans disparou NullPointerException!", ex);
     }catch(IllegalAccessException | InvocationTargetException ex){
-      throw new MsgException(JsonResponse.ERROR_DESCONHECIDO, "Essa JVM não pode tem permissão para executar atividades de Reflexão ou Introspecção!");
+      throw new RuntimeException("Essa JVM não tem permissão para executar atividades de Reflexão ou Introspecção!", ex);
     }
   }
   
@@ -230,12 +241,19 @@ public class PersistenciaUtils {
   }
   
   
-  public static Set<SingularAttribute> getIds(EntityManager em, Class<?> klass){
+  public static List<String> getIds(EntityManager em, Class<?> klass){
     Metamodel meta = em.getMetamodel();
     EntityType entity = meta.entity( klass );
+    List<String> nomes = new ArrayList<>();
     
     try{
-      return entity.getIdClassAttributes();
+      Set<SingularAttribute> attrs = entity.getIdClassAttributes();
+      if( attrs!= null ){
+        for( SingularAttribute attr : attrs ){
+          nomes.add( attr.getName() );
+        }
+      }
+      return nomes; 
     }catch(IllegalArgumentException ex){
       Set<SingularAttribute> ids = new HashSet<>(4);
       for( Attribute attr : (Set<Attribute>)entity.getAttributes() ){
@@ -243,26 +261,20 @@ public class PersistenciaUtils {
         Id id = field.getAnnotation( Id.class );
         if( id != null ){
           ids.add( (SingularAttribute)attr );
-        }
-        /*
-        EmbeddedId embId = field.getAnnotation( EmbeddedId.class );
-        if( embId != null ){
-          Class c = attr.getJavaType();
-          try{
-            for( Field f : c.getDeclaredFields() ){
-              id = f.getAnnotation(Id.class);
-              if( id != null ){
-                ids.add( (SingularAttribute)attr );
-                continue;
-              }
+          nomes.add( attr.getName() );
+        }else{
+          EmbeddedId embId = field.getAnnotation( EmbeddedId.class );
+          if( embId != null ){
+            //ids.add( (SingularAttribute)attr );
+            String nomeEmb = attr.getName();
+            Class c = attr.getJavaType();
+            for( Field fC : c.getDeclaredFields() ){
+              nomes.add( String.format("%s.%s", nomeEmb, fC.getName() ) );
             }
-          }catch(SecurityException exS){
-            
           }
         }
-          /* */
       }
-      return ids;
+      return nomes;
     }
   }
   

@@ -73,7 +73,7 @@ public class ClassCache {
     
     
     public Map<String,BeanUtil> getInfo(String entidadeName){
-      return getInfo(entidadeName, null);
+      return getInfo(entidadeName, emInj);
     }
     public Map<String,BeanUtil> getInfo(String entidadeName, EntityManager em){
       recarregarBeanInfo(em);
@@ -123,7 +123,7 @@ public class ClassCache {
         }
         beanInfos = new SoftReference( mapInfo );
       }catch(IntrospectionException | NoSuchMethodException ex){
-        beanInfos = null;
+        throw new RuntimeException("Exceção de Instrospecção", ex);
       }
     }
     

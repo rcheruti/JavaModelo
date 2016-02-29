@@ -26,10 +26,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.SingularAttribute;
+import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
@@ -71,6 +73,7 @@ public class EntidadesUmIdService {
   //=====================================================================
   @POST
   @Path("/buscar")
+  @Transactional
   public JsonResponse buscar(
           @PathParam("entidade") String entidade,
           // 'Pagina' da busca, cláusula OFFSET do banco
@@ -82,6 +85,12 @@ public class EntidadesUmIdService {
           @MatrixParam("order") String orderMatrix,
           JsonNode node
   ) {
+    
+    // O JSON deve ser um Array, com as entidades dentro
+    if( node == null || !node.isArray() ){
+      return new JsonResponse(false,"A mensagem deve ser um Array JSON.");
+    }
+    
     Class<?> klass = cache.get(entidade, em);
     if (klass == null) {
       return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade));
@@ -89,33 +98,19 @@ public class EntidadesUmIdService {
     checker.check(klass, Seguranca.SELECT);
     
     // Pegando os ids da classe
-    Set<SingularAttribute> ids = PersistenciaUtils.getIds(em, klass);
-    if( ids == null ){
-      System.out.printf("---  Ids eh NULL \n");
-    }else{
-      System.out.printf("---  ids.size: \n", ids.size() );
-      for( SingularAttribute attr : ids ){
-        System.out.printf("---  - ID: %s   \n", attr.getName() );
-      }
-    }
+    List<String> ids = PersistenciaUtils.getIds(em, klass);
     if (ids == null || ids.isEmpty()) {
       return new JsonResponse(false, "Não encontramos os campos de Id dessa classe");
     }
     
-    // O JSON deve ser um Array, com as entidades dentro
-    if( node == null || !node.isArray() ){
-      return new JsonResponse(false,"A mensagem deve ser um Array JSON.");
-    }
     
     List resposta = new ArrayList<>();
-    List<SingularAttribute> idLista = new ArrayList<>();
     List<Predicate> wheres = new ArrayList<>();
     CriteriaBuilder cb = em.getCriteriaBuilder();
     
     iteracaoObjs:
     for(JsonNode json : node){
       if( json == null || !json.isObject() ) continue;
-      idLista.clear();
       wheres.clear();
       
       CriteriaQuery query = cb.createQuery();
@@ -123,22 +118,29 @@ public class EntidadesUmIdService {
       query.select(root);
       
       iteracaoIds:
-      for( SingularAttribute idAttr : ids ){
-        JsonNode prop = json.get(idAttr.getName());
+      for( String idAttr : ids ){
+        String[] idS = idAttr.split("\\.");
+        JsonNode prop = json;
+        for( String s : idS ) prop = prop.get(s);
         if( prop == null /* ... comp do tipo do ID */ ) continue;
-        idLista.add(idAttr);
-        System.out.printf("---  Root.get: %s, prop.VALOR: %s, idAttr.getJavaType: %s \n", 
-                idAttr.getName(), as(prop, idAttr.getJavaType()), idAttr.getJavaType() );
-        wheres.add( cb.equal( root.get(idAttr.getName()) , as(prop, idAttr.getJavaType()) ) );
+        javax.persistence.criteria.Path exp = root.get( idS[ 0 ] );
+        for( int i = 1; i < idS.length; i++ ) exp = exp.get( idS[i] );
+        wheres.add( cb.equal( exp , as(prop, exp.getJavaType() ) ) );
       }
       if( wheres.isEmpty() ){
-        System.out.printf("---  wheres.isEmpty \n");
         continue;
       }
       
       query.where(wheres.toArray(new Predicate[0]));
-      List lista = em.createQuery(query).setMaxResults(1).getResultList();
-      if( lista != null ) for( Object x : lista ) resposta.add(x);
+      List lista = em.createQuery(query).getResultList();
+      if( lista != null ){
+        //
+        em.clear();
+        PersistenciaUtils.anularLazy(cache, lista.toArray());
+        for( Object x : lista ) resposta.add(x);
+      }else{
+        em.clear();
+      }
       
     }
     
@@ -163,7 +165,7 @@ public class EntidadesUmIdService {
     }
         
         // Pegando os ids da classe
-        Set<SingularAttribute> ids = PersistenciaUtils.getIds(em, klass);
+        List<String> ids = PersistenciaUtils.getIds(em, klass);
         if (ids == null || ids.isEmpty()) {
           return new JsonResponse(false, "Não encontramos os campos de Id dessa classe");
         }
