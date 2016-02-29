@@ -12,6 +12,14 @@ insert into seg_fk_credencial_permissao( credenciais_id, permissoes_id ) values(
 insert into carro(nome) values('Volks');
 insert into carro(nome) values('Nissan');
 
+insert into porta(cor,carro_id) values('Vermelho Seco', 1);
+insert into porta(cor,carro_id) values('Laranja amarelado', 1);
+insert into porta(cor,carro_id) values('Rosa purpurina', 2);
+
+insert into janela(eletrica, porta_id) values(1, 1);
+insert into janela(eletrica, porta_id) values(0, 2);
+insert into janela(eletrica, porta_id) values(1, 3);
+
 insert into valor(valor,carro_id) values(75.50,1);
 insert into valor(valor,carro_id) values(130.80,2);
 

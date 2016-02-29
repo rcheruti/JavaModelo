@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -134,7 +133,6 @@ public class EntidadesUmService {
      * @return {@link br.eng.rcc.framework.jaxrs.JsonResponse JsonResponse}
      */
     @GET @Path("/")
-    @Transactional
     public JsonResponse buscar(
                 // Nome da classe (entidade) que iremos usar como parâmetro principal
             @PathParam("entidade") String entidade ,
@@ -160,6 +158,7 @@ public class EntidadesUmService {
         
         // Cláusula JOIN FETCH da JPQL:
         for(String s : info.getJoin()){ 
+          if( s.indexOf('.') < 0 )
             root.fetch(s, JoinType.LEFT);
         }
         
