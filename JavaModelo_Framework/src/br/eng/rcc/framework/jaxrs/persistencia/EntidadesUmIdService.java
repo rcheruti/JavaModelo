@@ -136,7 +136,7 @@ public class EntidadesUmIdService {
       if( lista != null ){
         //
         em.clear();
-        PersistenciaUtils.anularLazy(cache, lista.toArray());
+        PersistenciaUtils.resolverLazy(cache, lista.toArray(), true); 
         for( Object x : lista ) resposta.add(x);
       }else{
         em.clear();

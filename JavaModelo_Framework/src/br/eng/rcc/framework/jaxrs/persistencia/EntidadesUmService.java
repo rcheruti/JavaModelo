@@ -50,9 +50,6 @@ import javax.persistence.metamodel.PluralAttribute;
 public class EntidadesUmService {
     private final static Map<String,Runnable> map = new HashMap<>();
     
-    private final int pageNumDefault = 0;
-    private final int pageSizeDefault = 20;
-    
     @Inject
     private EntityManager em;
     @Inject
@@ -156,38 +153,7 @@ public class EntidadesUmService {
         checker.check( klass, Seguranca.SELECT );
         
         
-        
-        
-        int pageNum, pageSize;
-        try{
-            pageNum = Integer.parseInt(pageNumStr);
-        }catch(Exception ex){
-            pageNum = pageNumDefault;
-        }
-        try{
-            pageSize = Integer.parseInt(pageSizeStr);
-        }catch(Exception ex){
-            pageSize = pageSizeDefault;
-        }
-        if( pageSize > Configuracoes.limiteEntidadesSize ) pageSize = Configuracoes.limiteEntidadesSize;
-        
-        String uriQuery = ctx.getRequestUri().getQuery();
-        String[][] querysPs = PersistenciaUtils.parseQueryString(uriQuery);
-        
-        //List<String> joinParams = new ArrayList<>();
-        String[] joinParams;
-        if( joinMatrix != null ){
-            joinParams = joinMatrix.split(",+");
-        }else{
-            joinParams = new String[0];
-        }
-        
-        String[] orderParams;
-        if( orderMatrix != null ){
-            orderParams = orderMatrix.split(",+");
-        }else{
-            orderParams = new String[0];
-        }
+        PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath() );
         
         
         // ----  Criando a busca ao banco:
@@ -197,30 +163,32 @@ public class EntidadesUmService {
         query.select(root);
         
         // Cláusula JOIN FETCH da JPQL:
-        for(String s : joinParams){
+        for(String s : info.getJoin()){ 
             root.fetch(s, JoinType.LEFT);
         }
         
         // Cláusula ORDER BY da JPQL:
-        addOrderBy( cb, query, orderParams );
+        addOrderBy( cb, query, info.getOrder() );
         
         
         // Cláusula WHERE do banco:
         WhereBuilderInterface wb = WhereBuilder.create(cb, query);
-        query.where( wb.addArray( querysPs ).build() );
+        query.where( wb.addArray( info.getQuery() ).build() );
         
         checker.checkPersistencia(klass, cb, query);
         
         // A busca ao banco:
         Query q = em.createQuery(query);
-        q.setFirstResult( pageNum*pageSize );
-        q.setMaxResults( pageSize );
+        q.setFirstResult( info.getPage() * info.getSize() );
+        q.setMaxResults( info.getSize() );
         Set<Object> res = new HashSet<>( q.getResultList() );
+        System.out.printf("- info.getJoin: %s \n", String.join(",",info.getJoin()) );
+        PersistenciaUtils.resolverLazy(cache, res.toArray(), false, info.getJoin() );
         this.em.clear();
-        PersistenciaUtils.anularLazy(cache, res.toArray(), joinParams );
+        PersistenciaUtils.resolverLazy(cache, res.toArray(), true, info.getJoin() );
 
         // A resposta: 
-        return new JsonResponse(true,res,"Lista dos objetos", pageNum, pageSize);
+        return new JsonResponse(true,res,"Lista dos objetos", info.getPage(), info.getSize());
         
     }
     

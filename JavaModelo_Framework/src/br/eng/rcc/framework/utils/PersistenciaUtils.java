@@ -34,15 +34,9 @@ public class PersistenciaUtils {
        .compile("/persistencia/(?:um/(?:id/)?)?([\\w\\d]+)", Pattern.CASE_INSENSITIVE);
   
   
-  public static void anularLazy(ClassCache cache, Object[] lista, 
-          String... params){
-    anularLazy( cache, lista, 0, params );
-  }
-  public static void anularLazy(ClassCache cache, Object[] lista, 
-          int secureLevel, String... params){
-    if (secureLevel++ >= 30) {
-      throw new IllegalArgumentException("Um dos parâmetros esta fazendo com que entremos em recursão infinita!");
-    }
+  
+  public static void resolverLazy(ClassCache cache, Object[] lista, 
+          boolean anular, String... params){
     if( lista == null || lista.length == 0 ) return;
     Class klass = null;
     for( Object ooo : lista ){
@@ -53,28 +47,30 @@ public class PersistenciaUtils {
     }
     if( klass == null ) return;
     Map<String, ClassCache.BeanUtil> map = cache.getInfo( klass.getSimpleName() );
-    List<ClassCache.BeanUtil> fieldsToNullify = new ArrayList<>();
-    List<ClassCache.BeanUtil> fieldsDownNullify = new ArrayList<>();
+    List<ClassCache.BeanUtil> fieldsEncontrados = new ArrayList<>();
+    List<ClassCache.BeanUtil> fieldsToNull = new ArrayList<>();
       
     try{
+      String[] nParams = getArrayLevel(-1, null, params );
       for( ClassCache.BeanUtil bu : map.values() ){
         if( bu.isAssociacao() ){
-          if( nullifyInArray(params, bu.getNome()) ){
-            fieldsDownNullify.add(bu);
+          if( constainsInArray(nParams, bu.getNome()) ){
+            fieldsEncontrados.add(bu);
           }else{
-            fieldsToNullify.add(bu);
+            if( anular ) fieldsToNull.add(bu);
           }
         }
       }
       
-      for( ClassCache.BeanUtil bu : fieldsToNullify ){
+      for( ClassCache.BeanUtil bu : fieldsToNull ){
         for( Object obj : lista ){
           if( obj == null ) continue;
           bu.set(obj, null);
         }
       }
-      String[] novoParams = copyWithoutNulls(params);
-      for( ClassCache.BeanUtil bu : fieldsDownNullify ){
+      //String[] novoParams = copyWithoutNulls(params);
+      for( ClassCache.BeanUtil bu : fieldsEncontrados ){
+        String[] novoParams = getArrayLevel(1, bu.getNome(), params );
         for( Object obj : lista ){
           if( obj == null ) continue;
           Object novoObj = bu.get(obj);
@@ -82,7 +78,7 @@ public class PersistenciaUtils {
           Object[] novoLista;
           if( novoObj instanceof Collection ) novoLista = ((Collection)novoObj).toArray();
           else novoLista = new Object[]{ novoObj };
-          anularLazy(cache, novoLista, secureLevel, novoParams);
+          resolverLazy(cache, novoLista, anular, novoParams);
         }
       }
     }catch(NullPointerException ex){
@@ -91,7 +87,6 @@ public class PersistenciaUtils {
       throw new RuntimeException("Essa JVM não tem permissão para executar atividades de Reflexão ou Introspecção!", ex);
     }
   }
-  
   
   
   public static boolean constainsInArray(Object[] arr, Object obj) {
@@ -108,7 +103,7 @@ public class PersistenciaUtils {
     }
     return false;
   }
-  public static boolean nullifyInArray(Object[] arr, Object obj) {
+  private static boolean nullifyInArray(Object[] arr, Object obj) {
     if (arr == null || obj == null) {
       return false;
     }
@@ -123,13 +118,35 @@ public class PersistenciaUtils {
     }
     return false;
   }
-  public static <T> T[] copyWithoutNulls( T[] arr ){
+  private static <T> T[] copyWithoutNulls( T[] arr ){
     if( arr == null ) return null;
     List<T> newArr = new ArrayList<>( arr.length /2 );
     for(int i = 0; i < arr.length; i++){
       if( arr[i] != null ) newArr.add( arr[i] );
     }
     return newArr.toArray(arr);
+  }
+  private static String[] getArrayLevel( int level, String prefix, String... arr ){
+    if( arr == null || arr.length == 0 ) return null;
+    Set<String> lista = new HashSet<>();
+    if( level < 0 ){
+      for( String s : arr ){
+        if( s != null ){
+          lista.add( s.split("\\.")[0] );
+        }
+      }
+      return lista.toArray(new String[0]);
+    }
+    for(  String s : arr ){
+      if( s != null && ( prefix == null || s.startsWith(prefix) ) ){
+        String[] split = s.split("\\.");
+        if( split.length < level ) continue;
+        String sf = "";
+        for(int i = level; i < split.length; i++) sf += String.format("%s.", split[i]);
+        lista.add( sf.substring(0, sf.length()-1) );
+      }
+    }
+    return lista.toArray(new String[0]);
   }
   
   
@@ -145,13 +162,13 @@ public class PersistenciaUtils {
     BuscaInfo bi = new BuscaInfo();
     bi.query = query;
     try{
-      if( matrix[0][0] != null ) bi.size = Integer.parseInt(matrix[0][0]);
-      if( matrix[1][0] != null ) bi.page = Integer.parseInt(matrix[1][0]);
+      if( matrix[0] != null && matrix[0][0] != null ) bi.size = Integer.parseInt(matrix[0][0]);
+      if( matrix[1] != null && matrix[1][0] != null ) bi.page = Integer.parseInt(matrix[1][0]);
     }catch( NumberFormatException ex ){
       throw new MsgException(JsonResponse.ERROR_EXCECAO, "Os parâmetros 'size' e 'page' devem ser números inteiros!", ex);
     }
-    bi.join = matrix[2];
-    bi.order = matrix[3];
+    bi.join = matrix[2] != null ? matrix[2] : new String[0];
+    bi.order = matrix[3] != null ? matrix[3] : new String[0];
     
     Matcher matcher = entidadePattern.matcher(uriQuery);
     if( matcher.find() ){
@@ -163,7 +180,8 @@ public class PersistenciaUtils {
       bi.entidade = entidade;
       bi.classe = klass;
     }
-    return null;
+    
+    return bi;
   }
   
   /**

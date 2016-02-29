@@ -38,7 +38,7 @@ public class Carro implements Serializable{
   protected Set<Porta> portas;
     public void setPortas(Set<Porta> xs){
       portas = xs;
-      for(Porta x : xs) x.setCarro(this);
+      if(xs != null) for(Porta x : xs) x.setCarro(this);
     }
   
   
