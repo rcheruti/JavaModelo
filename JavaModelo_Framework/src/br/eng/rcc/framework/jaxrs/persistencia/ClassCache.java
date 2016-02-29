@@ -5,7 +5,9 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.annotation.Annotation;
 import java.lang.ref.SoftReference;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -18,9 +20,12 @@ import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.PluralAttribute;
 
 @ApplicationScoped
 public class ClassCache {
@@ -104,16 +109,34 @@ public class ClassCache {
               for( PropertyDescriptor propDesc : propDescs ){
                 if( !attr.getName().equals( propDesc.getName() ) ) continue;
                 BeanUtil beanUtil = new BeanUtil();
+                beanUtil.classCache = this;
                 beanUtil.nome = attr.getName();
                 beanUtil.getter = propDesc.getReadMethod();
                 beanUtil.setter = propDesc.getWriteMethod();
                 beanUtil.associacao = attr.isAssociation();
+                if( attr instanceof PluralAttribute ){
+                  beanUtil.colecaoType = attr.getJavaType();
+                  beanUtil.javaType = ((PluralAttribute)attr).getBindableJavaType();
+                }else beanUtil.javaType = attr.getJavaType();
                 if( attr.isCollection() ){
                   beanUtil.colecao = attr.isCollection();
                   Class<?> cColl = attr.getJavaType();
                   if( Collection.class.isAssignableFrom(cColl) ){
                     beanUtil.add = cColl.getMethod("add", Object.class);
                     beanUtil.remove = cColl.getMethod("remove", Object.class);
+                  }
+                }
+                  // pegando anotações:
+                if( attr.isAssociation() ){
+                  Field field = ((Field)attr.getJavaMember());
+                  OneToMany annOTM = field.getAnnotation(OneToMany.class);
+                  if( annOTM != null ){
+                    beanUtil.mapeado = annOTM.mappedBy();
+                  }else{
+                    OneToOne annOTO = field.getAnnotation(OneToOne.class);
+                    if( annOTO != null ){
+                      beanUtil.mapeado = annOTO.mappedBy();
+                    }
                   }
                 }
                 mapInfoProps.put(propDesc.getName(), beanUtil);
@@ -151,7 +174,10 @@ public class ClassCache {
       private Method setter;
       private Method add;
       private Method remove;
-      
+      private Class javaType;
+      private Class colecaoType;
+      private ClassCache classCache;
+      private String mapeado;
       
       public boolean isAssociacao(){ return associacao; }
       public boolean isColecao(){ return colecao; }
@@ -160,7 +186,20 @@ public class ClassCache {
       public Method getAdd(){ return add; }
       public Method getRemove(){ return remove; }
       public String getNome(){ return nome; }
+      public Class getJavaType(){ return javaType; }
+      public Class getColecaoType(){ return colecaoType; }
+      public String getMapeado(){ return mapeado; }
       
+      
+      public Map<String,BeanUtil> path(){
+        return classCache.getInfo(javaType.getSimpleName());
+      }
+      public BeanUtil getInverse(){
+        if( !associacao || mapeado == null ) return null;
+        Map<String,BeanUtil> map = this.path();
+        if( map != null ) return map.get(mapeado);
+        return null;
+      }
       public Object get(Object that) 
               throws IllegalAccessException, InvocationTargetException{ 
         if( getter == null ) return null;

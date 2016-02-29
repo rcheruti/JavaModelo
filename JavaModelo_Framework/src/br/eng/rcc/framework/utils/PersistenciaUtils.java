@@ -143,6 +143,7 @@ public class PersistenciaUtils {
         if( split.length < level ) continue;
         String sf = "";
         for(int i = level; i < split.length; i++) sf += String.format("%s.", split[i]);
+        if( sf.length() < 3 ) continue;
         lista.add( sf.substring(0, sf.length()-1) );
       }
     }

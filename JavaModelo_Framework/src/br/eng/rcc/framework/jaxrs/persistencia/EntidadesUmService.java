@@ -11,7 +11,9 @@ import br.eng.rcc.framework.utils.PersistenciaUtils;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.HashSet;
@@ -120,13 +122,15 @@ public class EntidadesUmService {
      * Retornará as entidades da classe "Comprador" que tenham o atributo "idade" (a classe DEVE ter este atributo) maior que 18,
      * ordenados pelo "nome", sendo que a busca retornará a página 4 (pois "page" inicia em 0) limitada em 30 itens.
      * 
+     * Parâmetros da matrix:
+     *  page: Este parâmetro informa a página que deverá ser retornada (cláusula OFFSET), iniciando em 0.
+     *  size: Este parâmetro informa a quantidade de itens que retornarão por página (cláusula LIMIT).
+     *  join: Este parâmetro informa quais atributos devemos incluir no "FETCH JOIN" (cláusulas JOIN).
+     *  order: Este parâmetro informa quais atributos serão usados para a ordenação (cláusula ORDER BY).
+     * 
      * @param entidade Nome simples da classe que iremos buscar uma entidade.
      * @param ctx Este parâmetro será informado pelo JAX-RS, daqui pegaremos a "Query String"
      * que será usada para fazer a filtragem das entidades (cláusula WHERE).
-     * @param pageNumStr Este parâmetro informa a página que deverá ser retornada (cláusula OFFSET), iniciando em 0.
-     * @param pageSizeStr Este parâmetro informa a quantidade de itens que retornarão por página (cláusula LIMIT).
-     * @param joinMatrix Este parâmetro informa quais atributos devemos incluir no "FETCH JOIN" (cláusulas JOIN).
-     * @param orderMatrix Este parâmetro informa quais atributos serão usados para a ordenação (cláusula ORDER BY).
      * @return {@link br.eng.rcc.framework.jaxrs.JsonResponse JsonResponse}
      */
     @GET @Path("/")
@@ -135,15 +139,7 @@ public class EntidadesUmService {
                 // Nome da classe (entidade) que iremos usar como parâmetro principal
             @PathParam("entidade") String entidade ,
                 // Apenas para coletarmos dados da requisição, não vem da URL
-            @Context UriInfo ctx,
-                // 'Pagina' da busca, cláusula OFFSET do banco
-            @MatrixParam("page") String pageNumStr,
-                // Quantidade de itens na página, cláusula LIMIT do banco
-            @MatrixParam("size") String pageSizeStr,
-                // Itens relacionados que devem ser carregados, cláusula JOIN FETCH da JPQL
-            @MatrixParam("join") String joinMatrix,
-            
-            @MatrixParam("order") String orderMatrix
+            @Context UriInfo ctx
         ){
         
         Class<?> klass = cache.get(entidade, em);
@@ -181,8 +177,7 @@ public class EntidadesUmService {
         Query q = em.createQuery(query);
         q.setFirstResult( info.getPage() * info.getSize() );
         q.setMaxResults( info.getSize() );
-        Set<Object> res = new HashSet<>( q.getResultList() );
-        System.out.printf("- info.getJoin: %s \n", String.join(",",info.getJoin()) );
+        List<Object> res = q.getResultList();
         PersistenciaUtils.resolverLazy(cache, res.toArray(), false, info.getJoin() );
         this.em.clear();
         PersistenciaUtils.resolverLazy(cache, res.toArray(), true, info.getJoin() );
@@ -227,136 +222,29 @@ public class EntidadesUmService {
         Class klass = objs.get(0).getClass();
         checker.check( klass, Seguranca.INSERT );
         
-        
-        //-------------------------------------------------
-        /*
-        Class<?> klass = cache.get(entidade);
-        Metamodel mm = em.getMetamodel();
-        EntityType et = mm.entity(klass);
-        Set<PluralAttribute> plurals = et.getDeclaredPluralAttributes();
-        
-        //List<Method> cascadeCalls = new ArrayList<>();
-        Map<Method,List<Method>> mapCascade = new HashMap<>();
-        System.out.printf("Iniciando: plurals: %d \n", plurals.size() ).flush();
-        for( PluralAttribute pAttr : plurals ){
-          System.out.printf("-------------------- \n" ).flush();
-          System.out.printf("PluralAttribute: %s \n", pAttr.getName() ).flush();
-          if( !pAttr.isAssociation() ) continue; // ----------  não processar esse
-          
-          Field field = null;
-          try{
-            field = pAttr.getDeclaringType().getJavaType().getDeclaredField( pAttr.getName() );
-          }catch( NoSuchFieldException ex ){
-            System.out.printf("Não existe esse campo na classe: %s\n", pAttr.getName()).flush();
-            continue;
-          }
-          String attrName = null;
-          
-          // ====  pegar nome de atributo e se devemos propagar a chamada (cascade):
-          boolean cascade = false;
-          CascadeType[] cascadeArr = null;
-          ManyToMany mTmAnn = (ManyToMany)field.getAnnotation( ManyToMany.class );
-          if( mTmAnn != null ){
-            cascadeArr = mTmAnn.cascade();
-            attrName = mTmAnn.mappedBy();
-          }else{
-            OneToMany oTmAnn = (OneToMany)field.getAnnotation( OneToMany.class );
-            if( oTmAnn != null ){
-              cascadeArr = oTmAnn.cascade();
-              attrName = oTmAnn.mappedBy();
-            }
-          }
-          System.out.printf("Classe: %s, Campo: %s, attrName: %s, cascadeArr: %s \n", 
-                  klass.getName(), field.getName() ,attrName, cascadeArr ).flush();
-          if( attrName == null || attrName.isEmpty() || cascadeArr == null ) continue;
-          for( CascadeType cT : cascadeArr ){
-            if( cT.equals( CascadeType.ALL ) || cT.equals( CascadeType.PERSIST ) ){
-              cascade = true;
-              break;
-            }
-          }
-          System.out.printf("cascade: %b \n", cascade).flush();
-          if( !cascade ) continue; // ----------  não processar esse
-              //  --- 
-          
-          Method mGet = null;
-          String mName = null;
-          try{
-            mName = pAttr.getName().replaceFirst(pAttr.getName().substring(0,1), 
-                                pAttr.getName().substring(0,1).toUpperCase() );
-            mGet = pAttr.getDeclaringType().getJavaType().getMethod("get"+ mName);
-            List<Method> methods = new ArrayList<>();
-            mapCascade.put( mGet, methods );
-            
-            Method mmm = null;
-            Class<?> typeClass = pAttr.getElementType().getJavaType();
-            EntityType refEt = mm.entity( typeClass );
-            
-            System.out.printf("attrName: %s\n", attrName ).flush();
-            Attribute refAttr = refEt.getDeclaredAttribute(attrName);
-            
-            System.out.printf("refAttr: %s\n", refEt.getName() ).flush();
-            if( refAttr == null ) continue; // ----------  não processar esse
-            
-            if( refAttr.isCollection() ){
-              System.out.printf("refAttr: Plural \n" ).flush();
-              mName = refAttr.getName().replaceFirst(refAttr.getName().substring(0,1), 
-                                refAttr.getName().substring(0,1).toUpperCase() );
-              mmm = typeClass.getMethod("get"+ mName);
-              methods.add(mmm);
-              
-              mmm = Collection.class.getMethod("add", Object.class );
-              methods.add(mmm);
-            }else{
-              System.out.printf("refAttr: Singular \n" ).flush();
-              mName = "set"+ refAttr.getName().replaceFirst(refAttr.getName().substring(0,1), 
-                                refAttr.getName().substring(0,1).toUpperCase() );
-              System.out.printf("typeClass: %s, mName: %s \n", typeClass.getName(), mName ).flush();
-              mmm = typeClass.getMethod( mName, klass);
-              methods.add(mmm);
-            }
-            
-            
-            //Method mSet = pAttr.getJavaType().getMethod("set"+ mName, pAttr.getJavaType());
-            //mapCascade.put(mGet,mSet);
-          }catch( NoSuchMethodException ex ){
-            System.out.printf("removendo alguem!!  NoSuchMethodException: %s \n",mName ).flush();
-            if( mGet != null ) mapCascade.remove(mGet);
-          }
-        }
-        
-        System.out.printf("mapCascade.size: %d\n", mapCascade.size() ).flush();
-        
-        for( Object obj : objs ){
-          
-          for( Method get : mapCascade.keySet() ){
-            try{
-              System.out.printf("Chamar '%s' em '%s' \n", get, obj ).flush();
-              Collection lista = (Collection)get.invoke(obj);
-              if( lista == null || lista.isEmpty() ) continue;
-              List<Method> sets = mapCascade.get(get);
-              Method set;
-              int i=0; 
-              System.out.printf("sets.size: %d \n", sets.size() ).flush();
-              for( Object alvo : lista ){
-                if( sets.size() > 1 ) for( ; i < sets.size()-1; i++ ){
-                  set = sets.get(i);
-                  alvo = set.invoke( alvo );
+          // precisamos colocar o objeto no lado inverso da relação para que tudo entre
+          // no banco com os valores corretos
+        Map<String,ClassCache.BeanUtil> map = cache.getInfo(entidade);
+        try{
+          for( ClassCache.BeanUtil util : map.values() ){
+            if( util.isAssociacao() ){
+              ClassCache.BeanUtil inverso = util.getInverse();
+              if( inverso == null ) continue;
+              if( util.isColecao() ){
+                for( Object obj : objs ){
+                  Collection coll = ((Collection)util.get(obj));
+                  if( coll == null ) continue;
+                  for( Object ooo : coll ){
+                    inverso.set( ooo , obj);
+                  }
                 }
-                set = sets.get(i);
-                System.out.printf("Chamar '%s' em '%s' com '%s' \n", set, alvo, obj ).flush();
-                set.invoke( alvo , obj);
               }
-            }catch( IllegalAccessException | InvocationTargetException ex ){
-              System.out.printf("Esse sistema não tem permissão para fazer chamadas Reflectivas em objetos.").flush();
-            }catch( NullPointerException ex ){
-              System.out.printf("NullPointerException para: %s \n", get.getName() ).flush();
+              else for( Object obj : objs ) inverso.set( util.get(obj) , obj);
             }
           }
+        }catch(IllegalAccessException | InvocationTargetException ex){
+          throw new RuntimeException("Problemas de Introspecção ou Reflexão ao criar entidades", ex);
         }
-          /* */
-          
-        
         for( Object obj : objs ){
           checker.checkPersistencia(klass, obj);
           em.persist(obj);

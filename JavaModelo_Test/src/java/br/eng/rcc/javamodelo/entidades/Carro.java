@@ -36,11 +36,6 @@ public class Carro implements Serializable{
   
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "carro")
   protected Set<Porta> portas;
-    public void setPortas(Set<Porta> xs){
-      portas = xs;
-      if(xs != null) for(Porta x : xs) x.setCarro(this);
-    }
-  
   
   @ManyToMany() // cascade = CascadeType.ALL
   @JoinTable(name = "ref_carro_cor",

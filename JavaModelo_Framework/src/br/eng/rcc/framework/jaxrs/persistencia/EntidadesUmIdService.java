@@ -38,6 +38,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 @Path("/persistencia/um/id/{entidade}")
 @Produces({Configuracoes.JSON_PERSISTENCIA})
@@ -76,13 +78,7 @@ public class EntidadesUmIdService {
   @Transactional
   public JsonResponse buscar(
           @PathParam("entidade") String entidade,
-          // 'Pagina' da busca, cláusula OFFSET do banco
-          @MatrixParam("page") String pageNumStr,
-          // Quantidade de itens na página, cláusula LIMIT do banco
-          @MatrixParam("size") String pageSizeStr,
-          // Itens relacionados que devem ser carregados, cláusula JOIN FETCH da JPQL
-          @MatrixParam("join") String joinMatrix,
-          @MatrixParam("order") String orderMatrix,
+          @Context UriInfo ctx,
           JsonNode node
   ) {
     
@@ -96,6 +92,8 @@ public class EntidadesUmIdService {
       return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade));
     }
     checker.check(klass, Seguranca.SELECT);
+    
+    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath() );
     
     // Pegando os ids da classe
     List<String> ids = PersistenciaUtils.getIds(em, klass);
@@ -117,7 +115,6 @@ public class EntidadesUmIdService {
       Root root = query.from( klass );
       query.select(root);
       
-      iteracaoIds:
       for( String idAttr : ids ){
         String[] idS = idAttr.split("\\.");
         JsonNode prop = json;
@@ -130,13 +127,16 @@ public class EntidadesUmIdService {
       if( wheres.isEmpty() ){
         continue;
       }
-      
       query.where(wheres.toArray(new Predicate[0]));
-      List lista = em.createQuery(query).getResultList();
+      
+      List lista = em.createQuery(query)
+              .setFirstResult( info.getSize() * info.getPage() )
+              .setMaxResults( info.getSize() )
+              .getResultList();
       if( lista != null ){
-        //
+        PersistenciaUtils.resolverLazy(cache, lista.toArray(), false, info.getJoin() ); 
         em.clear();
-        PersistenciaUtils.resolverLazy(cache, lista.toArray(), true); 
+        PersistenciaUtils.resolverLazy(cache, lista.toArray(), true,  info.getJoin() ); 
         for( Object x : lista ) resposta.add(x);
       }else{
         em.clear();
@@ -149,7 +149,7 @@ public class EntidadesUmIdService {
   
   public JsonResponse editar(
           @PathParam("entidade") String entidade,
-          JsonNode obj
+          JsonNode json
   ) {
     Class<?> klass = cache.get(entidade, em);
     if (klass == null) {
@@ -157,28 +157,53 @@ public class EntidadesUmIdService {
     }
     checker.check(klass, Seguranca.UPDATE);
     
-    if( obj == null ){
+    if( json == null ){
       return new JsonResponse(false, "É necessário informar os dados da persistência");
     }
-    if( !obj.isArray() ){
+    if( !json.isArray() ){
       return new JsonResponse(false, "Os dados devem ser objetos dentro de um Array");
     }
         
-        // Pegando os ids da classe
-        List<String> ids = PersistenciaUtils.getIds(em, klass);
-        if (ids == null || ids.isEmpty()) {
-          return new JsonResponse(false, "Não encontramos os campos de Id dessa classe");
-        }
+    // Pegando os ids da classe
+    List<String> ids = PersistenciaUtils.getIds(em, klass);
+    if (ids == null || ids.isEmpty()) {
+      return new JsonResponse(false, "Não encontramos os campos de Id dessa classe");
+    }
+
+    List<Predicate> wheres = new ArrayList<>();
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+
+    for( JsonNode node : json ){
+        // ----  Criando a busca ao banco:
+      CriteriaUpdate query = cb.createCriteriaUpdate(klass);
+      Root root = query.from( klass );
+      
+      int xSplit = 0;
+      String[][] idsSplit = new String[ ids.size() ][];
+      
+      for( String idAttr : ids ){
+        String[] idS = idsSplit[ xSplit++ ] = idAttr.split("\\.");
+        JsonNode prop = node;
+        for( String s : idS ) prop = prop.get(s);
+        if( prop == null /* ... comp do tipo do ID */ ) continue;
+        javax.persistence.criteria.Path exp = root.get( idS[ 0 ] );
+        for( int i = 1; i < idS.length; i++ ) exp = exp.get( idS[i] );
+        wheres.add( cb.equal( exp , as(prop, exp.getJavaType() ) ) );
+      }
+      if( wheres.isEmpty() ){
+        continue;
+      }
+      query.where(wheres.toArray(new Predicate[0]));
+      
+      for( JsonNode attrNode : node ){
+          // ainda falta adicionar a parte dessa linha abaixo!
+        if( attrNode.isArray() || attrNode.isObject() ) continue;
         
-        for( JsonNode node : obj ){
-          
-            // ----  Criando a busca ao banco:
-          CriteriaBuilder cb = em.getCriteriaBuilder();
-          CriteriaUpdate query = cb.createCriteriaUpdate(klass);
-          Root root = query.from( klass );
-          
-        }
         
+      }
+      query.set(root, cache);
+    }
+    
     return null;
   }
   
