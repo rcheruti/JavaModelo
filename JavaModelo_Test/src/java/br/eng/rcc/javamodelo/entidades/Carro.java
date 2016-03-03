@@ -1,11 +1,11 @@
 
 package br.eng.rcc.javamodelo.entidades;
 
+import br.eng.rcc.javamodelo.entidades.embutidos.RegistroUsuario;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -44,6 +44,7 @@ public class Carro implements Serializable{
   )
   protected Set<Cor> cores;
   
-  
+  @Embedded
+  protected RegistroUsuario registroUsuario;
   
 }

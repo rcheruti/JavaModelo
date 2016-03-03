@@ -9,8 +9,8 @@ insert into seg_permissao( nome ) values( 'url_tipo' );
 insert into seg_fk_credencial_permissao( credenciais_id, permissoes_id ) values( 1, 1 );
 
 
-insert into carro(nome) values('Volks');
-insert into carro(nome) values('Nissan');
+insert into carro(nome, atualizacao, usuario_id) values('Volks', NOW(), 1);
+insert into carro(nome, atualizacao, usuario_id) values('Nissan', NOW(), 2);
 
 insert into porta(cor,carro_id) values('Vermelho Seco', 1);
 insert into porta(cor,carro_id) values('Laranja amarelado', 1);

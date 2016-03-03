@@ -5,7 +5,6 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -19,11 +18,13 @@ import java.util.Set;
 import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.persistence.Embedded;
 import javax.persistence.EntityManager;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
 
@@ -100,7 +101,7 @@ public class ClassCache {
             mapInfo.put(nome, mapInfoProps);
           }
           Class<?> klass = map.get(nome);
-          EntityType type = meta.entity(klass);
+          ManagedType type = meta.managedType(klass);
           BeanInfo info = Introspector.getBeanInfo( klass );
           PropertyDescriptor[] propDescs = info.getPropertyDescriptors();
           if( type.getAttributes() != null && propDescs != null ){
@@ -110,7 +111,7 @@ public class ClassCache {
                 if( !attr.getName().equals( propDesc.getName() ) ) continue;
                 BeanUtil beanUtil = new BeanUtil();
                 beanUtil.classCache = this;
-                beanUtil.nome = attr.getName();
+                beanUtil.nome = attr.getName(); 
                 beanUtil.getter = propDesc.getReadMethod();
                 beanUtil.setter = propDesc.getWriteMethod();
                 beanUtil.associacao = attr.isAssociation();
@@ -127,8 +128,8 @@ public class ClassCache {
                   }
                 }
                   // pegando anotações:
+                Field field = ((Field)attr.getJavaMember());
                 if( attr.isAssociation() ){
-                  Field field = ((Field)attr.getJavaMember());
                   OneToMany annOTM = field.getAnnotation(OneToMany.class);
                   if( annOTM != null ){
                     beanUtil.mapeado = annOTM.mappedBy();
@@ -137,6 +138,12 @@ public class ClassCache {
                     if( annOTO != null ){
                       beanUtil.mapeado = annOTO.mappedBy();
                     }
+                  }
+                }else{
+                  // verificando os embutidos:
+                  Embedded annEMBD = field.getAnnotation(Embedded.class);
+                  if( annEMBD != null ){
+                    beanUtil.embutido = true;
                   }
                 }
                 mapInfoProps.put(propDesc.getName(), beanUtil);
@@ -155,10 +162,10 @@ public class ClassCache {
     private synchronized void reloadCache(EntityManager em){
         if( em == null || ref != null && ref.get() != null ) return ;
         Metamodel metamodel = em.getMetamodel();
-        Map<String,Class<?>> map = new HashMap<>( metamodel.getEntities().size() + 2 );
-        for( EntityType<?> entity : metamodel.getEntities() ){
+        Map<String,Class<?>> map = new HashMap<>( metamodel.getManagedTypes().size() +2 );
+        for( ManagedType<?> entity : metamodel.getManagedTypes() ){
             //System.out.printf("---  Carregando do Metamodel: %s [%s] \n", entity.getName(), entity.getJavaType() );
-            map.put( entity.getName(), entity.getJavaType() );
+            map.put( entity.getJavaType().getSimpleName(), entity.getJavaType() );
         }
         ref = new SoftReference( map );
     }
@@ -170,6 +177,7 @@ public class ClassCache {
       private String nome;
       private boolean associacao;
       private boolean colecao;
+      private boolean embutido;
       private Method getter;
       private Method setter;
       private Method add;
@@ -181,6 +189,7 @@ public class ClassCache {
       
       public boolean isAssociacao(){ return associacao; }
       public boolean isColecao(){ return colecao; }
+      public boolean isEmbutido(){ return embutido; }
       public Method getGetter(){ return getter; }
       public Method getSetter(){ return setter; }
       public Method getAdd(){ return add; }

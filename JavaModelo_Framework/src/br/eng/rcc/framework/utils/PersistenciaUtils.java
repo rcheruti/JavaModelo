@@ -53,7 +53,7 @@ public class PersistenciaUtils {
     try{
       String[] nParams = getArrayLevel(-1, null, params );
       for( ClassCache.BeanUtil bu : map.values() ){
-        if( bu.isAssociacao() ){
+        if( bu.isAssociacao() || bu.isEmbutido() ){
           if( constainsInArray(nParams, bu.getNome()) ){
             fieldsEncontrados.add(bu);
           }else{
