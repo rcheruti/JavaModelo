@@ -5,10 +5,11 @@ Module.controller('Carro',['$scope','Entidades',
   $scope.carro = {};
   
   function recarregar(){
-    Entidades.query( 'Cor' ).order('nome').get().then(function(data){
+    Entidades.query( 'Cor' ).order(['nome']).get().then(function(data){
       $scope.cores = data;
     }) ; 
-    Entidades.query('Carro').join('cores','portas').order('nome').getIn( $scope, 'coisas.carros' );
+    Entidades.query('Carro').join(['cores','portas','valor','portas.janelas','registroUsuario'])
+      .order(['nome']).getIn( $scope, 'coisas.carros' );
   }
   recarregar();
   

@@ -1,32 +1,17 @@
 package br.eng.rcc.framework.jaxrs.persistencia;
 
-import br.eng.rcc.framework.jaxrs.persistencia.builders.WhereBuilderInterface;
-import br.eng.rcc.framework.jaxrs.persistencia.builders.WhereBuilder;
 import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
-import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.persistence.Query;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -35,9 +20,6 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.annotation.PostConstruct;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Order;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -67,7 +49,7 @@ public class EntidadesUmService {
     if (em == null) {
       String msg = "O objeto EM é nulo! Verifique as configurações do Banco.";
       Logger.getLogger(this.getClass().getName()).log(Level.WARNING, msg);
-      throw new MsgException(msg);
+      throw new MsgException(JsonResponse.ERROR_DESCONHECIDO,msg);
     }
   }
 
@@ -119,14 +101,10 @@ public class EntidadesUmService {
           @PathParam("entidade") String entidade,
           @Context UriInfo ctx
   ) {
-    Class<?> klass = cache.get(entidade, em);
-    if (klass == null) {
-      return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade));
-    }
-    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca(ctx.getPath());
-    // A resposta: 
-    return new JsonResponse(true, entService.buscar(klass, info), "Lista dos objetos", info.page, info.size);
-
+    String path = String.format("%s?%s", ctx.getPath(), ctx.getRequestUri().getQuery() );
+    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca(path);
+    return new JsonResponse(true, entService.buscar(entidade, info), "Lista dos objetos", 
+            info.page, info.size);
   }
 
   /**
@@ -161,44 +139,8 @@ public class EntidadesUmService {
       return new JsonResponse(false,
               String.format("Não encontramos nenhuma entidade para '%s'", entidade));
     }
-    Class klass = objs.get(0).getClass();
-    checker.check(klass, Seguranca.INSERT);
-
-    // precisamos colocar o objeto no lado inverso da relação para que tudo entre
-    // no banco com os valores corretos
-    Map<String, ClassCache.BeanUtil> map = cache.getInfo(entidade);
-    try {
-      for (ClassCache.BeanUtil util : map.values()) {
-        if (util.isAssociacao()) {
-          ClassCache.BeanUtil inverso = util.getInverse();
-          if (inverso == null) {
-            continue;
-          }
-          if (util.isColecao()) {
-            for (Object obj : objs) {
-              Collection coll = ((Collection) util.get(obj));
-              if (coll == null) {
-                continue;
-              }
-              for (Object ooo : coll) {
-                inverso.set(ooo, obj);
-              }
-            }
-          } else {
-            for (Object obj : objs) {
-              inverso.set(util.get(obj), obj);
-            }
-          }
-        }
-      }
-    } catch (IllegalAccessException | InvocationTargetException ex) {
-      throw new RuntimeException("Problemas de Introspecção ou Reflexão ao criar entidades", ex);
-    }
-    for (Object obj : objs) {
-      checker.checkPersistencia(klass, obj);
-      em.persist(obj);
-    }
-
+    entService.criar(objs, entidade);
+    
     return new JsonResponse(true, null, null);
   }
 
@@ -228,74 +170,16 @@ public class EntidadesUmService {
           @PathParam("entidade") String entidade,
           @Context UriInfo ctx,
           JsonNode obj) { // JsonNode
-
-    Class<?> klass = cache.get(entidade, em);
-    if (klass == null) {
-      return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade));
-    }
-    checker.check(klass, Seguranca.UPDATE);
-
     String uriQuery = ctx.getRequestUri().getQuery();
     if (uriQuery == null || uriQuery.isEmpty()) {
       return new JsonResponse(false,
               "Para editar registros é necessário informar os parâmetros de filtragem na QueryString.");
     }
-    String[][] querysPs = PersistenciaUtils.parseQueryString(uriQuery);
-
-    // ----  Criando a busca ao banco:
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaUpdate query = cb.createCriteriaUpdate(klass);
-    Root root = query.from(klass);
-
-    // Cláusula WHERE do banco:
-    WhereBuilderInterface wb = WhereBuilder.create(cb, query);
-    Predicate[] preds = wb.addArray(querysPs).build();
-    if (preds.length < 1) {
-      return new JsonResponse(false, "Os parâmetros de filtragem da QueryString não são válidos.");
-    }
-    query.where(preds);
-
-    // Montando o update, excluindo os atributos usados na query string:
-    Iterator<String> nodeNameIt = obj.fieldNames();
-    String[] querysPsNames = new String[querysPs.length];
-    for (int i = 0; i < querysPs.length; i++) {
-      querysPsNames[i] = querysPs[i][0];
-    }
-    while (nodeNameIt.hasNext()) {
-      String nodeName = nodeNameIt.next();
-      if (PersistenciaUtils.constainsInArray(querysPsNames, nodeName)) {
-        continue;
-      }
-      try {
-        JsonNode node = obj.get(nodeName);
-        Object value = null;
-
-        switch (node.getNodeType()) {
-          case BOOLEAN:
-            value = node.asBoolean();
-            break;
-          case STRING:
-            value = node.asText();
-            break;
-          case NUMBER:
-            value = node.isDouble()
-                    ? node.asDouble() : node.asInt();
-            break;
-        }
-
-        if (value == null
-                && !node.getNodeType().equals(JsonNodeType.NULL)) {
-          continue;
-        }
-        query.set(root.get(nodeName), value);
-      } catch (Exception ex) {
-      }
-    }
-
-    checker.checkPersistencia(klass, cb, query);
-
-    int ups = em.createQuery(query).executeUpdate();
-
+    String path = String.format("%s?%s", ctx.getPath(), uriQuery );
+    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( path, cache);
+    if( obj.isArray() ) obj = obj.get(0);
+    
+    int ups = entService.editar(entidade, info, obj);
     return new JsonResponse(true, ups, null);
   }
 
@@ -321,39 +205,19 @@ public class EntidadesUmService {
           @PathParam("entidade") String entidade,
           @Context UriInfo ctx
   ) {
-
-    Class<?> klass = cache.get(entidade, em);
-    if (klass == null) {
-      return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade));
-    }
-    checker.check(klass, Seguranca.DELETE);
-
     String uriQuery = ctx.getRequestUri().getQuery();
     if (uriQuery == null || uriQuery.isEmpty()) {
       return new JsonResponse(false,
               "Para apagar registros é necessário informar os parâmetros de filtragem na QueryString.");
     }
-    String[][] querysPs = PersistenciaUtils.parseQueryString(uriQuery);
-
-    // ----  Criando a busca ao banco:
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaDelete query = cb.createCriteriaDelete(klass);
-    Root root = query.from(klass);
-
-    // Cláusula WHERE do banco:
-    WhereBuilderInterface wb = WhereBuilder.create(cb, query);
-    Predicate[] preds = wb.addArray(querysPs).build();
-    if (preds.length < 1) {
-      return new JsonResponse(false, "Os parâmetros de filtragem da QueryString não são válidos.");
-    }
-    query.where(preds);
-
-    checker.checkPersistencia(klass, cb, query);
-
-    // A busca ao banco:
-    int qtd = em.createQuery(query).executeUpdate();
-
+    String path = String.format("%s?%s", ctx.getPath(), uriQuery );
+    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( path );
+    
+    int qtd = entService.deletar(entidade, info);
     return new JsonResponse(true, qtd, null);
   }
-
+  
+  
+  
+  
 }

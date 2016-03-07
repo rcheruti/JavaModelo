@@ -1,6 +1,7 @@
 
 package br.eng.rcc.framework.jaxrs.persistencia;
 
+import br.eng.rcc.framework.jaxrs.MsgException;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -41,9 +42,12 @@ public class ClassCache {
     //===================================================================
     
     public Class<?> get(String entidadeName){
-        return get(entidadeName, null);
+        return get(entidadeName, null, false);
     }
     public Class<?> get(String entidadeName, EntityManager em){
+      return get(entidadeName, em, false);
+    }
+    public Class<?> get(String entidadeName, EntityManager em, boolean retornar){
         if( em == null ) em = emInj ;
         if( ref == null ){
             if( em == null ) return null;
@@ -55,7 +59,11 @@ public class ClassCache {
             reloadCache(em);
             map = ref.get();
         }
-        return map.get(entidadeName);
+        Class<?> x = map.get(entidadeName);
+        if( x == null && !retornar ){
+          throw new MsgException( String.format("Não encontramos nenhuma entidade para '%s'", entidadeName) );
+        }
+        return x;
     }
     
     public Function getEstrategiaInsert(String entidadeName){

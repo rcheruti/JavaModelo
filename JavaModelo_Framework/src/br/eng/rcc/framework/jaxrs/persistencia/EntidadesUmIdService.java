@@ -3,40 +3,23 @@ package br.eng.rcc.framework.jaxrs.persistencia;
 import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
-import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.databind.JsonNode;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Time;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.PluralAttribute;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -68,7 +51,7 @@ public class EntidadesUmIdService {
     if (em == null) {
       String msg = "O objeto EM é nulo! Verifique as configurações do Banco.";
       Logger.getLogger(this.getClass().getName()).log(Level.WARNING, msg);
-      throw new MsgException(msg);
+      throw new MsgException(JsonResponse.ERROR_DESCONHECIDO,msg);
     }
   }
   
@@ -94,17 +77,12 @@ public class EntidadesUmIdService {
           @Context UriInfo ctx,
           JsonNode node
   ) {
-    
     // O JSON deve ser um Array, com as entidades dentro
     if( node == null || !node.isArray() ){
       return new JsonResponse(false,"A mensagem deve ser um Array JSON.");
     }
     
     Class<?> klass = cache.get(entidade, em);
-    if (klass == null) {
-      return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade));
-    }
-    
     PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath() );
     
     // Pegando os ids da classe
@@ -127,114 +105,114 @@ public class EntidadesUmIdService {
         info.query[i++] = new String[]{ idAttr, "=", prop.asText(), "&" };
       }
       
-      List lista = entService.buscar(klass, info);
+      List lista = entService.buscar(entidade, info);
       for( Object x : lista ) resposta.add(x);
     }
     
     return new JsonResponse(true, resposta, "Busca por IDs");
   }
   
+  
+  // ---  Sem método "criar": nenhuma entidade por ser criada pelo ID
+  @POST
+  @Path("/")
+  @Transactional
+  public JsonResponse criar(){
+    return new JsonResponse(false,"Não é possível criar entidades a partir do ID!");
+  }
+  
+  
+  @PUT
+  @Path("/")
+  @Transactional
   public JsonResponse editar(
           @PathParam("entidade") String entidade,
-          JsonNode json
+          @Context UriInfo ctx,
+          JsonNode node
   ) {
-    Class<?> klass = cache.get(entidade, em);
-    if (klass == null) {
-      return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade));
+    // O JSON deve ser um Array, com as entidades dentro
+    if( node == null || !node.isArray() ){
+      return new JsonResponse(false,"A mensagem deve ser um Array JSON.");
     }
-    checker.check(klass, Seguranca.UPDATE);
     
-    if( json == null ){
-      return new JsonResponse(false, "É necessário informar os dados da persistência");
-    }
-    if( !json.isArray() ){
-      return new JsonResponse(false, "Os dados devem ser objetos dentro de um Array");
-    }
-        
+    Class<?> klass = cache.get(entidade, em);
+    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath() );
     // Pegando os ids da classe
     List<String> ids = PersistenciaUtils.getIds(em, klass);
     if (ids == null || ids.isEmpty()) {
       return new JsonResponse(false, "Não encontramos os campos de Id dessa classe");
     }
-
-    List<Predicate> wheres = new ArrayList<>();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-
-    for( JsonNode node : json ){
-        // ----  Criando a busca ao banco:
-      CriteriaUpdate query = cb.createCriteriaUpdate(klass);
-      Root root = query.from( klass );
-      
-      int xSplit = 0;
-      String[][] idsSplit = new String[ ids.size() ][];
-      
+    
+    int upsTotal = 0;
+    for(JsonNode json : node){
+      if( json == null || !json.isObject() ) continue;
+      info.query = new String[ ids.size() ][];
+      int i = 0;
       for( String idAttr : ids ){
-        String[] idS = idsSplit[ xSplit++ ] = idAttr.split("\\.");
-        JsonNode prop = node;
+        String[] idS = idAttr.split("\\.");
+        JsonNode prop = json;
         for( String s : idS ) prop = prop.get(s);
         if( prop == null /* ... comp do tipo do ID */ ) continue;
-        javax.persistence.criteria.Path exp = root.get( idS[ 0 ] );
-        for( int i = 1; i < idS.length; i++ ) exp = exp.get( idS[i] );
-        wheres.add( cb.equal( exp , as(prop, exp.getJavaType() ) ) );
+        info.query[i++] = new String[]{ idAttr, "=", prop.asText(), "&" };
       }
-      if( wheres.isEmpty() ){
-        continue;
-      }
-      query.where(wheres.toArray(new Predicate[0]));
       
-      for( JsonNode attrNode : node ){
-          // ainda falta adicionar a parte dessa linha abaixo!
-        if( attrNode.isArray() || attrNode.isObject() ) continue;
-        
-        
-      }
-      query.set(root, cache);
+      upsTotal += entService.editar(entidade, info, json);
     }
     
-    return null;
+    return new JsonResponse(true, upsTotal, "Editar lista por ID");
   }
+  
+  
+  @DELETE
+  @Path("/")
+  @Transactional
+  public JsonResponse deletar(
+          @PathParam("entidade") String entidade,
+          @Context UriInfo ctx,
+          JsonNode node
+  ){
+    // O JSON deve ser um Array, com as entidades dentro
+    if( node == null || !node.isArray() ){
+      return new JsonResponse(false,"A mensagem deve ser um Array JSON.");
+    }
+    
+    Class<?> klass = cache.get(entidade, em);
+    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath() );
+    // Pegando os ids da classe
+    List<String> ids = PersistenciaUtils.getIds(em, klass);
+    if (ids == null || ids.isEmpty()) {
+      return new JsonResponse(false, "Não encontramos os campos de Id dessa classe");
+    }
+    
+    int upsTotal = 0;
+    for(JsonNode json : node){
+      if( json == null || !json.isObject() ) continue;
+      info.query = new String[ ids.size() ][];
+      int i = 0;
+      for( String idAttr : ids ){
+        String[] idS = idAttr.split("\\.");
+        JsonNode prop = json;
+        for( String s : idS ) prop = prop.get(s);
+        if( prop == null /* ... comp do tipo do ID */ ) continue;
+        info.query[i++] = new String[]{ idAttr, "=", prop.asText(), "&" };
+      }
+      
+      upsTotal += entService.deletar(entidade, info);
+    }
+    
+    return new JsonResponse(true, upsTotal, "Deletar lista por ID");
+  }
+  
+  
+  
+  
+  
+  
+  
   
   //===============  Privates  ==================
   
   
-  private static final Map<Class,Integer> mapConvercao = new HashMap<>(20);
-  static{
-    // 0: byte
-    // 1: int
-    // 2: long
-    // 3: double
-    // 4: datas -> String para interpretar, usando padrão ISO
-    mapConvercao.put( Boolean.class, 0);
-    mapConvercao.put( boolean.class, 0);
-    mapConvercao.put( Byte.class, 1);
-    mapConvercao.put( byte.class, 1);
-    mapConvercao.put( Short.class, 1);
-    mapConvercao.put( short.class, 1);
-    mapConvercao.put( Integer.class, 1);
-    mapConvercao.put( int.class, 1);
-    mapConvercao.put( Long.class, 2);
-    mapConvercao.put( long.class, 2);
-    mapConvercao.put( BigInteger.class, 2);
-    mapConvercao.put( Float.class, 3);
-    mapConvercao.put( float.class, 3);
-    mapConvercao.put( Double.class, 3);
-    mapConvercao.put( double.class, 3);
-    mapConvercao.put( BigDecimal.class, 3);
-    mapConvercao.put( Date.class, 4);
-    mapConvercao.put( Time.class, 4);
-    mapConvercao.put( Calendar.class, 4);
-  }
-  private Object as( JsonNode node, Class<?> tipo ){
-    if( tipo == null || node == null ) return null;
-    if( Integer.class.isAssignableFrom(tipo) || int.class.isAssignableFrom(tipo) ) return node.asInt();
-    if( Long.class.isAssignableFrom(tipo) ) return node.asLong();
-    if( Double.class.isAssignableFrom(tipo) ) return node.asDouble();
-    if( Number.class.isAssignableFrom(tipo) ) return node.asLong();
-    if( String.class.isAssignableFrom(tipo) ) return node.asText();
-    if( Date.class.isAssignableFrom(tipo) ) throw new MsgException("Fazer impl. de Json para Date");
-    
-    return null;
-  }
   
   
 }

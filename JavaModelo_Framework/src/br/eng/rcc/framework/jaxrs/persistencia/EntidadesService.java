@@ -1,16 +1,26 @@
 package br.eng.rcc.framework.jaxrs.persistencia;
 
 import br.eng.rcc.framework.jaxrs.JsonResponse;
+import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.jaxrs.persistencia.builders.WhereBuilder;
 import br.eng.rcc.framework.jaxrs.persistencia.builders.WhereBuilderInterface;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,9 +29,13 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
@@ -92,8 +106,8 @@ public class EntidadesService {
     return map;
   }
 
-  public List<Object> buscar(Class<?> klass, PersistenciaUtils.BuscaInfo info) {
-    
+  public List<Object> buscar(String entidade, PersistenciaUtils.BuscaInfo info) {
+    Class<?> klass = cache.get(entidade, em);
     checker.check( klass, Seguranca.SELECT );
     
     // ----  Criando a busca ao banco:
@@ -130,19 +144,156 @@ public class EntidadesService {
     return res;
   }
 
-  public void criar() {
+  public void criar(List<?> objs, String entidade) {
+    Class klass = cache.get(entidade);
+    checker.check(klass, Seguranca.INSERT);
 
+    // precisamos colocar o objeto no lado inverso da relação para que tudo entre
+    // no banco com os valores corretos
+    Map<String, ClassCache.BeanUtil> map = cache.getInfo(entidade);
+    try {
+      for (ClassCache.BeanUtil util : map.values()) {
+        if (util.isAssociacao()) {
+          ClassCache.BeanUtil inverso = util.getInverse();
+          if (inverso == null) {
+            continue;
+          }
+          if (util.isColecao()) {
+            for (Object obj : objs) {
+              Collection coll = ((Collection) util.get(obj));
+              if (coll == null) {
+                continue;
+              }
+              for (Object ooo : coll) {
+                inverso.set(ooo, obj);
+              }
+            }
+          } else {
+            for (Object obj : objs) {
+              inverso.set(util.get(obj), obj);
+            }
+          }
+        }
+      }
+    } catch (IllegalAccessException | InvocationTargetException ex) {
+      throw new RuntimeException("Problemas de Introspecção ou Reflexão ao criar entidades", ex);
+    }
+    for (Object obj : objs) {
+      checker.checkPersistencia(klass, obj);
+      em.persist(obj);
+    }
   }
 
-  public void editar() {
+  public int editar(String entidade, PersistenciaUtils.BuscaInfo info, JsonNode obj) {
+    Class<?> klass = cache.get(entidade, em);
+    checker.check(klass, Seguranca.UPDATE);
+    
+    Map<String,Object> listaAtualizar = new HashMap<>();
+    editarArvore(listaAtualizar, obj, null);
+    
+    // ----  Criando a busca ao banco:
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaUpdate query = cb.createCriteriaUpdate(klass);
+    Root root = query.from(klass);
 
+    // Cláusula WHERE do banco:
+    WhereBuilderInterface wb = WhereBuilder.create(cb, query);
+    Predicate[] preds = wb.addArray( info.query ).build();
+    if (preds.length < 1) {
+      throw new MsgException(JsonResponse.ERROR_EXCECAO,"Os parâmetros de filtragem da QueryString não são válidos.");
+    }
+    query.where(preds);
+    
+    atualizar:
+    for( String entryName : listaAtualizar.keySet() ){
+      for(String[] sss : info.query) if( entryName.equals(sss[0]) ){
+        continue atualizar;
+      }
+      String[] listaStr = entryName.split("\\.");
+      if( listaStr.length < 1 ) continue;
+      Path exp = root.get( listaStr[0] );
+      for( int i = 1; i < listaStr.length; i++ ) exp = exp.get( listaStr[i] );
+      
+      Object valor = listaAtualizar.get( entryName );
+        if( exp.getJavaType().equals(Date.class) ){
+          valor = javax.xml.bind.DatatypeConverter.parseDateTime( (String)valor ).getTime();
+        }else if( exp.getJavaType().equals(Calendar.class) ){
+          valor = javax.xml.bind.DatatypeConverter.parseDateTime( (String)valor );
+        }else if( exp.getJavaType().equals(Time.class) ){
+          Date d = javax.xml.bind.DatatypeConverter.parseDateTime( (String)valor ).getTime();
+          valor = new Time( d.getTime() );
+        }
+      query.set(exp, valor );
+    }
+    
+    checker.checkPersistencia(klass, cb, query);
+
+    int ups = em.createQuery(query).executeUpdate();
+    return ups;
+  }
+  private void editarArvore(Map<String,Object> listaAtualizar, JsonNode obj, StringBuilder builder){
+    Iterator<String> nodeNameIt = obj.fieldNames();
+    while (nodeNameIt.hasNext()) {
+      String nodeName = nodeNameIt.next();
+      JsonNode node = obj.get( nodeName );
+      
+      StringBuilder newBuilder = new StringBuilder(30);
+      if( builder != null ) newBuilder.append(builder);
+      if( newBuilder.length() > 0 ) newBuilder.append(".");
+      newBuilder.append(nodeName);
+      
+      if( node.getNodeType() == JsonNodeType.OBJECT ){
+        editarArvore( listaAtualizar, node, newBuilder );
+        continue;
+      }
+      Object value = null;
+
+      switch (node.getNodeType()) {
+        case BOOLEAN:
+          value = node.asBoolean();
+          break;
+        case STRING:
+          value = node.asText();
+          break;
+        case NUMBER:
+          value = node.isDouble()
+                  ? node.asDouble() : node.asInt();
+          break;
+      }
+
+      if (value == null && !node.getNodeType().equals(JsonNodeType.NULL)) {
+        continue;
+      }
+      
+      listaAtualizar.put( newBuilder.toString(), value );
+    }
   }
 
-  public void deletar() {
+  public int deletar(String entidade, PersistenciaUtils.BuscaInfo info) {
+    Class<?> klass = cache.get(entidade, em);
+    checker.check(klass, Seguranca.DELETE);
+    
+    // ----  Criando a busca ao banco:
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaDelete query = cb.createCriteriaDelete(klass);
+    Root root = query.from(klass);
 
+    // Cláusula WHERE do banco:
+    WhereBuilderInterface wb = WhereBuilder.create(cb, query);
+    Predicate[] preds = wb.addArray(info.query).build();
+    if (preds.length < 1) {
+      throw new MsgException(JsonResponse.ERROR_EXCECAO,"Os parâmetros de filtragem da QueryString não são válidos.");
+    }
+    query.where(preds);
+
+    checker.checkPersistencia(klass, cb, query);
+
+    // A busca ao banco:
+    int qtd = em.createQuery(query).executeUpdate();
+    return qtd;
   }
   
-  public void adicionar(){
+  public void adicionar(String entidade, PersistenciaUtils.BuscaInfo info){
     
   }
   
@@ -179,6 +330,47 @@ public class EntidadesService {
       }
     }
     query.orderBy(lista);
+  }
+  
+  
+  
+  private static final Map<Class,Integer> mapConvercao = new HashMap<>(20);
+  static{
+    // 0: byte
+    // 1: int
+    // 2: long
+    // 3: double
+    // 4: datas -> String para interpretar, usando padrão ISO
+    mapConvercao.put( Boolean.class, 0);
+    mapConvercao.put( boolean.class, 0);
+    mapConvercao.put( Byte.class, 1);
+    mapConvercao.put( byte.class, 1);
+    mapConvercao.put( Short.class, 1);
+    mapConvercao.put( short.class, 1);
+    mapConvercao.put( Integer.class, 1);
+    mapConvercao.put( int.class, 1);
+    mapConvercao.put( Long.class, 2);
+    mapConvercao.put( long.class, 2);
+    mapConvercao.put( BigInteger.class, 2);
+    mapConvercao.put( Float.class, 3);
+    mapConvercao.put( float.class, 3);
+    mapConvercao.put( Double.class, 3);
+    mapConvercao.put( double.class, 3);
+    mapConvercao.put( BigDecimal.class, 3);
+    mapConvercao.put( Date.class, 4);
+    mapConvercao.put( Time.class, 4);
+    mapConvercao.put( Calendar.class, 4);
+  }
+  private Object as( JsonNode node, Class<?> tipo ){
+    if( tipo == null || node == null ) return null;
+    if( Integer.class.isAssignableFrom(tipo) || int.class.isAssignableFrom(tipo) ) return node.asInt();
+    if( Long.class.isAssignableFrom(tipo) ) return node.asLong();
+    if( Double.class.isAssignableFrom(tipo) ) return node.asDouble();
+    if( Number.class.isAssignableFrom(tipo) ) return node.asLong();
+    if( String.class.isAssignableFrom(tipo) ) return node.asText();
+    if( Date.class.isAssignableFrom(tipo) ) throw new MsgException(JsonResponse.ERROR_EXCECAO,"Fazer impl. de Json para Date");
+    
+    return null;
   }
   
 }
