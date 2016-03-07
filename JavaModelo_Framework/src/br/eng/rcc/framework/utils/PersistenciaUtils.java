@@ -4,6 +4,7 @@ import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.jaxrs.persistencia.ClassCache;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -160,6 +161,38 @@ public class PersistenciaUtils {
     }
     
     return bi;
+  }
+  
+  public static List<BuscaInfo> parseBusca(JsonNode json, ClassCache cache){
+    List<PersistenciaUtils.BuscaInfo> buscas = new ArrayList<>();
+    for( JsonNode node : json ){
+      PersistenciaUtils.BuscaInfo busca = new PersistenciaUtils.BuscaInfo();
+      busca.entidade = node.get("entidade").asText();
+      busca.classe = cache.get(busca.entidade);
+      if( node.has("size") ) busca.size = node.get("size").intValue();
+      if( node.has("page") ) busca.page = node.get("page").intValue();
+      if( node.has("data") ) busca.data = node.get("data");
+      if( node.has("join") && node.get("join").isArray() ){
+        List<String> arr = new ArrayList<>();
+        for( JsonNode nodeStr : node.get("join") ) arr.add( nodeStr.asText() );
+        busca.join = arr.toArray(new String[0]);
+      }
+      if( node.has("order") && node.get("order").isArray() ){
+        List<String> arr = new ArrayList<>();
+        for( JsonNode nodeStr : node.get("order") ) arr.add( nodeStr.asText() );
+        busca.order = arr.toArray(new String[0]);
+      }
+      if( node.has("query") && node.get("query").isTextual() ){
+        busca.query = PersistenciaUtils.parseQueryString( node.get("query").asText() );
+      }
+      
+      if( busca.join == null ) busca.join = new String[0];
+      if( busca.order == null ) busca.order = new String[0];
+      if( busca.query == null ) busca.query = new String[0][];
+      
+      buscas.add(busca);
+    }
+    return buscas;
   }
   
   

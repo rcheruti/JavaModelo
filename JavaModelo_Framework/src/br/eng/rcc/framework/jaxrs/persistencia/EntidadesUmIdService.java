@@ -82,11 +82,10 @@ public class EntidadesUmIdService {
       return new JsonResponse(false,"A mensagem deve ser um Array JSON.");
     }
     
-    Class<?> klass = cache.get(entidade, em);
-    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath() );
+    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath(), cache );
     
     // Pegando os ids da classe
-    List<String> ids = PersistenciaUtils.getIds(em, klass);
+    List<String> ids = PersistenciaUtils.getIds(em, info.classe);
     if (ids == null || ids.isEmpty()) {
       return new JsonResponse(false, "Não encontramos os campos de Id dessa classe");
     }
@@ -135,10 +134,9 @@ public class EntidadesUmIdService {
       return new JsonResponse(false,"A mensagem deve ser um Array JSON.");
     }
     
-    Class<?> klass = cache.get(entidade, em);
-    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath() );
+    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath(), cache );
     // Pegando os ids da classe
-    List<String> ids = PersistenciaUtils.getIds(em, klass);
+    List<String> ids = PersistenciaUtils.getIds(em, info.classe);
     if (ids == null || ids.isEmpty()) {
       return new JsonResponse(false, "Não encontramos os campos de Id dessa classe");
     }
@@ -176,10 +174,9 @@ public class EntidadesUmIdService {
       return new JsonResponse(false,"A mensagem deve ser um Array JSON.");
     }
     
-    Class<?> klass = cache.get(entidade, em);
-    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath() );
+    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath(), cache );
     // Pegando os ids da classe
-    List<String> ids = PersistenciaUtils.getIds(em, klass);
+    List<String> ids = PersistenciaUtils.getIds(em, info.classe);
     if (ids == null || ids.isEmpty()) {
       return new JsonResponse(false, "Não encontramos os campos de Id dessa classe");
     }
