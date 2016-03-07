@@ -13,8 +13,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Time;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -106,8 +104,8 @@ public class EntidadesService {
     return map;
   }
 
-  public List<Object> buscar(String entidade, PersistenciaUtils.BuscaInfo info) {
-    Class<?> klass = cache.get(entidade, em);
+  public List<Object> buscar(PersistenciaUtils.BuscaInfo info) {
+    Class<?> klass = cache.get(info.entidade, em);
     checker.check( klass, Seguranca.SELECT );
     
     // ----  Criando a busca ao banco:
@@ -117,7 +115,7 @@ public class EntidadesService {
     query.select(root);
 
     // Cláusula JOIN FETCH da JPQL:
-    for(String s : info.join ){ 
+    if(info.join != null) for(String s : info.join ){ 
       if( s.indexOf('.') < 0 )
         root.fetch(s, JoinType.LEFT);
     }
@@ -184,8 +182,8 @@ public class EntidadesService {
     }
   }
 
-  public int editar(String entidade, PersistenciaUtils.BuscaInfo info, JsonNode obj) {
-    Class<?> klass = cache.get(entidade, em);
+  public int editar(PersistenciaUtils.BuscaInfo info, JsonNode obj) {
+    Class<?> klass = cache.get(info.entidade, em);
     checker.check(klass, Seguranca.UPDATE);
     
     Map<String,Object> listaAtualizar = new HashMap<>();
@@ -200,7 +198,7 @@ public class EntidadesService {
     WhereBuilderInterface wb = WhereBuilder.create(cb, query);
     Predicate[] preds = wb.addArray( info.query ).build();
     if (preds.length < 1) {
-      throw new MsgException(JsonResponse.ERROR_EXCECAO,"Os parâmetros de filtragem da QueryString não são válidos.");
+      throw new MsgException(JsonResponse.ERROR_EXCECAO,null,"Os parâmetros de filtragem da QueryString não são válidos.");
     }
     query.where(preds);
     
@@ -269,8 +267,8 @@ public class EntidadesService {
     }
   }
 
-  public int deletar(String entidade, PersistenciaUtils.BuscaInfo info) {
-    Class<?> klass = cache.get(entidade, em);
+  public int deletar(PersistenciaUtils.BuscaInfo info) {
+    Class<?> klass = cache.get(info.entidade, em);
     checker.check(klass, Seguranca.DELETE);
     
     // ----  Criando a busca ao banco:
@@ -282,7 +280,7 @@ public class EntidadesService {
     WhereBuilderInterface wb = WhereBuilder.create(cb, query);
     Predicate[] preds = wb.addArray(info.query).build();
     if (preds.length < 1) {
-      throw new MsgException(JsonResponse.ERROR_EXCECAO,"Os parâmetros de filtragem da QueryString não são válidos.");
+      throw new MsgException(JsonResponse.ERROR_EXCECAO,null,"Os parâmetros de filtragem da QueryString não são válidos.");
     }
     query.where(preds);
 
@@ -368,7 +366,7 @@ public class EntidadesService {
     if( Double.class.isAssignableFrom(tipo) ) return node.asDouble();
     if( Number.class.isAssignableFrom(tipo) ) return node.asLong();
     if( String.class.isAssignableFrom(tipo) ) return node.asText();
-    if( Date.class.isAssignableFrom(tipo) ) throw new MsgException(JsonResponse.ERROR_EXCECAO,"Fazer impl. de Json para Date");
+    if( Date.class.isAssignableFrom(tipo) ) throw new MsgException(JsonResponse.ERROR_EXCECAO,null,"Fazer impl. de Json para Date");
     
     return null;
   }

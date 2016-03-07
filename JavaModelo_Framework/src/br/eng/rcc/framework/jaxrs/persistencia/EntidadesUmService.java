@@ -49,7 +49,7 @@ public class EntidadesUmService {
     if (em == null) {
       String msg = "O objeto EM é nulo! Verifique as configurações do Banco.";
       Logger.getLogger(this.getClass().getName()).log(Level.WARNING, msg);
-      throw new MsgException(JsonResponse.ERROR_DESCONHECIDO,msg);
+      throw new MsgException(JsonResponse.ERROR_DESCONHECIDO,null,msg);
     }
   }
 
@@ -68,7 +68,7 @@ public class EntidadesUmService {
     if (klass == null) {
       return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade));
     }
-    return new JsonResponse(true, entService.tipo(klass), "Busca do tipo");
+    return new JsonResponse(true, entService.tipo(klass), "Tipo um");
   }
 
   /**
@@ -103,7 +103,7 @@ public class EntidadesUmService {
   ) {
     String path = String.format("%s?%s", ctx.getPath(), ctx.getRequestUri().getQuery() );
     PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca(path);
-    return new JsonResponse(true, entService.buscar(entidade, info), "Lista dos objetos", 
+    return new JsonResponse(true, entService.buscar(info), "Buscar um", 
             info.page, info.size);
   }
 
@@ -141,7 +141,7 @@ public class EntidadesUmService {
     }
     entService.criar(objs, entidade);
     
-    return new JsonResponse(true, null, null);
+    return new JsonResponse(true, null, "Criar um");
   }
 
   /**
@@ -179,8 +179,8 @@ public class EntidadesUmService {
     PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( path, cache);
     if( obj.isArray() ) obj = obj.get(0);
     
-    int ups = entService.editar(entidade, info, obj);
-    return new JsonResponse(true, ups, null);
+    int ups = entService.editar(info, obj);
+    return new JsonResponse(true, ups, "Editar um");
   }
 
   /**
@@ -213,8 +213,8 @@ public class EntidadesUmService {
     String path = String.format("%s?%s", ctx.getPath(), uriQuery );
     PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( path );
     
-    int qtd = entService.deletar(entidade, info);
-    return new JsonResponse(true, qtd, null);
+    int qtd = entService.deletar(info);
+    return new JsonResponse(true, qtd, "Deletar um");
   }
   
   

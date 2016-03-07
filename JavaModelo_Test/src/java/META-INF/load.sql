@@ -1,6 +1,6 @@
 
 insert into seg_usuario( DTYPE, email, nome ) values( 1, 'rafael@someone.com','Rafael' );
-insert into seg_usuario( DTYPE, email, nome ) values( 1, 'rafael@someone.com','Rafael' );
+insert into seg_usuario( DTYPE, email, nome ) values( 1, 'alguem@someone.com','Alguém' );
 
 insert into seg_credencial( bloqueado, erros, login, renovarSenha, senha, usuario_id ) values( 0, 0, 'rafael', 0, 'ok', 1 );
 insert into seg_credencial( bloqueado, erros, login, renovarSenha, senha, usuario_id ) values( 0, 0, 'alguem', 0, 'ok', 2 );

@@ -93,7 +93,7 @@ public class JsonRequestReader implements MessageBodyReader<Object> {
       }
     }
     
-    System.out.println("Disponivel: "+ entityStream.available() );
+    //System.out.println("Disponivel: "+ entityStream.available() );
     try {
       Object x = fromJson(entityStream, typeList, type);
       return x;

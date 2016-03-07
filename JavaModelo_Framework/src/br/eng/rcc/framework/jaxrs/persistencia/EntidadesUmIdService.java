@@ -51,7 +51,7 @@ public class EntidadesUmIdService {
     if (em == null) {
       String msg = "O objeto EM é nulo! Verifique as configurações do Banco.";
       Logger.getLogger(this.getClass().getName()).log(Level.WARNING, msg);
-      throw new MsgException(JsonResponse.ERROR_DESCONHECIDO,msg);
+      throw new MsgException(JsonResponse.ERROR_DESCONHECIDO,null,msg);
     }
   }
   
@@ -65,7 +65,7 @@ public class EntidadesUmIdService {
     if( klass == null ){
       return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade) );
     }
-    return new JsonResponse(true, entService.tipo(klass), "Busca do tipo");
+    return new JsonResponse(true, entService.tipo(klass), "Tipo um ID");
   }
   
   
@@ -105,11 +105,11 @@ public class EntidadesUmIdService {
         info.query[i++] = new String[]{ idAttr, "=", prop.asText(), "&" };
       }
       
-      List lista = entService.buscar(entidade, info);
+      List lista = entService.buscar(info);
       for( Object x : lista ) resposta.add(x);
     }
     
-    return new JsonResponse(true, resposta, "Busca por IDs");
+    return new JsonResponse(true, resposta, "Buscar um ID");
   }
   
   
@@ -156,10 +156,10 @@ public class EntidadesUmIdService {
         info.query[i++] = new String[]{ idAttr, "=", prop.asText(), "&" };
       }
       
-      upsTotal += entService.editar(entidade, info, json);
+      upsTotal += entService.editar(info, json);
     }
     
-    return new JsonResponse(true, upsTotal, "Editar lista por ID");
+    return new JsonResponse(true, upsTotal, "Editar um ID");
   }
   
   
@@ -197,20 +197,12 @@ public class EntidadesUmIdService {
         info.query[i++] = new String[]{ idAttr, "=", prop.asText(), "&" };
       }
       
-      upsTotal += entService.deletar(entidade, info);
+      upsTotal += entService.deletar(info);
     }
     
-    return new JsonResponse(true, upsTotal, "Deletar lista por ID");
+    return new JsonResponse(true, upsTotal, "Deletar um ID");
   }
   
-  
-  
-  
-  
-  
-  
-  
-  //===============  Privates  ==================
   
   
   

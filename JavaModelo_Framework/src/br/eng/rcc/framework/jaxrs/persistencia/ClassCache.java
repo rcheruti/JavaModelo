@@ -228,15 +228,15 @@ public class ClassCache {
       }
       public void add(Object that, Object... params)
               throws IllegalAccessException, InvocationTargetException{
-        if( setter != null ) 
+        if( add != null ) 
           for( Object param : params )
-            setter.invoke(that, param);
+            add.invoke(that, param);
       }
       public void remove(Object that, Object... params)
               throws IllegalAccessException, InvocationTargetException{
-        if( setter != null ) 
+        if( remove != null ) 
           for( Object param : params )
-            setter.invoke(that, param);
+            remove.invoke(that, param);
       }
       
     }

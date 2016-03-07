@@ -309,6 +309,10 @@ public class PersistenciaUtils {
      * Classe da entidade.
      */
     public Class<?> classe; 
+    /**
+     * Valor que vem no corpo da mensagem HTTP.
+     */
+    public Object data;
 
   }
 
