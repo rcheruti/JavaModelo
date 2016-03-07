@@ -82,7 +82,7 @@ public class EntidadesUmIdService {
     if( klass == null ){
       return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade) );
     }
-    return entService.tipo(klass);
+    return new JsonResponse(true, entService.tipo(klass), "Busca do tipo");
   }
   
   
@@ -104,7 +104,6 @@ public class EntidadesUmIdService {
     if (klass == null) {
       return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade));
     }
-    checker.check(klass, Seguranca.SELECT);
     
     PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath() );
     
@@ -114,47 +113,22 @@ public class EntidadesUmIdService {
       return new JsonResponse(false, "Não encontramos os campos de Id dessa classe");
     }
     
-    
     List resposta = new ArrayList<>();
-    List<Predicate> wheres = new ArrayList<>();
-    CriteriaBuilder cb = em.getCriteriaBuilder();
     
-    iteracaoObjs:
     for(JsonNode json : node){
       if( json == null || !json.isObject() ) continue;
-      wheres.clear();
-      
-      CriteriaQuery query = cb.createQuery();
-      Root root = query.from( klass );
-      query.select(root);
-      
+      info.query = new String[ ids.size() ][];
+      int i = 0;
       for( String idAttr : ids ){
         String[] idS = idAttr.split("\\.");
         JsonNode prop = json;
         for( String s : idS ) prop = prop.get(s);
         if( prop == null /* ... comp do tipo do ID */ ) continue;
-        javax.persistence.criteria.Path exp = root.get( idS[ 0 ] );
-        for( int i = 1; i < idS.length; i++ ) exp = exp.get( idS[i] );
-        wheres.add( cb.equal( exp , as(prop, exp.getJavaType() ) ) );
-      }
-      if( wheres.isEmpty() ){
-        continue;
-      }
-      query.where(wheres.toArray(new Predicate[0]));
-      
-      List lista = em.createQuery(query)
-              .setFirstResult( info.getSize() * info.getPage() )
-              .setMaxResults( info.getSize() )
-              .getResultList();
-      if( lista != null ){
-        PersistenciaUtils.resolverLazy(cache, lista.toArray(), false, info.getJoin() ); 
-        em.clear();
-        PersistenciaUtils.resolverLazy(cache, lista.toArray(), true,  info.getJoin() ); 
-        for( Object x : lista ) resposta.add(x);
-      }else{
-        em.clear();
+        info.query[i++] = new String[]{ idAttr, "=", prop.asText(), "&" };
       }
       
+      List lista = entService.buscar(klass, info);
+      for( Object x : lista ) resposta.add(x);
     }
     
     return new JsonResponse(true, resposta, "Busca por IDs");
@@ -221,34 +195,7 @@ public class EntidadesUmIdService {
   }
   
   //===============  Privates  ==================
-  private void addOrderBy(CriteriaBuilder cb, CriteriaQuery query, String[] orders) {
-    if (orders.length < 1) {
-      return;
-    }
-    Root root = (Root) query.getRoots().iterator().next();
-    List<Order> lista = new ArrayList<>(6);
-    for (String s : orders) {
-      try {
-        String[] ordersOrder = s.trim().split("\\s+");
-        if (ordersOrder.length > 1 && ordersOrder[1].matches("(?i)desc")) {
-          lista.add(cb.desc(root.get(ordersOrder[0])));
-        } else {
-          lista.add(cb.asc(root.get(ordersOrder[0])));
-        }
-      } catch (IllegalArgumentException ex) {
-        /*
-                Throwable ttt = ex;
-                Throwable lastttt = null; // Para proteger de loop infinito
-                while( ttt != null && ttt != lastttt ){
-                    System.out.printf("---   Ex.: %s \n", ttt.getMessage() );
-                    lastttt = ttt;
-                    ttt = ttt.getCause();
-                }
-                /* */
-      }
-    }
-    query.orderBy(lista);
-  }
+  
   
   private static final Map<Class,Integer> mapConvercao = new HashMap<>(20);
   static{

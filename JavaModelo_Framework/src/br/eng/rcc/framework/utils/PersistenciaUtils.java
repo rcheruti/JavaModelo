@@ -103,29 +103,6 @@ public class PersistenciaUtils {
     }
     return false;
   }
-  private static boolean nullifyInArray(Object[] arr, Object obj) {
-    if (arr == null || obj == null) {
-      return false;
-    }
-    int hash = obj.hashCode();
-    for (int i = 0; i < arr.length; i ++) {
-      Object x = arr[i];
-      if( x == null )continue;
-      if (hash == x.hashCode() && obj.equals(x)) {
-        arr[i] = null;
-        return true;
-      }
-    }
-    return false;
-  }
-  private static <T> T[] copyWithoutNulls( T[] arr ){
-    if( arr == null ) return null;
-    List<T> newArr = new ArrayList<>( arr.length /2 );
-    for(int i = 0; i < arr.length; i++){
-      if( arr[i] != null ) newArr.add( arr[i] );
-    }
-    return newArr.toArray(arr);
-  }
   private static String[] getArrayLevel( int level, String prefix, String... arr ){
     if( arr == null || arr.length == 0 ) return null;
     Set<String> lista = new HashSet<>();
@@ -185,6 +162,7 @@ public class PersistenciaUtils {
     return bi;
   }
   
+  
   /**
    * Este método é usado internamente para criar os itens de filtragem das
    * buscas.
@@ -194,7 +172,6 @@ public class PersistenciaUtils {
    */
   public static String[][] parseQueryString(String uriQuery) {
     // Interpretando "Query String" (parâmetros de busca no banco [WHERE])
-    //List<String[]> querysPs = new ArrayList<>();
     int qI = 0, qLimit = 30;
     String[][] querysPs = new String[qLimit][];
     if (uriQuery != null) {
@@ -214,7 +191,6 @@ public class PersistenciaUtils {
         }
 
         String[] params = {attr, comp, valor, opComp, isValor ? "" : null};
-        //querysPs.add(params);
         querysPs[qI++] = params;
       }
     }
@@ -302,22 +278,37 @@ public class PersistenciaUtils {
   
   public static class BuscaInfo {
 
-    private int page = Configuracoes.pageEntidadeDefault;
-    private int size = Configuracoes.sizeEntidadeDefault;
-    private String[] join;
-    private String[] order;
-    private String[][] query;
-    private String entidade;
-    private Class<?> classe;
-    
-    
-    public int getPage(){ return page; }
-    public int getSize(){ return size; }
-    public String[] getJoin(){ return join; }
-    public String[] getOrder(){ return order; }
-    public String[][] getQuery(){ return query; }
-    public String getEntidade(){ return entidade; }
-    public Class<?> getClasse(){ return classe; }
+    public int page = Configuracoes.pageEntidadeDefault;
+    public int size = Configuracoes.sizeEntidadeDefault;
+    /**
+     * A lista dos atributos que devem ser carregados para a resposta, que 
+     * provavelmente são "Lazy".
+     */
+    public String[] join;
+    /**
+    * A lista de Strings que serão usadas para fazer a ordenação.
+    * 
+    * Pode estar nos formatos: "attr", "attr ASC" ou "attr DESC"
+    */
+    public String[] order; 
+    /**
+    * Query String dessa busca, já interpretada.
+    * 
+    * Esse vetor está no formato:
+    * [
+    *   [ "Nome do atributo", "comparador do banco", "valor do atributo", "operação E ou Ou" ]
+    * ]
+    */
+    public String[][] query;
+    /**
+     * Nome simples da classe dessa entidade, como a JPA mapeia
+     * as entidades.s
+     */
+    public String entidade; 
+    /**
+     * Classe da entidade.
+     */
+    public Class<?> classe; 
 
   }
 
