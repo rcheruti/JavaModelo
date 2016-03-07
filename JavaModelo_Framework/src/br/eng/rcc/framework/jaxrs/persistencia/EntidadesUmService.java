@@ -59,7 +59,7 @@ public class EntidadesUmService {
   /*
         Abaixo estão os métodos que trabalharão com apenas 1 tipo de entidade por vez
    */
-  @GET
+  @POST
   @Path("/tipo")
   public JsonResponse tipo(
           @PathParam("entidade") String entidade

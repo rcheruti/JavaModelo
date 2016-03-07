@@ -57,7 +57,7 @@ public class EntidadesUmIdService {
   
   //=====================================================================
   
-  @GET @Path("/tipo")
+  @POST @Path("/tipo")
   public JsonResponse tipo(
           @PathParam("entidade") String entidade
     ){
