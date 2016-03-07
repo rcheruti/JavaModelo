@@ -17,7 +17,8 @@ Module.run(['Entidades','$window',
   $window.Cor = Entidades.entidade('Cor');
   
   Entidades.entidade('Porta');
-  Entidades.entidade('Usuario');
+  Entidades.entidade('Usuario'); 
   Entidades.entidade('Valor');
+  Entidades.entidade('RegistroUsuario');
   
 }]);

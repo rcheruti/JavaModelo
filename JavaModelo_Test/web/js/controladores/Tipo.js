@@ -5,7 +5,7 @@ Module.controller('Tipo',['$scope','Entidades',
   $scope.entidade = null;
   $scope.override = false;
   $scope.entidadeLista = [
-    'Carro','Porta','Usuario','Valor','Cor'
+    'Carro','Porta','Usuario','Valor','Cor','RegistroUsuario'
   ];
   
   $scope.mostrarTipo = function(x){

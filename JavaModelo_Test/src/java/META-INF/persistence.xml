@@ -10,6 +10,7 @@
     <class>br.eng.rcc.framework.seguranca.entidades.Permissao</class>
     <properties>
       <property name="hibernate.max_fetch_depth" value="1"/>
+      
       <!--
       <property name="javax.persistence.sql-load-script-source" value="META-INF/load.sql"/>
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>

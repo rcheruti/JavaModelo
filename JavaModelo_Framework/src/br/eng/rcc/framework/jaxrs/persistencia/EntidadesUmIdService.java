@@ -26,14 +26,16 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.SingularAttribute;
+import javax.persistence.metamodel.Attribute;
+import javax.persistence.metamodel.EntityType;
+import javax.persistence.metamodel.Metamodel;
+import javax.persistence.metamodel.PluralAttribute;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.MatrixParam;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -47,17 +49,15 @@ import javax.ws.rs.core.UriInfo;
 @RequestScoped
 public class EntidadesUmIdService {
 
-  private final static Map<String, Runnable> map = new HashMap<>();
-
-  private final int pageNumDefault = 0;
-  private final int pageSizeDefault = 20;
-
   @Inject
-  private EntityManager em;
+  protected EntityManager em;
   @Inject
-  private ClassCache cache;
+  protected ClassCache cache;
   @Inject
-  private SegurancaServico checker;
+  protected SegurancaServico checker;
+  @Inject
+  protected EntidadesService entService;
+    
   
   /**
    * Para que este objeto possa fazer o seu trabalho, é obrigatório um
@@ -73,6 +73,19 @@ public class EntidadesUmIdService {
   }
   
   //=====================================================================
+  
+  @GET @Path("/tipo")
+  public JsonResponse tipo(
+          @PathParam("entidade") String entidade
+    ){
+    Class<?> klass = cache.get(entidade, em);
+    if( klass == null ){
+      return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade) );
+    }
+    return entService.tipo(klass);
+  }
+  
+  
   @POST
   @Path("/buscar")
   @Transactional

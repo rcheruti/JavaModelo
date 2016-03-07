@@ -24,11 +24,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-@Path("/persistencia/many")
+@Path("/persistencia/muitos")
 @Produces({Configuracoes.JSON_PERSISTENCIA})
 @Consumes({Configuracoes.JSON_PERSISTENCIA})
 @RequestScoped
-public class EntidadesManyService {
+public class EntidadesMuitosService {
 
   @Inject
   private EntityManager em;

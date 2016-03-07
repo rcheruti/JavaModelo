@@ -3,6 +3,7 @@ Module.provider('LoginInter',[function(){
   var provider = this;
 
   provider.url = '/login.jsp';
+  provider.ativo = true;
   provider.ERRORCODE_LOGIN = 401 ;
 
   provider.$get = ['context','$window',function(context,$window){
@@ -14,7 +15,7 @@ Module.provider('LoginInter',[function(){
 
     var ref = {
       response:function( response ){
-        if( response.data && response.data.code === provider.ERRORCODE_LOGIN ){
+        if( provider.ativo && response.data && response.data.code === provider.ERRORCODE_LOGIN ){
           var origin = $window.location.origin ;
           $window.location = origin + context.services + provider.url ;
         }

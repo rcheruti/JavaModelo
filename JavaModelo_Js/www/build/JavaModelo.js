@@ -83,6 +83,10 @@ Module.config(['$httpProvider',
     this.$scope = null;
     this._build = false;
     this._path = '';
+    
+    this._buscarUm = true;
+    this._buscarMuitos = false;
+    this._buscarId = false;
   }
   
   var proto = Query.prototype;
@@ -147,8 +151,13 @@ Module.config(['$httpProvider',
     return this;
   };
   proto.path = function( x ){
-    this._path = x;
+    this._path = x || '';
     return this;
+  };
+  
+  proto.id = function( config ){
+    if( typeof config === 'undefined' ) config = true;
+    this._id = config ;
   };
   
   proto.build = function( force ){
@@ -175,7 +184,10 @@ Module.config(['$httpProvider',
       matrix = ';' + matrix;
     
     // Montar url:
-    var url = this._url +'/' +this.entidade.nome +this._path ;
+    var url = '' +(this._buscarUm?'/um':this._buscarMuitos?'/muitos':'') + 
+            (this._buscarId?'/id':'') ;
+    url = this._url +url + (this._buscarMuitos?'':'/'+this.entidade.nome) 
+            +this._path ;
     this._url = url + matrix + queryStr ;
     this._build = true;
     return this;
@@ -211,7 +223,7 @@ Module.config(['$httpProvider',
     return $q.resolve( cached );
   };
   
-  __construirRequisicao( 'get','GET' );
+  __construirRequisicao( 'get','POST', '/buscar' );
   __construirRequisicao( 'put','PUT' );
   __construirRequisicao( 'post','POST' );
   __construirRequisicao( 'delete','DELETE' );
@@ -222,9 +234,9 @@ Module.config(['$httpProvider',
   __construirRequisicaoIn( 'postIn','post' );
   __construirRequisicaoIn( 'deleteIn','delete' );
   
-  function __construirRequisicao( nomeFunc, method ){
+  function __construirRequisicao( nomeFunc, method, path ){
     proto[nomeFunc] = function( _data ){
-      return this.data( _data ).method( method ).build().send();
+      return this.path( path ).data( _data ).method( method ).build().send();
     };
   }
   function __construirRequisicaoIn( nomeFunc, methodFunc ){
@@ -287,20 +299,22 @@ Module.provider('Entidades',[function(){
 
 Module.provider('HostInter',[function(){
       /**
-       * Interceptador para usar as ferramentas de desenvolvimento do Chrome
+       * Interceptador para resirecionar as requisições para outro
+       * endereço.
+       * (ferramentas de desenvolvimento do Chrome)
        * @type NetbeansChromeInter
        */
 
   var provider = this;
 
-  provider.use = false;
+  provider.ativo = false;
   provider.url = '';
 
   provider.$get = ['context',function(context){
 
     var ref = {
       request:function( request ){
-        if( provider.use ){
+        if( provider.ativo ){
           request.url = provider.url + context.services + request.url ;
         }
         return request;
@@ -316,6 +330,7 @@ Module.provider('LoginInter',[function(){
   var provider = this;
 
   provider.url = '/login.jsp';
+  provider.ativo = true;
   provider.ERRORCODE_LOGIN = 401 ;
 
   provider.$get = ['context','$window',function(context,$window){
@@ -327,7 +342,7 @@ Module.provider('LoginInter',[function(){
 
     var ref = {
       response:function( response ){
-        if( response.data && response.data.code === provider.ERRORCODE_LOGIN ){
+        if( provider.ativo && response.data && response.data.code === provider.ERRORCODE_LOGIN ){
           var origin = $window.location.origin ;
           $window.location = origin + context.services + provider.url ;
         }

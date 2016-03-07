@@ -20,7 +20,7 @@ public class RegistroUsuario implements Serializable{
   @ManyToOne
   protected Usuario usuario;
   
-  @Temporal(TemporalType.TIMESTAMP)
+  @Temporal(TemporalType.DATE)
   protected Date atualizacao;
   
   //=======================================================================

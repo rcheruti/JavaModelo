@@ -1,19 +1,21 @@
 Module.provider('HostInter',[function(){
       /**
-       * Interceptador para usar as ferramentas de desenvolvimento do Chrome
+       * Interceptador para resirecionar as requisições para outro
+       * endereço.
+       * (ferramentas de desenvolvimento do Chrome)
        * @type NetbeansChromeInter
        */
 
   var provider = this;
 
-  provider.use = false;
+  provider.ativo = false;
   provider.url = '';
 
   provider.$get = ['context',function(context){
 
     var ref = {
       request:function( request ){
-        if( provider.use ){
+        if( provider.ativo ){
           request.url = provider.url + context.services + request.url ;
         }
         return request;

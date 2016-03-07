@@ -44,19 +44,20 @@ import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
 
 
-@Path("/persistencia/{entidade}")
+@Path("/persistencia/um/{entidade}")
 @Produces({ Configuracoes.JSON_PERSISTENCIA })
 @Consumes({ Configuracoes.JSON_PERSISTENCIA })
 @RequestScoped
 public class EntidadesUmService {
-    private final static Map<String,Runnable> map = new HashMap<>();
     
     @Inject
-    private EntityManager em;
+    protected EntityManager em;
     @Inject
-    private ClassCache cache;
+    protected ClassCache cache;
     @Inject
-    private SegurancaServico checker;
+    protected SegurancaServico checker;
+    @Inject
+    protected EntidadesService entService;
     
     
     /**
@@ -89,26 +90,7 @@ public class EntidadesUmService {
       if( klass == null ){
         return new JsonResponse(false, String.format("Não encontramos nenhuma entidade para '%s'", entidade) );
       }
-      checker.check( klass, Seguranca.SELECT | Seguranca.INSERT 
-                          | Seguranca.DELETE | Seguranca.UPDATE );
-      
-      Metamodel meta = this.em.getMetamodel();
-      EntityType entity = meta.entity(klass);
-      
-      Map<String,String> map = new HashMap<>(20);
-      Set<Attribute> attrs = entity.getDeclaredAttributes();
-      for( Attribute attr : attrs ){
-        if( attr.isCollection() ){
-          PluralAttribute pAttr = (PluralAttribute) attr;
-          map.put( pAttr.getName(), String.format("%s<%s>",
-                  pAttr.getJavaType().getSimpleName(), 
-                  pAttr.getElementType().getJavaType().getSimpleName()  ) );
-        }else{
-          map.put( attr.getName(), attr.getJavaType().getSimpleName() );
-        }
-      }
-      
-      return new JsonResponse(true, map, "Busca do tipo");
+      return entService.tipo(klass);
     }
     
     
@@ -132,7 +114,7 @@ public class EntidadesUmService {
      * que será usada para fazer a filtragem das entidades (cláusula WHERE).
      * @return {@link br.eng.rcc.framework.jaxrs.JsonResponse JsonResponse}
      */
-    @GET @Path("/")
+    @POST @Path("/buscar")
     public JsonResponse buscar(
                 // Nome da classe (entidade) que iremos usar como parâmetro principal
             @PathParam("entidade") String entidade ,
