@@ -1,9 +1,10 @@
 
 window.Module = angular.module('Module',['ngAnimate','ngTouch','ngRoute','ui.router','JavaModelo']);
 
-Module.config(['contextProvider','UsuarioProvider',
-    function(contextProvider, UsuarioProvider){
+Module.config(['contextProvider','UsuarioProvider','EntidadesProvider',
+    function(contextProvider, UsuarioProvider,EntidadesProvider){
   
+  //EntidadesProvider.defaults.cacheTimeout["POST/tipo"] = 5000 ;
   //UsuarioProvider.carregarAoIniciar = false;
   
   contextProvider.root( window.contextRoot );

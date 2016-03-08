@@ -121,7 +121,14 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
         dataPath: 'data.data',
         size: 20,
         page: 0,
-        url: '/persistencia'
+        url: '/persistencia',
+        cacheTimeout: {
+          "POST/tipo": -1 , // -1 para nunca expirar
+          "POST/buscar": 180000 , // 3min timeout
+          "POST": 180000 ,
+          "PUT": 180000 ,
+          "DELETE": 180000 
+        } // ms
       },
       headers = {
         'Content-Type': defaults.contentType
@@ -138,6 +145,9 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     this.page = config.page || defaults.page;
     this.url = config.url || defaults.url ;
     this.cache = {};
+    this.ultimoCache = {};
+    this.cacheTimeout = angular.extend({}, 
+        defaults.cacheTimeout , config.cacheTimeout ); 
   }
   
   function Query( ent ){
@@ -243,9 +253,14 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     return this;
   };
   proto.send = function(){
-    var cache = this.entidade.cache;
+    var entidade = this.entidade;
+    var cache = entidade.cache;
     var cacheKey = this._method + this._path;
-    if( this._clearCache ) cache[cacheKey] = null;
+    if( this._clearCache 
+      || (entidade.ultimoCache[cacheKey] 
+        && entidade.cacheTimeout[cacheKey] > 0
+        && (Date.now() - entidade.ultimoCache[cacheKey]) > entidade.cacheTimeout[cacheKey]
+      ) ) cache[cacheKey] = null;
     else if( cache[cacheKey] ) return $q.resolve( cache[cacheKey] );
     
     var that = this; 
@@ -255,8 +270,11 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
       headers: headers,
       data: this._data || {}
     }).then(function(data){
-      data = _getObjByPath( data, that.entidade.dataPath );
-      if( that._cache ) cache[cacheKey] = data;
+      data = _getObjByPath( data, entidade.dataPath );
+      if( that._cache ){
+        entidade.ultimoCache[cacheKey] = Date.now();
+        cache[cacheKey] = data;
+      }
       return data;
     });
   };
@@ -276,14 +294,14 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
   
   __construirRequisicao( proto, 'tipo','POST', '/tipo' );
   __construirRequisicao( proto, 'get','POST', '/buscar' );
-  __construirRequisicao( proto, 'put','PUT' );
   __construirRequisicao( proto, 'post','POST' );
+  __construirRequisicao( proto, 'put','PUT' );
   __construirRequisicao( proto, 'delete','DELETE' );
   
   __construirRequisicaoIn( proto, 'tipoIn','tipo' );
   __construirRequisicaoIn( proto, 'getIn','get' );
-  __construirRequisicaoIn( proto, 'putIn','put' );
   __construirRequisicaoIn( proto, 'postIn','post' );
+  __construirRequisicaoIn( proto, 'putIn','put' );
   __construirRequisicaoIn( proto, 'deleteIn','delete' );
   
   function __construirRequisicao( pro, nomeFunc, method, path ){
@@ -495,7 +513,7 @@ Module.provider('LoginInter',[function(){
   //=========================================================================
   Module.provider('Usuario', function(){
     provider = this;
-    this.carregarAoIniciar = true;
+    this.carregarAoIniciar = false;
     this.$get = function(){ return promise; };
   });
   
