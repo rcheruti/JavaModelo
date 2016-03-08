@@ -25,101 +25,71 @@ Module.config(['$httpProvider',
 }]);
 
 
-(function(){
-  
-  var injector = angular.injector(['ng'],true),
-      $q = injector.get('$q');
-  
-  var resolve, reject;
-  var promise = $q(function(resolveX, rejectX){
-    resolve = resolveX;
-    reject = rejectX;
-  });
-  promise.reload = function(){ return promise; };
-  
-  Module.value('Usuario', promise );
-  
-  Module.run(['context','$http',function(context,$http){
-    promise.reload = function(){
-      promise.$$state.status = 0;
-      $http.get(context.services +'/seguranca/usuario').then(function(data){
-        if( data.data.codigo === 200 && data.data.data ) resolve( data.data.data );
-        else reject( {} );
-      },function(err){
-        reject( err );
-      });
-      return promise;
-    };
-    promise.reload();
-  }]);
-  
-})();
-
-
-
-Module.directive('segGrupo', [function () {
+Module.directive('segGrupo', ['Usuario',function(Usuario){
 
     return {
       link: function (scope, el, attr) {
-        var u = window.Usuario;
-        if (!u) return;
+        Usuario.then(function( u ){
+          if (!u) return;
 
-        if (u.credencial) {
-          if (u.credencial.grupos) {
-            var grupos = {};
-            for (var gK in u.credencial.grupos) {
-              var g = u.credencial.grupos[gK];
-              var gNome = g.chave.trim();
-              if (!grupos[gNome]) grupos[gNome] = g;
-            }
+          if (u.credencial) {
+            if (u.credencial.grupos) {
+              var grupos = {};
+              for (var gK in u.credencial.grupos) {
+                var g = u.credencial.grupos[gK];
+                var gNome = g.chave.trim();
+                if (!grupos[gNome]) grupos[gNome] = g;
+              }
 
-            var permNome = attr.segGrupo.trim();
-            if (permNome.indexOf('!') === 0) {
-              if (grupos[permNome.substring(1, permNome.length)]) el.remove();
-            } else {
-              if (!grupos[permNome]) el.remove();
+              var permNome = attr.segGrupo.trim();
+              if (permNome.indexOf('!') === 0) {
+                if (grupos[permNome.substring(1, permNome.length)]) el.remove();
+              } else {
+                if (!grupos[permNome]) el.remove();
+              }
             }
           }
-        }
+        });
       }
     };
 
   }]);
-Module.directive('segPermissao', [function () {
+Module.directive('segPermissao', ['Usuario',function(Usuario){
 
     return {
       link: function (scope, el, attr) {
-        var u = window.Usuario;
-        if (!u) return;
+        Usuario.then(function(u){
+          if (!u) return;
 
-        if (u.credencial) {
-          if (u.credencial.grupos) {
-            var permissoes = {};
-            for (var gK in u.credencial.grupos) {
-              var g = u.credencial.grupos[gK];
-              if (!g.permissoes) continue;
-              for (var pK in g.permissoes) {
-                var p = g.permissoes[pK];
+          if (u.credencial) {
+            if (u.credencial.grupos) {
+              var permissoes = {};
+              for (var gK in u.credencial.grupos) {
+                var g = u.credencial.grupos[gK];
+                if (!g.permissoes) continue;
+                for (var pK in g.permissoes) {
+                  var p = g.permissoes[pK];
+                  var pNome = p.nome.trim();
+                  if (!permissoes[pNome]) permissoes[pNome] = p;
+                }
+              }
+              for (var pK in u.credencial.permissoes) {
+                var p = u.credencial.permissoes[pK];
                 var pNome = p.nome.trim();
-                if (!permissoes[pNome]) permissoes[pNome] = p;
+                if (!permissoes[pNome])
+                  permissoes[pNome] = p;
+              }
+
+              //------------------------------------------------------
+              var permNome = attr.segPermissao.trim();
+              if (permNome.indexOf('!') === 0) {
+                if (permissoes[permNome.substring(1, permNome.length)]) el.remove();
+              } else {
+                if (!permissoes[permNome]) el.remove();
               }
             }
-            for (var pK in u.credencial.permissoes) {
-              var p = u.credencial.permissoes[pK];
-              var pNome = p.nome.trim();
-              if (!permissoes[pNome])
-                permissoes[pNome] = p;
-            }
-
-            //------------------------------------------------------
-            var permNome = attr.segPermissao.trim();
-            if (permNome.indexOf('!') === 0) {
-              if (permissoes[permNome.substring(1, permNome.length)]) el.remove();
-            } else {
-              if (!permissoes[permNome]) el.remove();
-            }
           }
-        }
+        });
       }
     };
 
@@ -128,7 +98,8 @@ Module.directive('segPermissao', [function () {
   
   var injector = angular.injector(['ng'],true),
       $http = injector.get('$http'),
-      $q = injector.get('$q');
+      $q = injector.get('$q')
+      ;
   
   function _getObjByPath( obj, path ){
     if( !path ) return obj;
@@ -155,7 +126,6 @@ Module.directive('segPermissao', [function () {
       headers = {
         'Content-Type': defaults.contentType
       },
-      tiposCache = {},
       entidadesCache = {};
 
   //===========================================================================
@@ -167,10 +137,11 @@ Module.directive('segPermissao', [function () {
     this.size = config.size || defaults.size;
     this.page = config.page || defaults.page;
     this.url = config.url || defaults.url ;
+    this.cache = {};
   }
   
-  function Query( ents ){
-    this.entidade = ents instanceof Array? ents[0] : ents || {};
+  function Query( ent ){
+    this.entidade = ent || {};
     this._size = this.entidade.size;
     this._page = this.entidade.page;
     this._param = [];
@@ -182,6 +153,8 @@ Module.directive('segPermissao', [function () {
     this.$scope = null;
     this._build = false;
     this._path = '';
+    this._cache = false;
+    this._clearCache = false;
     
     this._buscarUm = true;
     this._buscarMuitos = false;
@@ -190,14 +163,8 @@ Module.directive('segPermissao', [function () {
   
   var proto = Query.prototype;
     
-  proto.size = function( x ){
-    if( typeof x === 'number' ) this._size = x;
-    return this;
-  };
-  proto.page = function( x ){
-    if( typeof x === 'number' ) this._page = x;
-    return this;
-  };
+  __construirSetter( proto, 'page', '_page' );
+  __construirSetter( proto, 'size', '_size' );
   proto.order = function (vals) {
     if (vals instanceof Array) {
       for (var g in vals) {
@@ -276,14 +243,21 @@ Module.directive('segPermissao', [function () {
     return this;
   };
   proto.send = function(){
-    var that = this;
+    var cache = this.entidade.cache;
+    var cacheKey = this._method + this._path;
+    if( this._clearCache ) cache[cacheKey] = null;
+    else if( cache[cacheKey] ) return $q.resolve( cache[cacheKey] );
+    
+    var that = this; 
     return $http({
       method: this._method,
       url: this._url,
       headers: headers,
       data: this._data || {}
     }).then(function(data){
-      return _getObjByPath( data, that.entidade.dataPath );
+      data = _getObjByPath( data, that.entidade.dataPath );
+      if( that._cache ) cache[cacheKey] = data;
+      return data;
     });
   };
   
@@ -291,39 +265,16 @@ Module.directive('segPermissao', [function () {
     this._build = false;
     return this;
   };
-  proto.apply = function( x ){
-    this.$scope = x;
-    return this;
-  };
-  proto.data = function( x ){
-    this._data = x;
-    return this;
-  };
-  proto.method = function( x ){
-    this._method = x;
-    return this;
-  };
-  proto.path = function( x ){
-    this._path = x;
-    return this;
-  };
-  proto.id = function( config ){
-    if( typeof config === 'undefined' ) config = true;
-    this._id = config ;
-  };
+  __construirSetter( proto, 'cache', '_cache', true );
+  __construirSetter( proto, 'clearCache', '_clearCache', true );
+  __construirSetter( proto, 'path', '_path' );
+  __construirSetter( proto, 'method', '_method' );
+  __construirSetter( proto, 'data', '_data' );
+  __construirSetter( proto, 'apply', '_apply' );
+  __construirSetter( proto, 'id', '_id', true );
   
   
-  proto.tipo = function( override ){
-    var that = this;
-    var cached = tiposCache[that.entidade.nome] ;
-    if( !cached || override  ){
-      return that.path('/tipo').method('POST').build().send().then(function(data){
-        return tiposCache[that.entidade.nome] = data;
-      });
-    }
-    return $q.resolve( cached );
-  };
-  
+  __construirRequisicao( proto, 'tipo','POST', '/tipo' );
   __construirRequisicao( proto, 'get','POST', '/buscar' );
   __construirRequisicao( proto, 'put','PUT' );
   __construirRequisicao( proto, 'post','POST' );
@@ -354,8 +305,14 @@ Module.directive('segPermissao', [function () {
       });
     };
   }
-  function __construirSetter( pro, nomeFunc, nomeAttr ){
-    pro[nomeFunc] = function( val ){
+  function __construirSetter( pro, nomeFunc, nomeAttr, defaultVal ){
+    if( typeof defaultVal !== 'undefined' ) 
+      pro[nomeFunc] = function( val ){
+        if( typeof val === 'undefined' ) val = defaultVal;
+        this[nomeAttr] = val;
+        return this;
+      };
+    else pro[nomeFunc] = function( val ){
       this[nomeAttr] = val;
       return this;
     };
@@ -423,16 +380,12 @@ Module.provider('Entidades',[function(){
   this.$get = ['context',function(context){
     var that = this;
     var ref = {
-      query: function( entOrList ){
-        if( !(entOrList instanceof Array) ) entOrList = [ entOrList ];
-        for( var i = 0; i < entOrList.length; i++ ){
-          var entOrStr = entOrList[i];
-          if( typeof entOrStr === 'string' ) entOrList[i] = entidadesCache[entOrStr] ;
-        }
-        return new Query( entOrList );
+      query: function( ent ){
+        if( typeof ent === 'string' ) ent = ref.entidade(ent);
+        return new Query( ent );
       },
       muitosQuery: function( arrQ ){
-        if( !arrQ ) return new MuitosQuery();
+        if( !arrQ ) return new MuitosQuery(  );
       },
       entidade: function( nome, config, override ){
         var ent = entidadesCache[nome];
@@ -519,6 +472,56 @@ Module.provider('LoginInter',[function(){
   }];
 
 }]);
+(function(){
+  
+  var injector = angular.injector(['ng'],true),
+      $q = injector.get('$q'),
+      provider = null;
+  
+  var resolve, reject;
+  var promise = $q(function(resolveX, rejectX){
+    resolve = resolveX;
+    reject = rejectX;
+  });
+  promise._recarregar = false;
+  promise.recarregar = function(){ return promise; };
+  
+  var oldThen = promise.then ;
+  promise.then = function(){
+    if( !promise.$$state.status && !promise._recarregar ) promise.recarregar();
+    oldThen.apply( promise, arguments );
+  };
+  
+  //=========================================================================
+  Module.provider('Usuario', function(){
+    provider = this;
+    this.carregarAoIniciar = true;
+    this.$get = function(){ return promise; };
+  });
+  
+  //=========================================================================
+  Module.run(['context','$http',function(context,$http){
+    promise.recarregar = function(){
+      if( promise._recarregar ) return promise;
+      promise.$$state.status = 0;
+      promise._recarregar = true;
+      $http.get(context.services +'/seguranca/usuario').then(function(data){
+        if( data.data.codigo === 200 && data.data.data ) resolve( data.data.data );
+        else reject( {} );
+      },function(err){
+        reject( err );
+      }).finally(function(){
+        promise._recarregar = false;
+      });
+      return promise;
+    };
+    if( provider.carregarAoIniciar ) promise.recarregar();
+  }]);
+  
+})();
+
+
+
 Module.provider('context',[function(){
     
     var provider = this;

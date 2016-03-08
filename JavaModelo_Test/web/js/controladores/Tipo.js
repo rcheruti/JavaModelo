@@ -9,7 +9,8 @@ Module.controller('Tipo',['$scope','Entidades',
   ];
   
   $scope.mostrarTipo = function(x){
-    Entidades.query( $scope.entidade ).tipoIn( $scope, 'tipo', $scope.override );
+    Entidades.query( $scope.entidade ).cache(true).clearCache( $scope.override )
+      .tipoIn( $scope, 'tipo' );
   };
   
 }]);

@@ -1,9 +1,11 @@
 
 window.Module = angular.module('Module',['ngAnimate','ngTouch','ngRoute','ui.router','JavaModelo']);
 
-Module.config(['contextProvider',
-    function(contextProvider){
-
+Module.config(['contextProvider','UsuarioProvider',
+    function(contextProvider, UsuarioProvider){
+  
+  //UsuarioProvider.carregarAoIniciar = false;
+  
   contextProvider.root( window.contextRoot );
   contextProvider.services('/s');
   contextProvider.websocket('/websocket');
@@ -24,8 +26,9 @@ Module.run(['Entidades','$window','Usuario','$q',
   Usuario.then(function(u){
     console.log('Usuario::: ', u);
   });
+  /* */
   
-  
+  /*
   var resolve, reject,
       promise = $q(function( res, rej ){
         resolve = res;
@@ -42,5 +45,6 @@ Module.run(['Entidades','$window','Usuario','$q',
     //promise.$$state.value = $window.vvv ;
     resolve( $window.vvv );
   }, 300);
+  /* */
   
 }]);

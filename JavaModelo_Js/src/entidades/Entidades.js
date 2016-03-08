@@ -2,7 +2,8 @@
   
   var injector = angular.injector(['ng'],true),
       $http = injector.get('$http'),
-      $q = injector.get('$q');
+      $q = injector.get('$q')
+      ;
   
   function _getObjByPath( obj, path ){
     if( !path ) return obj;
@@ -29,7 +30,6 @@
       headers = {
         'Content-Type': defaults.contentType
       },
-      tiposCache = {},
       entidadesCache = {};
 
   //===========================================================================
@@ -41,10 +41,11 @@
     this.size = config.size || defaults.size;
     this.page = config.page || defaults.page;
     this.url = config.url || defaults.url ;
+    this.cache = {};
   }
   
-  function Query( ents ){
-    this.entidade = ents instanceof Array? ents[0] : ents || {};
+  function Query( ent ){
+    this.entidade = ent || {};
     this._size = this.entidade.size;
     this._page = this.entidade.page;
     this._param = [];
@@ -56,6 +57,8 @@
     this.$scope = null;
     this._build = false;
     this._path = '';
+    this._cache = false;
+    this._clearCache = false;
     
     this._buscarUm = true;
     this._buscarMuitos = false;
@@ -64,14 +67,8 @@
   
   var proto = Query.prototype;
     
-  proto.size = function( x ){
-    if( typeof x === 'number' ) this._size = x;
-    return this;
-  };
-  proto.page = function( x ){
-    if( typeof x === 'number' ) this._page = x;
-    return this;
-  };
+  __construirSetter( proto, 'page', '_page' );
+  __construirSetter( proto, 'size', '_size' );
   proto.order = function (vals) {
     if (vals instanceof Array) {
       for (var g in vals) {
@@ -150,14 +147,21 @@
     return this;
   };
   proto.send = function(){
-    var that = this;
+    var cache = this.entidade.cache;
+    var cacheKey = this._method + this._path;
+    if( this._clearCache ) cache[cacheKey] = null;
+    else if( cache[cacheKey] ) return $q.resolve( cache[cacheKey] );
+    
+    var that = this; 
     return $http({
       method: this._method,
       url: this._url,
       headers: headers,
       data: this._data || {}
     }).then(function(data){
-      return _getObjByPath( data, that.entidade.dataPath );
+      data = _getObjByPath( data, that.entidade.dataPath );
+      if( that._cache ) cache[cacheKey] = data;
+      return data;
     });
   };
   
@@ -165,39 +169,16 @@
     this._build = false;
     return this;
   };
-  proto.apply = function( x ){
-    this.$scope = x;
-    return this;
-  };
-  proto.data = function( x ){
-    this._data = x;
-    return this;
-  };
-  proto.method = function( x ){
-    this._method = x;
-    return this;
-  };
-  proto.path = function( x ){
-    this._path = x;
-    return this;
-  };
-  proto.id = function( config ){
-    if( typeof config === 'undefined' ) config = true;
-    this._id = config ;
-  };
+  __construirSetter( proto, 'cache', '_cache', true );
+  __construirSetter( proto, 'clearCache', '_clearCache', true );
+  __construirSetter( proto, 'path', '_path' );
+  __construirSetter( proto, 'method', '_method' );
+  __construirSetter( proto, 'data', '_data' );
+  __construirSetter( proto, 'apply', '_apply' );
+  __construirSetter( proto, 'id', '_id', true );
   
   
-  proto.tipo = function( override ){
-    var that = this;
-    var cached = tiposCache[that.entidade.nome] ;
-    if( !cached || override  ){
-      return that.path('/tipo').method('POST').build().send().then(function(data){
-        return tiposCache[that.entidade.nome] = data;
-      });
-    }
-    return $q.resolve( cached );
-  };
-  
+  __construirRequisicao( proto, 'tipo','POST', '/tipo' );
   __construirRequisicao( proto, 'get','POST', '/buscar' );
   __construirRequisicao( proto, 'put','PUT' );
   __construirRequisicao( proto, 'post','POST' );
@@ -228,8 +209,14 @@
       });
     };
   }
-  function __construirSetter( pro, nomeFunc, nomeAttr ){
-    pro[nomeFunc] = function( val ){
+  function __construirSetter( pro, nomeFunc, nomeAttr, defaultVal ){
+    if( typeof defaultVal !== 'undefined' ) 
+      pro[nomeFunc] = function( val ){
+        if( typeof val === 'undefined' ) val = defaultVal;
+        this[nomeAttr] = val;
+        return this;
+      };
+    else pro[nomeFunc] = function( val ){
       this[nomeAttr] = val;
       return this;
     };
@@ -297,16 +284,12 @@ Module.provider('Entidades',[function(){
   this.$get = ['context',function(context){
     var that = this;
     var ref = {
-      query: function( entOrList ){
-        if( !(entOrList instanceof Array) ) entOrList = [ entOrList ];
-        for( var i = 0; i < entOrList.length; i++ ){
-          var entOrStr = entOrList[i];
-          if( typeof entOrStr === 'string' ) entOrList[i] = entidadesCache[entOrStr] ;
-        }
-        return new Query( entOrList );
+      query: function( ent ){
+        if( typeof ent === 'string' ) ent = ref.entidade(ent);
+        return new Query( ent );
       },
       muitosQuery: function( arrQ ){
-        if( !arrQ ) return new MuitosQuery();
+        if( !arrQ ) return new MuitosQuery(  );
       },
       entidade: function( nome, config, override ){
         var ent = entidadesCache[nome];
