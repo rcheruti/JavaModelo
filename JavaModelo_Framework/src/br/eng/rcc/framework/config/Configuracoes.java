@@ -74,13 +74,33 @@ public class Configuracoes {
    * </a> contém a lista dos scripts padrão da JVM (de implementação obrigatória para as JVMs). 
    * 
    */
-  public static String encriptionScript = "PBKDF2WithHmacSHA1";
+  public static String criptografia = "PBKDF2WithHmacSHA1";
+  
+  /**
+   * SALT para ser usado junto com a senha do usuário no momento que for criada a
+   * criptografia da senha.
+   */
+  public static String criptografiaSalt = "Persistencia";
+  
+  /**
+   * Quantidade de iterações da chave quando uma chave de "SecretKey" for usavada.
+   * <br/><br/>
+   * Ex.: "PBKDF2WithHmacSHA1"
+   */
+  public static int criptografiaIteration = 5;
+  
+  /**
+   * Tamanho da chave quando uma chave de "SecretKey" for usavada.
+   * <br/><br/>
+   * Ex.: "PBKDF2WithHmacSHA1"
+   */
+  public static int criptografiaKeyLength = 512;
   
   /**
    * Informa se é necessário fazer a criptografia das senhas dos usuários.
    * (Atenção: apenas configure esta opção durante testes!)
    */
-  public static boolean encriptionActive = true;
+  public static boolean criptografiaAtivo = false;
   
   
   

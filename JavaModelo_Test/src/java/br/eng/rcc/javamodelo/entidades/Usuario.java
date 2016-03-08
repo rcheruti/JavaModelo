@@ -1,6 +1,6 @@
-
 package br.eng.rcc.javamodelo.entidades;
 
+import br.eng.rcc.framework.seguranca.entidades.Credencial;
 import br.eng.rcc.framework.seguranca.entidades.SegUsuario;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -11,16 +11,31 @@ import lombok.ToString;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper=false)
-@DiscriminatorValue(value="1")
+@EqualsAndHashCode(callSuper = false)
+@DiscriminatorValue(value = "1")
 @ToString(exclude = {"DTYPE"}) // ,"credencial"
-public class Usuario extends SegUsuario{ 
-  
-  
-  private String nome;
-  private String email;
-  
+public class Usuario extends SegUsuario {
+
+  protected String nome;
+  protected String email;
+
   @Column(updatable = false, insertable = false)
   protected int DTYPE = 1;
+
+  
+  @Override
+  public Usuario clone() {
+    Usuario clone = new Usuario();
     
+    clone.nome = this.nome;
+    clone.email = this.email;
+    
+    Credencial cred = this.getCredencial();
+    if (cred != null) {
+      clone.credencial = cred.clone();
+    }
+
+    return clone;
+  }
+
 }

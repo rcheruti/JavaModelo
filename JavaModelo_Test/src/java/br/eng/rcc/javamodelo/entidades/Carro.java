@@ -1,7 +1,9 @@
 
 package br.eng.rcc.javamodelo.entidades;
 
+import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.javamodelo.entidades.embutidos.RegistroUsuario;
+import br.eng.rcc.javamodelo.seguranca.SegInter;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -23,6 +25,7 @@ import lombok.ToString;
 @Data
 @ToString(exclude = {"cores"})  
 @EqualsAndHashCode(exclude={"cores", "portas","valor"})
+@Seguranca(persistenciaSelect = SegInter.class)
 public class Carro implements Serializable{
   
   @Id

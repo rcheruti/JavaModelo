@@ -64,7 +64,8 @@ public class SegurancaServico {
     if (  (valor == null || Seguranca.emptyString.equals(valor)) && 
           (grupoK == null || Seguranca.emptyString.equals(grupoK))
         ){
-      throw new MsgException(JsonResponse.ERROR_PERMISSAO, null, "Uma chave de segurança não pode ser nula!");
+      return;
+      //throw new MsgException(JsonResponse.ERROR_PERMISSAO, null, "Uma chave de segurança não pode ser nula!");
     }
 
     try {

@@ -142,23 +142,6 @@ Module.config(['$httpProvider',
     this._param.push(nome + ' ' + comp + ' ' + val + logicOp);
     return this;
   };
-  proto.data = function( x ){
-    this._data = x;
-    return this;
-  };
-  proto.method = function( x ){
-    this._method = x;
-    return this;
-  };
-  proto.path = function( x ){
-    this._path = x || '';
-    return this;
-  };
-  
-  proto.id = function( config ){
-    if( typeof config === 'undefined' ) config = true;
-    this._id = config ;
-  };
   
   proto.build = function( force ){
     if( this._build && !force ) return this;
@@ -184,16 +167,13 @@ Module.config(['$httpProvider',
       matrix = ';' + matrix;
     
     // Montar url:
+    if( !this._path ) this._path = '';
     var url = '' +(this._buscarUm?'/um':this._buscarMuitos?'/muitos':'') + 
             (this._buscarId?'/id':'') ;
     url = this._url +url + (this._buscarMuitos?'':'/'+this.entidade.nome) 
             +this._path ;
     this._url = url + matrix + queryStr ;
     this._build = true;
-    return this;
-  };
-  proto.clearBuild - function(){
-    this._build = false;
     return this;
   };
   proto.send = function(){
@@ -207,40 +187,62 @@ Module.config(['$httpProvider',
       return _getObjByPath( data, that.entidade.dataPath );
     });
   };
-  proto.apply = function( $scope ){
-    this.$scope = $scope;
+  
+  proto.clearBuild = function(){
+    this._build = false;
     return this;
   };
+  proto.apply = function( x ){
+    this.$scope = x;
+    return this;
+  };
+  proto.data = function( x ){
+    this._data = x;
+    return this;
+  };
+  proto.method = function( x ){
+    this._method = x;
+    return this;
+  };
+  proto.path = function( x ){
+    this._path = x;
+    return this;
+  };
+  proto.id = function( config ){
+    if( typeof config === 'undefined' ) config = true;
+    this._id = config ;
+  };
+  
   
   proto.tipo = function( override ){
     var that = this;
     var cached = tiposCache[that.entidade.nome] ;
     if( !cached || override  ){
-      return that.path('/tipo').method('GET').build().send().then(function(data){
+      return that.path('/tipo').method('POST').build().send().then(function(data){
         return tiposCache[that.entidade.nome] = data;
       });
     }
     return $q.resolve( cached );
   };
   
-  __construirRequisicao( 'get','POST', '/buscar' );
-  __construirRequisicao( 'put','PUT' );
-  __construirRequisicao( 'post','POST' );
-  __construirRequisicao( 'delete','DELETE' );
+  __construirRequisicao( proto, 'get','POST', '/buscar' );
+  __construirRequisicao( proto, 'put','PUT' );
+  __construirRequisicao( proto, 'post','POST' );
+  __construirRequisicao( proto, 'delete','DELETE' );
   
-  __construirRequisicaoIn( 'tipoIn','tipo' );
-  __construirRequisicaoIn( 'getIn','get' );
-  __construirRequisicaoIn( 'putIn','put' );
-  __construirRequisicaoIn( 'postIn','post' );
-  __construirRequisicaoIn( 'deleteIn','delete' );
+  __construirRequisicaoIn( proto, 'tipoIn','tipo' );
+  __construirRequisicaoIn( proto, 'getIn','get' );
+  __construirRequisicaoIn( proto, 'putIn','put' );
+  __construirRequisicaoIn( proto, 'postIn','post' );
+  __construirRequisicaoIn( proto, 'deleteIn','delete' );
   
-  function __construirRequisicao( nomeFunc, method, path ){
-    proto[nomeFunc] = function( _data ){
+  function __construirRequisicao( pro, nomeFunc, method, path ){
+    pro[nomeFunc] = function( _data ){
       return this.path( path ).data( _data ).method( method ).build().send();
     };
   }
-  function __construirRequisicaoIn( nomeFunc, methodFunc ){
-    proto[nomeFunc] = function( obj, key, _data ){
+  function __construirRequisicaoIn( pro, nomeFunc, methodFunc ){
+    pro[nomeFunc] = function( obj, key, _data ){
       if( !key ) key = this.entidade.nome;
       key = key.split('.');
       var objToBind = _getObjByPath( obj, key.slice(0,key.length-1) );
@@ -253,7 +255,68 @@ Module.config(['$httpProvider',
       });
     };
   }
-
+  function __construirSetter( pro, nomeFunc, nomeAttr ){
+    pro[nomeFunc] = function( val ){
+      this[nomeAttr] = val;
+      return this;
+    };
+  }
+  
+  
+//============================================================================
+  
+  function MuitosQuery(){
+    this._querys = [];
+    this._method = '';
+    this.$scope = null;
+    this._build = false;
+    this._path = '';
+    this._buscarId = false;
+  }
+  
+  var muitosProto = MuitosQuery.prototype;
+  muitosProto.clearBuild = proto.clearBuild;
+  muitosProto.apply = proto.apply ;
+  muitosProto.id = proto.id ;
+  muitosProto.path = proto.path ;
+  muitosProto.method = proto.method ;
+  
+  muitosProto.add = function( query ){
+    this._querys.push( query );
+    return this;
+  };
+  muitosProto.remove = function( query ){
+    for( var i = 0; i < this._querys.length; i++ ){
+      if( this._querys[i] === query ){
+        this._querys.splice( i, 1 );
+        break;
+      }
+    }
+    return this;
+  };
+  
+  muitosProto.build = function(){
+    for( var i = 0; i < this._querys.length; i++ ){
+      this._querys[i].build();
+    }
+    this._build = true;
+    return this;
+  } ;
+  muitosProto.send = function(){} ;
+  
+  
+  __construirRequisicao( muitosProto, 'get','POST', '/buscar' );
+  __construirRequisicao( muitosProto, 'put','PUT' );
+  __construirRequisicao( muitosProto, 'post','POST' );
+  __construirRequisicao( muitosProto, 'delete','DELETE' );
+  
+  __construirRequisicaoIn( muitosProto, 'tipoIn','tipo' );
+  __construirRequisicaoIn( muitosProto, 'getIn','get' );
+  __construirRequisicaoIn( muitosProto, 'putIn','put' );
+  __construirRequisicaoIn( muitosProto, 'postIn','post' );
+  __construirRequisicaoIn( muitosProto, 'deleteIn','delete' );
+  
+  
 //============================================================================
 Module.provider('Entidades',[function(){
     
@@ -268,6 +331,9 @@ Module.provider('Entidades',[function(){
           if( typeof entOrStr === 'string' ) entOrList[i] = entidadesCache[entOrStr] ;
         }
         return new Query( entOrList );
+      },
+      muitosQuery: function( arrQ ){
+        if( !arrQ ) return new MuitosQuery();
       },
       entidade: function( nome, config, override ){
         var ent = entidadesCache[nome];

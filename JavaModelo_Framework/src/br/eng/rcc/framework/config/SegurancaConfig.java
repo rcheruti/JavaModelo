@@ -20,8 +20,9 @@ public class SegurancaConfig {
   public static void init() throws IOException{
     System.out.printf("------  Iniciando leitura de segurança: \n");
 
-    URL url = SegurancaConfig.class.getClassLoader().getResource("seguranca.json");
-    System.out.printf("- Endereço: %s \n", url );
+    URL url = SegurancaConfig.class.getClassLoader().getResource("META-INF/seguranca.json");
+    if( url == null ) url = SegurancaConfig.class.getClassLoader().getResource("seguranca.json");
+    System.out.printf("------ Endereço: %s \n", url );
 
     if( url != null ){
       ObjectMapper mapper = new JacksonObjectMapperContextResolver().getContext(null);
