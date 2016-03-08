@@ -10,8 +10,8 @@ Module.config(['contextProvider',
   
 }]);
 
-Module.run(['Entidades','$window',
-    function(Entidades,$window){
+Module.run(['Entidades','$window','Usuario','$q',
+    function(Entidades,$window,Usuario, $q){
   
   $window.Carro = Entidades.entidade('Carro');
   $window.Cor = Entidades.entidade('Cor');
@@ -20,5 +20,27 @@ Module.run(['Entidades','$window',
   Entidades.entidade('Usuario'); 
   Entidades.entidade('Valor');
   Entidades.entidade('RegistroUsuario');
+  
+  Usuario.then(function(u){
+    console.log('Usuario::: ', u);
+  });
+  
+  
+  var resolve, reject,
+      promise = $q(function( res, rej ){
+        resolve = res;
+        reject = rej;
+      });
+  
+  $window.ppp = promise;
+  $window.vvv = 1;
+  $window.reload = function(){
+    promise.$$state.status = 0;
+  };
+  
+  setInterval(function(){
+    //promise.$$state.value = $window.vvv ;
+    resolve( $window.vvv );
+  }, 300);
   
 }]);

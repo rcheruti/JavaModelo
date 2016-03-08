@@ -1,7 +1,6 @@
 Module.provider('context',[function(){
     
     var provider = this;
-        
     
     /**
      * 

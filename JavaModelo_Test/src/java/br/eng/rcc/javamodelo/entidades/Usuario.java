@@ -27,6 +27,7 @@ public class Usuario extends SegUsuario {
   public Usuario clone() {
     Usuario clone = new Usuario();
     
+    clone.id = this.id;
     clone.nome = this.nome;
     clone.email = this.email;
     

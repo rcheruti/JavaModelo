@@ -28,6 +28,105 @@ Module.config(['$httpProvider',
 (function(){
   
   var injector = angular.injector(['ng'],true),
+      $q = injector.get('$q');
+  
+  var resolve, reject;
+  var promise = $q(function(resolveX, rejectX){
+    resolve = resolveX;
+    reject = rejectX;
+  });
+  promise.reload = function(){ return promise; };
+  
+  Module.value('Usuario', promise );
+  
+  Module.run(['context','$http',function(context,$http){
+    promise.reload = function(){
+      promise.$$state.status = 0;
+      $http.get(context.services +'/seguranca/usuario').then(function(data){
+        if( data.data.codigo === 200 && data.data.data ) resolve( data.data.data );
+        else reject( {} );
+      },function(err){
+        reject( err );
+      });
+      return promise;
+    };
+    promise.reload();
+  }]);
+  
+})();
+
+
+
+Module.directive('segGrupo', [function () {
+
+    return {
+      link: function (scope, el, attr) {
+        var u = window.Usuario;
+        if (!u) return;
+
+        if (u.credencial) {
+          if (u.credencial.grupos) {
+            var grupos = {};
+            for (var gK in u.credencial.grupos) {
+              var g = u.credencial.grupos[gK];
+              var gNome = g.chave.trim();
+              if (!grupos[gNome]) grupos[gNome] = g;
+            }
+
+            var permNome = attr.segGrupo.trim();
+            if (permNome.indexOf('!') === 0) {
+              if (grupos[permNome.substring(1, permNome.length)]) el.remove();
+            } else {
+              if (!grupos[permNome]) el.remove();
+            }
+          }
+        }
+      }
+    };
+
+  }]);
+Module.directive('segPermissao', [function () {
+
+    return {
+      link: function (scope, el, attr) {
+        var u = window.Usuario;
+        if (!u) return;
+
+        if (u.credencial) {
+          if (u.credencial.grupos) {
+            var permissoes = {};
+            for (var gK in u.credencial.grupos) {
+              var g = u.credencial.grupos[gK];
+              if (!g.permissoes) continue;
+              for (var pK in g.permissoes) {
+                var p = g.permissoes[pK];
+                var pNome = p.nome.trim();
+                if (!permissoes[pNome]) permissoes[pNome] = p;
+              }
+            }
+            for (var pK in u.credencial.permissoes) {
+              var p = u.credencial.permissoes[pK];
+              var pNome = p.nome.trim();
+              if (!permissoes[pNome])
+                permissoes[pNome] = p;
+            }
+
+            //------------------------------------------------------
+            var permNome = attr.segPermissao.trim();
+            if (permNome.indexOf('!') === 0) {
+              if (permissoes[permNome.substring(1, permNome.length)]) el.remove();
+            } else {
+              if (!permissoes[permNome]) el.remove();
+            }
+          }
+        }
+      }
+    };
+
+  }]);
+(function(){
+  
+  var injector = angular.injector(['ng'],true),
       $http = injector.get('$http'),
       $q = injector.get('$q');
   
@@ -423,7 +522,6 @@ Module.provider('LoginInter',[function(){
 Module.provider('context',[function(){
     
     var provider = this;
-        
     
     /**
      * 
