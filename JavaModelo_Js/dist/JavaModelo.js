@@ -2,7 +2,7 @@
 (function(window){
 
 
-var Module = angular.module('JavaModelo',['ng']);
+var Module = angular.module('JavaModelo',['ng','ui.router']);
 
   // Configuração dos interceptadores desse módule
 Module.config(['$httpProvider',
@@ -461,10 +461,12 @@ Module.provider('HostInter',[function(){
   }];
 
 }]);
-Module.provider('LoginInter',[function(){
+Module.provider('LoginInter',['state',function(state){
 
   var provider = this;
-
+  
+  provider.handler = null;
+  provider.state = 'login';
   provider.url = '/login.jsp';
   provider.ativo = true;
   provider.ERRORCODE_LOGIN = 401 ;
@@ -479,8 +481,17 @@ Module.provider('LoginInter',[function(){
     var ref = {
       response:function( response ){
         if( provider.ativo && response.data && response.data.code === provider.ERRORCODE_LOGIN ){
-          var origin = $window.location.origin ;
-          $window.location = origin + context.services + provider.url ;
+          if( provider.handler ){
+            provider.handler( response );
+            //-----------------------------------------------------------------
+          }else{
+            if( provider.state ){
+              state.go( provider.state );
+            }else{
+              var origin = $window.location.origin ;
+              $window.location = origin + context.services + provider.url ;
+            }
+          }
         }
         return response ;
       }

@@ -21,7 +21,7 @@ import lombok.ToString;
 @Data
 @Cacheable(true)
 @ToString(exclude = {"carros"})
-@EqualsAndHashCode(exclude={"rgb", "carros","hex","nome","rgb"})
+@EqualsAndHashCode(exclude={"rgb", "carros","hex","nome"})
 public class Cor implements Serializable{
   
   @Id

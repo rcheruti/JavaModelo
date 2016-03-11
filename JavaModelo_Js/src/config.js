@@ -1,5 +1,5 @@
 
-var Module = angular.module('JavaModelo',['ng']);
+var Module = angular.module('JavaModelo',['ng','ui.router']);
 
   // Configuração dos interceptadores desse módule
 Module.config(['$httpProvider',

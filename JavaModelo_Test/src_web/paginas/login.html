@@ -1,0 +1,21 @@
+
+<div class="loginForm" ng-controller="LoginForm">
+  <label>
+    <span>Login</span>
+    <input ng-model="login"/>
+  </label>
+
+  <br/><br/>
+
+  <label>
+    <span>Senha</span>
+    <input ng-model="senha" type="password"/>
+  </label>
+
+  <br/><br/>
+
+  <button type="button" ng-click="entrar()">Log in</button>
+  <br/><br/>
+
+  <div class="msg trans" ng-class="msgClasses">{{ msg }}</div>
+</div>

@@ -29,8 +29,7 @@ public class FiltroRegistrador implements ServletContextListener{
         ctx.addFilter(RewriteFiltro.class.getName(), RewriteFiltro.class)
           .addMappingForUrlPatterns(null, true, "/*");
         ctx.addFilter(SegurancaFiltro.class.getName(), SegurancaFiltro.class)
-          .addMappingForUrlPatterns(EnumSet.of( DispatcherType.REQUEST, 
-                                                DispatcherType.FORWARD ) , true, "/*");
+          .addMappingForUrlPatterns(EnumSet.of( DispatcherType.REQUEST ) , true, "/*");
     }
 
     @Override

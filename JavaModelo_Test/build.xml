@@ -7,17 +7,9 @@
     
     <target name="-pre-compile">
       <delete file="web/js/libs/JavaModelo.js" />
-      <copy file="../JavaModelo_Js/dist/JavaModelo.js" tofile="web/js/libs/JavaModelo.js" />
-      
-      <!--
-      <property name="entidadeTestFolder" value="src/java/br/eng/rcc/framework/seguranca/entidades" />
-      <property name="testSrcFolder" value="src/java" />
-      <property name="entidadeSrcFolder" value="../JavaModelo_Entities/src" />
-      <delete dir="${entidadeTestFolder}" />
-      <copy todir="${testSrcFolder}" >
-        <fileset dir="${entidadeSrcFolder}" />
-      </copy>
-      -->
+      <copy file="../JavaModelo_Js/dist/JavaModelo.js" 
+            tofile="src_web/js/critico/libs/JavaModelo.js" />
+      <exec executable="grunt" />
     </target>
     
     <target name="-post-dist">

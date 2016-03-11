@@ -27,25 +27,6 @@ Module.run(['Entidades','$window','Usuario','$q',
   Usuario.then(function(u){
     console.log('Usuario::: ', u);
   });
-  /* */
   
-  /*
-  var resolve, reject,
-      promise = $q(function( res, rej ){
-        resolve = res;
-        reject = rej;
-      });
-  
-  $window.ppp = promise;
-  $window.vvv = 1;
-  $window.reload = function(){
-    promise.$$state.status = 0;
-  };
-  
-  setInterval(function(){
-    //promise.$$state.value = $window.vvv ;
-    resolve( $window.vvv );
-  }, 300);
-  /* */
   
 }]);
