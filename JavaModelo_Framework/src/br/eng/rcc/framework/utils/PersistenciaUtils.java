@@ -32,7 +32,7 @@ public class PersistenciaUtils {
   private static final Pattern matrixPattern = Pattern
        .compile(";\\s*([^=\\s]+)=([^;]+)");
   private static final Pattern entidadePattern = Pattern
-       .compile("/persistencia/(?:um/(?:id/)?)?([\\w\\d]+)", Pattern.CASE_INSENSITIVE);
+       .compile("/persistencia/(?:um/(id/)?)?([\\w\\d]+)", Pattern.CASE_INSENSITIVE);
   
   
   
@@ -139,7 +139,6 @@ public class PersistenciaUtils {
     String[][] matrix = uriSplit.length > 0? parseMatrixString( uriSplit[0] ) : new String[0][0];
     
     BuscaInfo bi = new BuscaInfo();
-    bi.query = query;
     try{
       if( matrix[0] != null && matrix[0][0] != null ) bi.size = Integer.parseInt(matrix[0][0]);
       if( matrix[1] != null && matrix[1][0] != null ) bi.page = Integer.parseInt(matrix[1][0]);
@@ -148,10 +147,12 @@ public class PersistenciaUtils {
     }
     bi.join = matrix[2] != null ? matrix[2] : new String[0];
     bi.order = matrix[3] != null ? matrix[3] : new String[0];
+    bi.query = query;
     
     Matcher matcher = entidadePattern.matcher(uriQuery);
     if( matcher.find() ){
-      String entidade = matcher.group(1);
+      bi.modeloId = matcher.group(1) != null;
+      String entidade = matcher.group(2);
       Class klass = null;
       if( cache != null ){
         klass = cache.get(entidade);
@@ -164,9 +165,9 @@ public class PersistenciaUtils {
   }
   
   public static List<BuscaInfo> parseBusca(JsonNode json, ClassCache cache){
-    List<PersistenciaUtils.BuscaInfo> buscas = new ArrayList<>();
+    List<BuscaInfo> buscas = new ArrayList<>();
     for( JsonNode node : json ){
-      PersistenciaUtils.BuscaInfo busca = new PersistenciaUtils.BuscaInfo();
+      BuscaInfo busca = new BuscaInfo();
       busca.entidade = node.get("entidade").asText();
       busca.classe = cache.get(busca.entidade);
       if( node.has("size") ) busca.size = node.get("size").intValue();
@@ -305,50 +306,6 @@ public class PersistenciaUtils {
       return nomes;
     }
   }
-  
-  
-  //=============================================================================
-  
-  public static class BuscaInfo {
-
-    public int page = Configuracoes.pageEntidadeDefault;
-    public int size = Configuracoes.sizeEntidadeDefault;
-    /**
-     * A lista dos atributos que devem ser carregados para a resposta, que 
-     * provavelmente são "Lazy".
-     */
-    public String[] join;
-    /**
-    * A lista de Strings que serão usadas para fazer a ordenação.
-    * 
-    * Pode estar nos formatos: "attr", "attr ASC" ou "attr DESC"
-    */
-    public String[] order; 
-    /**
-    * Query String dessa busca, já interpretada.
-    * 
-    * Esse vetor está no formato:
-    * [
-    *   [ "Nome do atributo", "comparador do banco", "valor do atributo", "operação E ou Ou" ]
-    * ]
-    */
-    public String[][] query;
-    /**
-     * Nome simples da classe dessa entidade, como a JPA mapeia
-     * as entidades.s
-     */
-    public String entidade; 
-    /**
-     * Classe da entidade.
-     */
-    public Class<?> classe; 
-    /**
-     * Valor que vem no corpo da mensagem HTTP.
-     */
-    public Object data;
-
-  }
-
   
   
 }

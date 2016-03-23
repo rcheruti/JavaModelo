@@ -6,6 +6,7 @@ import br.eng.rcc.framework.jaxrs.persistencia.builders.WhereBuilder;
 import br.eng.rcc.framework.jaxrs.persistencia.builders.WhereBuilderInterface;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
+import br.eng.rcc.framework.utils.BuscaInfo;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
@@ -104,7 +105,7 @@ public class EntidadesService {
     return map;
   }
 
-  public List<Object> buscar(PersistenciaUtils.BuscaInfo info) {
+  public List<Object> buscar(BuscaInfo info) {
     Class<?> klass = cache.get(info.entidade, em);
     checker.check( klass, Seguranca.SELECT );
     
@@ -127,13 +128,15 @@ public class EntidadesService {
     // Cláusula WHERE do banco:
     WhereBuilderInterface wb = WhereBuilder.create(cb, query);
     query.where( wb.addArray( info.query ).build() );
+    
 
     checker.checkPersistencia(klass, cb, query);
-
     // A busca ao banco:
     Query q = em.createQuery(query);
     q.setFirstResult( info.page * info.size );
     q.setMaxResults( info.size );
+    
+    // O resultado
     List<Object> res = q.getResultList();
     PersistenciaUtils.resolverLazy(cache, res.toArray(), false, info.join );
     this.em.clear();
@@ -182,7 +185,7 @@ public class EntidadesService {
     }
   }
 
-  public int editar(PersistenciaUtils.BuscaInfo info, JsonNode obj) {
+  public int editar(BuscaInfo info, JsonNode obj) {
     Class<?> klass = cache.get(info.entidade, em);
     checker.check(klass, Seguranca.UPDATE);
     
@@ -267,7 +270,7 @@ public class EntidadesService {
     }
   }
 
-  public int deletar(PersistenciaUtils.BuscaInfo info) {
+  public int deletar(BuscaInfo info) {
     Class<?> klass = cache.get(info.entidade, em);
     checker.check(klass, Seguranca.DELETE);
     
@@ -291,7 +294,7 @@ public class EntidadesService {
     return qtd;
   }
   
-  public void adicionar(String entidade, PersistenciaUtils.BuscaInfo info){
+  public void adicionar(String entidade, BuscaInfo info){
     
   }
   

@@ -5,6 +5,7 @@ import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
+import br.eng.rcc.framework.utils.BuscaInfo;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import java.util.logging.Level;
@@ -102,7 +103,7 @@ public class EntidadesUmService {
           @Context UriInfo ctx
   ) {
     String path = String.format("%s?%s", ctx.getPath(), ctx.getRequestUri().getQuery() );
-    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca(path);
+    BuscaInfo info = PersistenciaUtils.parseBusca(path);
     return new JsonResponse(true, entService.buscar(info), "Buscar um", 
             info.page, info.size);
   }
@@ -176,7 +177,7 @@ public class EntidadesUmService {
               "Para editar registros é necessário informar os parâmetros de filtragem na QueryString.");
     }
     String path = String.format("%s?%s", ctx.getPath(), uriQuery );
-    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( path, cache);
+    BuscaInfo info = PersistenciaUtils.parseBusca( path, cache);
     if( obj.isArray() ) obj = obj.get(0);
     
     int ups = entService.editar(info, obj);
@@ -211,7 +212,7 @@ public class EntidadesUmService {
               "Para apagar registros é necessário informar os parâmetros de filtragem na QueryString.");
     }
     String path = String.format("%s?%s", ctx.getPath(), uriQuery );
-    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( path );
+    BuscaInfo info = PersistenciaUtils.parseBusca( path );
     
     int qtd = entService.deletar(info);
     return new JsonResponse(true, qtd, "Deletar um");

@@ -4,6 +4,7 @@ import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
+import br.eng.rcc.framework.utils.BuscaInfo;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class EntidadesUmIdService {
       return new JsonResponse(false,"A mensagem deve ser um Array JSON.");
     }
     
-    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath(), cache );
+    BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath(), cache );
     
     // Pegando os ids da classe
     List<String> ids = PersistenciaUtils.getIds(em, info.classe);
@@ -134,7 +135,7 @@ public class EntidadesUmIdService {
       return new JsonResponse(false,"A mensagem deve ser um Array JSON.");
     }
     
-    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath(), cache );
+    BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath(), cache );
     // Pegando os ids da classe
     List<String> ids = PersistenciaUtils.getIds(em, info.classe);
     if (ids == null || ids.isEmpty()) {
@@ -174,7 +175,7 @@ public class EntidadesUmIdService {
       return new JsonResponse(false,"A mensagem deve ser um Array JSON.");
     }
     
-    PersistenciaUtils.BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath(), cache );
+    BuscaInfo info = PersistenciaUtils.parseBusca( ctx.getPath(), cache );
     // Pegando os ids da classe
     List<String> ids = PersistenciaUtils.getIds(em, info.classe);
     if (ids == null || ids.isEmpty()) {

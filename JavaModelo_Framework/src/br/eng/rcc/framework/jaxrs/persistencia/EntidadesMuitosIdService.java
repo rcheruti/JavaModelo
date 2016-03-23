@@ -3,6 +3,7 @@ package br.eng.rcc.framework.jaxrs.persistencia;
 import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.utils.BuscaInfo;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -74,9 +75,9 @@ public class EntidadesMuitosIdService {
   @Transactional
   public JsonResponse buscar( JsonNode json ){
     checkNull(json);
-    List<PersistenciaUtils.BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
+    List<BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
     Map<String, List> resposta = new HashMap<>( json.size() + 2, 1 );
-    for( PersistenciaUtils.BuscaInfo info : buscas ){
+    for( BuscaInfo info : buscas ){
       List lista = resposta.get(info.entidade);
       if( lista == null ){
         lista = new ArrayList<>();
@@ -122,9 +123,9 @@ public class EntidadesMuitosIdService {
   @Transactional
   public JsonResponse editar(JsonNode json){
     checkNull(json);
-    List<PersistenciaUtils.BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
+    List<BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
     Map<String, Integer> resposta = new HashMap<>( json.size() + 2, 1 );
-    for( PersistenciaUtils.BuscaInfo info : buscas ){
+    for( BuscaInfo info : buscas ){
       Integer val = resposta.get(info.entidade);
       if( val == null ){
         val = 0;
@@ -161,9 +162,9 @@ public class EntidadesMuitosIdService {
   @Transactional
   public JsonResponse deletar(JsonNode json){
     checkNull(json);
-    List<PersistenciaUtils.BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
+    List<BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
     Map<String, Integer> resposta = new HashMap<>( json.size() + 2, 1 );
-    for( PersistenciaUtils.BuscaInfo info : buscas ){
+    for( BuscaInfo info : buscas ){
       Integer val = resposta.get(info.entidade);
       if( val == null ){
         val = 0;

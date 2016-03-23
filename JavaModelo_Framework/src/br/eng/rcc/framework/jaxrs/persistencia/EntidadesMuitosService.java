@@ -4,6 +4,7 @@ import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
+import br.eng.rcc.framework.utils.BuscaInfo;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.ArrayList;
@@ -73,9 +74,9 @@ public class EntidadesMuitosService {
   @Transactional
   public JsonResponse buscar(JsonNode json) {
     checkNull(json);
-    List<PersistenciaUtils.BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
+    List<BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
     Map<String, Object> resposta = new HashMap<>( json.size() + 2, 1 );
-    for( PersistenciaUtils.BuscaInfo info : buscas ){
+    for( BuscaInfo info : buscas ){
       List lista = entService.buscar(info);
       resposta.put(info.entidade, lista);
     }
@@ -103,9 +104,9 @@ public class EntidadesMuitosService {
   @Transactional
   public JsonResponse editar(JsonNode json) {
     checkNull(json);
-    List<PersistenciaUtils.BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
+    List<BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
     Map<String, Object> resposta = new HashMap<>( json.size() + 2, 1 );
-    for( PersistenciaUtils.BuscaInfo info : buscas ){
+    for( BuscaInfo info : buscas ){
       int qtd = entService.editar(info, (JsonNode)info.data );
       resposta.put(info.entidade, qtd);
     }
@@ -117,9 +118,9 @@ public class EntidadesMuitosService {
   @Transactional
   public JsonResponse deletar(JsonNode json) {
     checkNull(json);
-    List<PersistenciaUtils.BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
+    List<BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
     Map<String, Object> resposta = new HashMap<>( json.size() + 2, 1 );
-    for( PersistenciaUtils.BuscaInfo info : buscas ){
+    for( BuscaInfo info : buscas ){
       int qtd = entService.deletar( info );
       resposta.put(info.entidade, qtd);
     }
