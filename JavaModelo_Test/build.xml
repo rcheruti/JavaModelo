@@ -9,7 +9,10 @@
       <delete file="web/js/libs/JavaModelo.js" />
       <copy file="../JavaModelo_Js/dist/JavaModelo.js" 
             tofile="src_web/js/critico/libs/JavaModelo.js" />
-      <exec executable="grunt" />
+      <exec executable="cmd">
+        <arg value="/C" />
+        <arg value="grunt" />
+      </exec>
     </target>
     
     <target name="-post-dist">
