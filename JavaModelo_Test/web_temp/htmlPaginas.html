@@ -1,4 +1,4 @@
-<script type="text/ng-template">
+<script type="text/ng-template" id="carro.html">
 
 <div class="carro" ng-controller="Carro">
   
@@ -67,7 +67,7 @@
   </div>
   
 </div></script>
-<script type="text/ng-template">
+<script type="text/ng-template" id="index.html">
 <div class="homePage">
   <div class="menu" ng-controller="Menu">
     <button ng-click="logout()">Logout</button>
@@ -82,7 +82,7 @@
   <div ui-view="conteudo"></div>
 </div>
 </script>
-<script type="text/ng-template">
+<script type="text/ng-template" id="login.html">
 <div class="loginForm" ng-controller="LoginForm">
   <label>
     <span>Login</span>
@@ -103,7 +103,7 @@
 
   <div class="msg trans" ng-class="msgClasses">{{ msg }}</div>
 </div></script>
-<script type="text/ng-template"><div class="tipo" ng-controller="Tipo">
+<script type="text/ng-template" id="tipo.html"><div class="tipo" ng-controller="Tipo">
   
   <form class="form">
     <label>
@@ -126,7 +126,7 @@
   <pre>{{ tipo | json }}</pre>
   
 </div></script>
-<script type="text/ng-template"><div class="tipoMany" ng-controller="TipoMany">
+<script type="text/ng-template" id="tipoMany.html"><div class="tipoMany" ng-controller="TipoMany">
   
   <form class="form">
     <label>

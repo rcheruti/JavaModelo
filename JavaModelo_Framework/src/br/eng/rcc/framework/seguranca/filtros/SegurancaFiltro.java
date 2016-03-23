@@ -77,6 +77,15 @@ public class SegurancaFiltro implements Filter{
       resp.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
       resp.addHeader("Pragma", "no-cache");
       resp.addHeader("Expires", "0");
+      
+      String header = req.getHeader("X-Requested-With");
+      if( "XMLHttpRequest".equals(header) ){
+        JsonResponse res = new JsonResponse(false, JsonResponse.ERROR_DESLOGADO, null, "Você está deslogado");
+        writer.writeTo(res, res.getClass(), null,
+                new Annotation[0], MediaType.APPLICATION_JSON_TYPE, null,
+                response.getOutputStream());
+        return;
+      }
       req.getRequestDispatcher( redirectPage ).forward(request, response);
       return; // Sair, pois nao podemos deixar processar a requisição
     }

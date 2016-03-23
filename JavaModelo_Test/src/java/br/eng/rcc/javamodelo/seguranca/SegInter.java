@@ -11,7 +11,7 @@ public class SegInter implements SegurancaPersistenciaInterceptador<Carro>{
   
   public void check(CriteriaBuilder cb, CriteriaQuery query){
     System.out.printf("---  Checando segunrança de Buscar no interceptador \n\n");
-    throw new MsgException("Não vou deixar você ver isso!");
+    //throw new MsgException("Não vou deixar você ver isso!");
   }
   
 }

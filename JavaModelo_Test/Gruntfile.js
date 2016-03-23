@@ -64,6 +64,15 @@ module.exports = function (grunt) {
         ],
         dest: p.temp+'jsCritico.js'
       },
+      jsCriticoLogin:{
+        src:[ 
+          p.srcJsC+ 'libs/angular/angular.min.js',
+          p.srcJsC+ 'libs/angular/*.js',
+          p.srcJsC+ 'libs/*.js',
+          //p.srcJsC+ '**/*.js'
+        ],
+        dest: p.temp+'jsCriticoLogin.js'
+      },
       jsNormal:{
         src:[ p.srcJsN+ '**/*.js' ],
         dest: p.temp+'jsNormal.js'
@@ -71,7 +80,8 @@ module.exports = function (grunt) {
       html:{
         options:{
           process: function(src, filepath){
-            return '<script type="text/ng-template">'+ src +'</script>'; 
+            var id = filepath.replace(/.*\/paginas\//i,'');
+            return '<script type="text/ng-template" id="'+ id +'">'+ src +'</script>'; 
           }
         },
         files:[{
@@ -117,6 +127,12 @@ module.exports = function (grunt) {
         files:[{
           src: p.temp+'jsCritico.js' ,
           dest: p.temp+'jsCritico.min.js'
+        }]
+      },
+      jsCriticoLogin:{
+        files:[{
+          src: p.temp+'jsCriticoLogin.js' ,
+          dest: p.temp+'jsCriticoLogin.min.js'
         }]
       },
       jsNormal:{
@@ -174,12 +190,17 @@ module.exports = function (grunt) {
             replacement: function(){
               return grunt.file.read(p.temp+"/jsCritico.min.js");
             }
+          },{
+            match: 'jsCriticoLogin',
+            replacement: function(){
+              return grunt.file.read(p.temp+"/jsCriticoLogin.min.js");
+            }
           }]
         },
         files:[{
           expand:true,
           flatten:true,
-          src: [p.src+ 'index.jsp'],
+          src: [p.src+ 'index.jsp', p.src+ 'login.jsp'],
           dest: p.dist 
         }]
       }

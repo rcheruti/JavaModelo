@@ -1,9 +1,9 @@
-Module.provider('LoginInter',['state',function(state){
+Module.provider('LoginInter',[function(state){ // '$state'
 
   var provider = this;
   
   provider.handler = null;
-  provider.state = 'login';
+  provider.state = ''; // login
   provider.url = '/login.jsp';
   provider.ativo = true;
   provider.ERRORCODE_LOGIN = 401 ;
@@ -17,16 +17,21 @@ Module.provider('LoginInter',['state',function(state){
 
     var ref = {
       response:function( response ){
-        if( provider.ativo && response.data && response.data.code === provider.ERRORCODE_LOGIN ){
+        var data = response.data || {};
+        console.log( 'LoginInter',data );
+        if( provider.ativo && data.codigo === provider.ERRORCODE_LOGIN ){
           if( provider.handler ){
+            console.log( 'LoginInter handler',provider.handler );
             provider.handler( response );
             //-----------------------------------------------------------------
           }else{
-            if( provider.state ){
-              state.go( provider.state );
+            if( provider.state && false ){
+            console.log( 'LoginInter state',provider.state );
+              //state.go( provider.state );
             }else{
               var origin = $window.location.origin ;
-              $window.location = origin + context.services + provider.url ;
+            console.log( 'LoginInter location', origin + context.services + provider.url );
+              $window.location = origin + context.root + provider.url ;
             }
           }
         }

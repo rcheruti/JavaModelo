@@ -16,6 +16,20 @@
     
     <div class="bodyMargin" ui-view="login">
       
+      <div class="homePage">
+        <div class="menu" ng-controller="Menu">
+          <button ng-click="logout()">Logout</button>
+          <span>{{ logoutMsg }}</span>
+          <a ui-sref="carro">Carros</a>
+          <a ui-sref="tipo">Tipos</a>
+          <a ui-sref="tipoMany">Tipos Many</a>
+        </div>
+
+        <h1>Hello World!</h1>
+
+        <div ui-view="conteudo"></div>
+      </div>
+
     </div>
     
     <!-- ================================================ -->

@@ -35,7 +35,8 @@
         } // ms
       },
       headers = {
-        'Content-Type': defaults.contentType
+        'Content-Type': defaults.contentType,
+        'X-Requested-With':"XMLHttpRequest"
       },
       entidadesCache = {};
 
