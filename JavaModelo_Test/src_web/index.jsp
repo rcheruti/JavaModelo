@@ -21,6 +21,7 @@
           <button ng-click="logout()">Logout</button>
           <span>{{ logoutMsg }}</span>
           <a ui-sref="carro">Carros</a>
+          <a ui-sref="janela">Janelas</a>
           <a ui-sref="tipo">Tipos</a>
           <a ui-sref="tipoMany">Tipos Many</a>
         </div>

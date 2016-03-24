@@ -26,7 +26,7 @@ import javax.persistence.metamodel.SingularAttribute;
 public class PersistenciaUtils {
   
   private static final Pattern queryStringPattern = Pattern
-       .compile("([\\w.]++)\\s*+(=|!=|<|>|<=|>=|(?>not)?like)\\s*+((['\"]).*?\\4|[\\w\\.]++)\\s*+([&\\|]?)", Pattern.CASE_INSENSITIVE);
+       .compile("([\\w.]++)\\s*+(=|!=|<|>|<=|>=|(?:not)?like|is(?:not)?null)\\s*+((['\"]).*?\\4|[\\w\\.]++)\\s*+([&\\|]?)", Pattern.CASE_INSENSITIVE);
   private static final Pattern valorPattern = Pattern
        .compile("^(['\"]).*\\1$", Pattern.CASE_INSENSITIVE);
   private static final Pattern matrixPattern = Pattern

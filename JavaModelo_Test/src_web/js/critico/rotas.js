@@ -2,7 +2,7 @@
 Module.config(['$stateProvider','$routeProvider',
     function($stateProvider,$routeProvider){
       
-  $routeProvider.otherwise('/carro');
+  $routeProvider.otherwise('/#/carro');
   
   $stateProvider.state('index',
     { url: '/index', views:{login:{ templateUrl:'index.html' }}}
@@ -14,6 +14,8 @@ Module.config(['$stateProvider','$routeProvider',
     { url: '/tipo', views:{conteudo:{ templateUrl:'tipo.html' }}}
   ).state('tipoMany',
     { url: '/tipoMany', views:{conteudo:{ templateUrl:'tipoMany.html' }}}
+  ).state('janela',
+    { url: '/janela', views:{conteudo:{ templateUrl:'janela.html' }}}
   );
   
 }]);

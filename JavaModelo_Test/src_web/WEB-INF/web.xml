@@ -10,10 +10,5 @@
     </session-timeout>
   </session-config>
   
-  <context-param>
-    <param-name>Configuracoes.loginPath</param-name>
-    <param-value>/index.jsp</param-value>
-  </context-param>
-  
   
 </web-app>

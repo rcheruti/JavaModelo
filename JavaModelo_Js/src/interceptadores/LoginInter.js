@@ -18,19 +18,15 @@ Module.provider('LoginInter',[function(state){ // '$state'
     var ref = {
       response:function( response ){
         var data = response.data || {};
-        console.log( 'LoginInter',data );
         if( provider.ativo && data.codigo === provider.ERRORCODE_LOGIN ){
           if( provider.handler ){
-            console.log( 'LoginInter handler',provider.handler );
             provider.handler( response );
             //-----------------------------------------------------------------
           }else{
             if( provider.state && false ){
-            console.log( 'LoginInter state',provider.state );
               //state.go( provider.state );
             }else{
               var origin = $window.location.origin ;
-            console.log( 'LoginInter location', origin + context.services + provider.url );
               $window.location = origin + context.root + provider.url ;
             }
           }

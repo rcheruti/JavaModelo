@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -33,7 +34,10 @@ public class WhereDelete implements WhereBuilderInterface{
     
     public WhereDelete add(String[] vet){
         Root root = query.getRoot();
-        exps.add( map.get(vet[1]).apply( cbObj, root.get(vet[0]), vet[2] ) );
+                String[] vet0 = vet[0].split("\\.");
+                Path exp1 = root.get(vet0[0]);
+                for(int i = 1; i < vet0.length; i++) exp1 = exp1.get(vet0[i]);
+                exps.add( map.get(vet[1]).apply( cbObj, exp1, vet[2] ) );
         return this;
     }
     public WhereDelete addArray( String[][] arr ){
@@ -46,7 +50,10 @@ public class WhereDelete implements WhereBuilderInterface{
                 || vet[2] == null
                 )continue;
             try{
-                exps.add( map.get(vet[1]).apply( cbObj, root.get(vet[0]), vet[2] ) );
+                String[] vet0 = vet[0].split("\\.");
+                Path exp1 = root.get(vet0[0]);
+                for(int i = 1; i < vet0.length; i++) exp1 = exp1.get(vet0[i]);
+                exps.add( map.get(vet[1]).apply( cbObj, exp1, vet[2] ) );
             }catch(IllegalArgumentException ex){}
         }
         return this;

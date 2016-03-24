@@ -27,6 +27,8 @@ public class WhereBuilder {
         staticMap.put(">", ( cb, exp1,  exp2) -> cb.greaterThan(exp1,exp2));
         staticMap.put("notlike", ( cb, exp1,  exp2) -> cb.notLike(exp1,((String)exp2).replaceAll("\\*", "%") ));
         staticMap.put("like", ( cb, exp1,  exp2) -> cb.like(exp1, ((String)exp2).replaceAll("\\*", "%") ));
+        staticMap.put("isnull", ( cb, exp1,  exp2) -> cb.isNull(exp1) );
+        staticMap.put("isnotnull", ( cb, exp1,  exp2) -> cb.isNotNull(exp1) );
         map = staticMap;
     }
     public static WhereBuilderInterface create(CriteriaBuilder cb, CriteriaQuery query){

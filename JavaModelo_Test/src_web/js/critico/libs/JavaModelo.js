@@ -201,13 +201,18 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     return this;
   };
   proto.param = function (nome, comp, val, logicOp, quoteVal) {
-    if (!nome)
-      return null;
+    if (!nome || !comp)
+      return this;
+    comp = comp.toLowerCase();
+    if( comp === 'isnull' || comp === 'isnotnull' ){
+      val = '-';
+      quoteVal = true;
+    }
     if (!logicOp)
       logicOp = '&'; // Padão para E se for falso
     else if (logicOp !== '&' && logicOp !== '|')
       logicOp = '|'; // Padão para OU se for verdadeiro
-    if (quoteVal === undefined) { // se não for definido verificaremos o valor para tentar sempre usar as aspas
+    if (typeof quoteVal === 'undefined') { // se não for definido verificaremos o valor para tentar sempre usar as aspas
       val = '' + val;
       if (val.indexOf('"') !== 0 && val.indexOf("'") !== 0)
         val = '"' + val;
@@ -307,7 +312,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
   
   function __construirRequisicao( pro, nomeFunc, method, path ){
     pro[nomeFunc] = function( _data ){
-      return this.path( path ).data( _data ).method( method ).build().send();
+      return this.path( path ).data( _data || this._data ).method( method ).build().send();
     };
   }
   function __construirRequisicaoIn( pro, nomeFunc, methodFunc ){
@@ -427,6 +432,8 @@ Module.provider('Entidades',[function(){
     ref.gt = ref.greaterThan = '>';
     ref.nl = ref.notLike = 'notlike';
     ref.lk = ref.like = 'like';
+    ref.nl = ref.isNull = 'isnull';
+    ref.nnl = ref.isNotNull = 'isnotnull';
     return ref;
   }];
 
@@ -482,19 +489,15 @@ Module.provider('LoginInter',[function(state){ // '$state'
     var ref = {
       response:function( response ){
         var data = response.data || {};
-        console.log( 'LoginInter',data );
         if( provider.ativo && data.codigo === provider.ERRORCODE_LOGIN ){
           if( provider.handler ){
-            console.log( 'LoginInter handler',provider.handler );
             provider.handler( response );
             //-----------------------------------------------------------------
           }else{
             if( provider.state && false ){
-            console.log( 'LoginInter state',provider.state );
               //state.go( provider.state );
             }else{
               var origin = $window.location.origin ;
-            console.log( 'LoginInter location', origin + context.services + provider.url );
               $window.location = origin + context.root + provider.url ;
             }
           }

@@ -66,12 +66,14 @@ public class SegurancaFiltro implements Filter{
     Matcher matcher = pattern.matcher(uri);
     
     // Checar se essa é uma URL pública
+      //System.out.printf("---  URL : %s \n", uri);
     if( matcher.find() ){
+      //System.out.printf("---  URL publica?: %s \n", uri);
       chain.doFilter(request, response);
       return;
     }
     
-    
+    //System.out.printf("---  Logado?: %b \n", usuarioService.checkLogin(true) );
     if( !usuarioService.checkLogin(true) ){
       HttpServletResponse resp = (HttpServletResponse) response;
       resp.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -86,10 +88,11 @@ public class SegurancaFiltro implements Filter{
                 response.getOutputStream());
         return;
       }
+      //resp.sendRedirect( req.getContextPath()+redirectPage );
       req.getRequestDispatcher( redirectPage ).forward(request, response);
       return; // Sair, pois nao podemos deixar processar a requisição
     }
-
+    //System.out.printf("Prox------------ \n");
     Boolean bool = urlCacheBoolean.get(uri);
     if( bool == null ){
       SegurancaRootNode node = SegurancaConfig.getSegurancas();
