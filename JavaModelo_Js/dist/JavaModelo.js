@@ -276,12 +276,12 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
       headers: headers,
       data: this._data || {}
     }).then(function(data){
-      data = _getObjByPath( data, entidade.dataPath );
+      var dataObj = _getObjByPath( data, entidade.dataPath );
       if( that._cache ){
         entidade.ultimoCache[cacheKey] = Date.now();
-        cache[cacheKey] = data;
+        cache[cacheKey] = dataObj;
       }
-      return data;
+      return data.data; // passando o "data" do "angular $http"
     });
   };
   
@@ -295,7 +295,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
   __construirSetter( proto, 'method', '_method' );
   __construirSetter( proto, 'data', '_data' );
   __construirSetter( proto, 'apply', '_apply' );
-  __construirSetter( proto, 'id', '_id', true );
+  __construirSetter( proto, 'id', '_buscarId', true );
   
   
   __construirRequisicao( proto, 'tipo','POST', '/tipo' );
@@ -323,7 +323,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
       key = key[key.length-1];
       var that = this;
       return this[methodFunc]( _data ).then(function(data){
-        objToBind[key] = data;
+        objToBind[key] = data.data; //  <<-----  por enquanto fica HardCode!
         _apply( that, obj );
         return data;
       });
