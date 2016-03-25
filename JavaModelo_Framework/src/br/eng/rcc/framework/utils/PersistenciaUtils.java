@@ -170,9 +170,11 @@ public class PersistenciaUtils {
       BuscaInfo busca = new BuscaInfo();
       busca.entidade = node.get("entidade").asText();
       busca.classe = cache.get(busca.entidade);
+      busca.data = node.path("data");
       if( node.has("size") ) busca.size = node.get("size").intValue();
       if( node.has("page") ) busca.page = node.get("page").intValue();
-      if( node.has("data") ) busca.data = node.get("data");
+      if( node.has("modeloId") ) busca.modeloId = node.get("modeloId").booleanValue();
+      if( node.has("acao") ) busca.acao = (byte)node.get("acao").intValue();
       if( node.has("join") && node.get("join").isArray() ){
         List<String> arr = new ArrayList<>();
         for( JsonNode nodeStr : node.get("join") ) arr.add( nodeStr.asText() );
@@ -182,6 +184,11 @@ public class PersistenciaUtils {
         List<String> arr = new ArrayList<>();
         for( JsonNode nodeStr : node.get("order") ) arr.add( nodeStr.asText() );
         busca.order = arr.toArray(new String[0]);
+      }
+      
+      
+      if( busca.modeloId ){
+        
       }
       if( node.has("query") && node.get("query").isTextual() ){
         busca.query = PersistenciaUtils.parseQueryString( node.get("query").asText() );

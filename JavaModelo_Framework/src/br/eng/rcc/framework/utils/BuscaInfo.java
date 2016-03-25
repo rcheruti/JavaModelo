@@ -1,6 +1,7 @@
 package br.eng.rcc.framework.utils;
 
 import br.eng.rcc.framework.config.Configuracoes;
+import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
 import javax.persistence.Query;
 import javax.persistence.criteria.CommonAbstractCriteria;
@@ -73,7 +74,7 @@ public class BuscaInfo {
   /**
    * Valor que vem no corpo da mensagem HTTP.
    */
-  public Object data;
+  public JsonNode data;
   /**
    * Indica se o modelo de script que esta busca esta pedindo é de ID.
    * <br><br>
@@ -84,7 +85,7 @@ public class BuscaInfo {
   /**
    * Indica qual ação será aplicada a entidade.
    */
-  public byte acaoEntidade;
+  public byte acao;
   
   
   //=========================================================================
