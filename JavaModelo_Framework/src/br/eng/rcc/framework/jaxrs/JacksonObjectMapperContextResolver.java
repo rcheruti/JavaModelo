@@ -1,7 +1,7 @@
 
 package br.eng.rcc.framework.jaxrs;
 
-import br.eng.rcc.framework.jaxrs.persistencia.ClassCache;
+import br.eng.rcc.framework.persistencia.ClassCache;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

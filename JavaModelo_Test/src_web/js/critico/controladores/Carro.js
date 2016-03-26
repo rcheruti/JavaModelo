@@ -6,9 +6,10 @@ Module.controller('Carro',['$scope','Entidades',
   
   function recarregar(){
     Entidades.query( 'Cor' ).order(['nome']).get().then(function(data){
-      $scope.cores = data;
+      $scope.cores = data.data[0];
     }) ; 
-    Entidades.query('Carro').join(['cores','portas','valor','portas.janelas','registroUsuario'])
+    Entidades.query('Carro').join(['cores','portas','valor','portas.janelas',
+        'registroUsuario'])
       .order(['nome']).getIn( $scope, 'coisas.carros' );
   }
   recarregar();
@@ -18,10 +19,9 @@ Module.controller('Carro',['$scope','Entidades',
     Entidades.query('Carro').post( $scope.carro ).then( recarregar );
   };
   
-  console.log( Entidades );
   $scope.deleteCarro = function( carro ){
     var sim = confirm('Deletar?');
-    sim && Entidades.query('Carro').param('id',Entidades.eq, carro.id ).delete().then( recarregar );
+    sim && Entidades.query('Carro').id().delete( carro ).then( recarregar );
   };
   
 }]);

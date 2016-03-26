@@ -1,4 +1,4 @@
-package br.eng.rcc.framework.jaxrs.persistencia.builders;
+package br.eng.rcc.framework.persistencia.builders;
 
 import java.util.HashMap;
 import java.util.Map;

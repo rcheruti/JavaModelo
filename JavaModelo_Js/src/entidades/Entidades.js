@@ -22,7 +22,7 @@
   
   var defaults = {
         contentType: 'application/json',
-        dataPath: 'data.data',
+        dataPath: 'data.0',
         size: 20,
         page: 0,
         url: '/persistencia',
@@ -59,27 +59,27 @@
     this.entidade = ent || {};
     this._size = this.entidade.size;
     this._page = this.entidade.page;
-    this._param = [];
+    this._param = []; // query
     this._join = [];
     this._order = [];
     this._data = null;
+    this._id = false;
+    this._acao = 1;
+    
     this._url = this.entidade.url;
-    this._method = '';
     this.$scope = null;
-    this._build = false;
-    this._path = '';
+    this._build = null;
     this._cache = false;
     this._clearCache = false;
-    
-    this._buscarUm = true;
-    this._buscarMuitos = false;
-    this._buscarId = false;
   }
   
   var proto = Query.prototype;
     
   __construirSetter( proto, 'page', '_page' );
   __construirSetter( proto, 'size', '_size' );
+  __construirSetter( proto, 'id', '_id', true );
+  __construirSetter( proto, 'data', '_data' );
+  __construirSetter( proto, 'acao', '_acao' );
   proto.order = function (vals) {
     if (vals instanceof Array) {
       for (var g in vals) {
@@ -137,29 +137,19 @@
       queryStr += this._param[g];
     }
     queryStr = queryStr.replace(/[&\|\s]+$/, '');
-    if (queryStr) queryStr = '?' + queryStr;
-
-    // Montar Matrix Params:
-    var matrix = [
-      'size=' + this._size,
-      'page=' + this._page
-    ];
-    if (this._join.length > 0)
-      matrix.push('join=' + this._join.join(','));
-    if (this._order.length > 0)
-      matrix.push('order=' + this._order.join(','));
-    matrix = matrix.join(';');
-    if (matrix)
-      matrix = ';' + matrix;
+    //if (queryStr) queryStr = '?' + queryStr;
     
-    // Montar url:
-    if( !this._path ) this._path = '';
-    var url = '' +(this._buscarUm?'/um':this._buscarMuitos?'/muitos':'') + 
-            (this._buscarId?'/id':'') ;
-    url = this._url +url + (this._buscarMuitos?'':'/'+this.entidade.nome) 
-            +this._path ;
-    this._url = url + matrix + queryStr ;
-    this._build = true;
+    this._build = {
+      entidade: this.entidade.nome,
+      page: this._page,
+      size: this._size,
+      query: queryStr,
+      join: this._join,
+      order: this._order,
+      data: this._data,
+      id: this._id,
+      acao: this._acao
+    };
     return this;
   };
   proto.send = function(){
@@ -175,17 +165,17 @@
     
     var that = this; 
     return $http({
-      method: this._method,
+      method: 'POST',
       url: this._url,
       headers: headers,
-      data: this._data || {}
+      data: this._build
     }).then(function(data){
-      var dataObj = _getObjByPath( data, entidade.dataPath );
+      data = data.data;
       if( that._cache ){
         entidade.ultimoCache[cacheKey] = Date.now();
-        cache[cacheKey] = dataObj;
+        cache[cacheKey] = data;
       }
-      return data.data; // passando o "data" do "angular $http"
+      return data; // passando o "data" do "angular $http"
     });
   };
   
@@ -195,18 +185,16 @@
   };
   __construirSetter( proto, 'cache', '_cache', true );
   __construirSetter( proto, 'clearCache', '_clearCache', true );
-  __construirSetter( proto, 'path', '_path' );
-  __construirSetter( proto, 'method', '_method' );
-  __construirSetter( proto, 'data', '_data' );
+  //__construirSetter( proto, 'path', '_path' );
+  //__construirSetter( proto, 'method', '_method' );
   __construirSetter( proto, 'apply', '_apply' );
-  __construirSetter( proto, 'id', '_buscarId', true );
   
   
-  __construirRequisicao( proto, 'tipo','POST', '/tipo' );
-  __construirRequisicao( proto, 'get','POST', '/buscar' );
-  __construirRequisicao( proto, 'post','POST' );
-  __construirRequisicao( proto, 'put','PUT' );
-  __construirRequisicao( proto, 'delete','DELETE' );
+  __construirRequisicao( proto, 'tipo',5 );
+  __construirRequisicao( proto, 'get',1 );
+  __construirRequisicao( proto, 'post',2 );
+  __construirRequisicao( proto, 'put',3 );
+  __construirRequisicao( proto, 'delete',4 );
   
   __construirRequisicaoIn( proto, 'tipoIn','tipo' );
   __construirRequisicaoIn( proto, 'getIn','get' );
@@ -214,9 +202,9 @@
   __construirRequisicaoIn( proto, 'putIn','put' );
   __construirRequisicaoIn( proto, 'deleteIn','delete' );
   
-  function __construirRequisicao( pro, nomeFunc, method, path ){
+  function __construirRequisicao( pro, nomeFunc, acao ){
     pro[nomeFunc] = function( _data ){
-      return this.path( path ).data( _data || this._data ).method( method ).build().send();
+      return this.data( _data || this._data ).acao( acao ).build().send();
     };
   }
   function __construirRequisicaoIn( pro, nomeFunc, methodFunc ){
@@ -227,7 +215,7 @@
       key = key[key.length-1];
       var that = this;
       return this[methodFunc]( _data ).then(function(data){
-        objToBind[key] = data.data; //  <<-----  por enquanto fica HardCode!
+        objToBind[key] = _getObjByPath( data, that.entidade.dataPath );
         _apply( that, obj );
         return data;
       });
@@ -319,7 +307,7 @@ Module.provider('Entidades',[function(){
         var ent = entidadesCache[nome];
         if( ent && !override ) return ent;
         if( !config ) config = {};
-        if( !config.url ) config.url = context.services+ defaults.url ;
+        if( !config.url ) config.url = context.root+ defaults.url ;
         ent = new Entidade( nome, config );
         that[nome] = entidadesCache[nome] = ent;
         return ent;
@@ -328,6 +316,7 @@ Module.provider('Entidades',[function(){
         return entidadesCache[nome] ;
       }
     };
+    
     ref.eq = ref.equal = '=';
     ref.ne = ref.notEqual = '!=';
     ref.le = ref.lowerThanOrEqualTo = '<=';
@@ -338,6 +327,14 @@ Module.provider('Entidades',[function(){
     ref.lk = ref.like = 'like';
     ref.nl = ref.isNull = 'isnull';
     ref.nnl = ref.isNotNull = 'isnotnull';
+    
+    ref.BUSCAR =      1;
+    ref.CRIAR =       2;
+    ref.EDITAR =      3;
+    ref.DELETAR =     4;
+    ref.TIPO =        5;
+    ref.ADICIONAR =   6;
+    ref.REMOVER =     7;
     return ref;
   }];
 

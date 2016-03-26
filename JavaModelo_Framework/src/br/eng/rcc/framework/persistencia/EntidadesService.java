@@ -1,9 +1,9 @@
-package br.eng.rcc.framework.jaxrs.persistencia;
+package br.eng.rcc.framework.persistencia;
 
 import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
-import br.eng.rcc.framework.jaxrs.persistencia.builders.WhereBuilder;
+import br.eng.rcc.framework.persistencia.builders.WhereBuilder;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import br.eng.rcc.framework.utils.BuscaInfo;
@@ -43,6 +43,7 @@ import javax.persistence.metamodel.Attribute;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
+import javax.transaction.Transactional;
 
 @ApplicationScoped
 public class EntidadesService {
@@ -125,7 +126,8 @@ public class EntidadesService {
 
     return map;
   }
-
+  
+  @Transactional
   public List<Object> buscar(BuscaInfo info) {
     checker.check( info.classe, Seguranca.SELECT );
     
@@ -162,8 +164,9 @@ public class EntidadesService {
 
     return res;
   }
-
-  public void criar(BuscaInfo info) throws JsonProcessingException{
+  
+  @Transactional
+  public List<Object> criar(BuscaInfo info) throws JsonProcessingException{
     checker.check(info.classe, Seguranca.INSERT);
     List<Object> objs = new ArrayList<>();
     if( info.data.isArray() ) 
@@ -183,6 +186,7 @@ public class EntidadesService {
           }
           if (util.isColecao()) {
             for (Object obj : objs) {
+              if( util.get(obj) == null ) continue;
               Collection coll = ((Collection) util.get(obj));
               if (coll == null) {
                 continue;
@@ -193,6 +197,7 @@ public class EntidadesService {
             }
           } else {
             for (Object obj : objs) {
+              if( util.get(obj) == null ) continue;
               inverso.set(util.get(obj), obj);
             }
           }
@@ -205,8 +210,15 @@ public class EntidadesService {
       checker.checkPersistencia(info.classe, obj);
       em.persist(obj);
     }
+    this.em.flush();
+    PersistenciaUtils.resolverLazy(cache, objs.toArray(), false, info.join );
+    this.em.clear();
+    PersistenciaUtils.resolverLazy(cache, objs.toArray(), true, info.join );
+    
+    return objs;
   }
-
+  
+  @Transactional
   public int editar(BuscaInfo info) {
     checker.check(info.classe, Seguranca.UPDATE);
     
@@ -290,6 +302,7 @@ public class EntidadesService {
     }
   }
 
+  @Transactional
   public int deletar(BuscaInfo info) {
     Class<?> klass = cache.get(info.entidade, em);
     checker.check(klass, Seguranca.DELETE);
@@ -313,7 +326,7 @@ public class EntidadesService {
     return qtd;
   }
   
-  public void adicionar(String entidade, BuscaInfo info){
+  public void adicionar(BuscaInfo info){
     
   }
   

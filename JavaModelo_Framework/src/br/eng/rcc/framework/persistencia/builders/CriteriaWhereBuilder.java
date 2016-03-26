@@ -1,5 +1,5 @@
 
-package br.eng.rcc.framework.jaxrs.persistencia.builders;
+package br.eng.rcc.framework.persistencia.builders;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Expression;

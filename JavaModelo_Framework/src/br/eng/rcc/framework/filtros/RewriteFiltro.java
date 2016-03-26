@@ -1,10 +1,8 @@
 package br.eng.rcc.framework.filtros;
 
 import br.eng.rcc.framework.config.Configuracoes;
-import br.eng.rcc.framework.jaxrs.JsonResponseWriter;
 import java.io.IOException;
 import java.util.regex.Pattern;
-import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -17,8 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 public class RewriteFiltro implements Filter {
 
   private Pattern regexp;
-  @Inject
-  private JsonResponseWriter writer;
 
   @Override
   public void init(FilterConfig fc) throws ServletException {

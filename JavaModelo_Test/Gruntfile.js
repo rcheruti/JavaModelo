@@ -178,22 +178,22 @@ module.exports = function (grunt) {
           patterns:[{
             match: 'htmlPaginas',
             replacement: function(){
-              return grunt.file.read(p.temp+"/htmlPaginas.min.html");
+              return grunt.file.read(p.temp+"/htmlPaginas.html");
             }
           },{
             match: 'cssCritico',
             replacement: function(){
-              return grunt.file.read(p.temp+"/cssCritico.min.css");
+              return grunt.file.read(p.temp+"/cssCritico.css");
             }
           },{
             match: 'jsCritico',
             replacement: function(){
-              return grunt.file.read(p.temp+"/jsCritico.min.js");
+              return grunt.file.read(p.temp+"/jsCritico.js");
             }
           },{
             match: 'jsCriticoLogin',
             replacement: function(){
-              return grunt.file.read(p.temp+"/jsCriticoLogin.min.js");
+              return grunt.file.read(p.temp+"/jsCriticoLogin.js");
             }
           }]
         },
@@ -210,8 +210,11 @@ module.exports = function (grunt) {
   });
   
   
-  grunt.registerTask('default',['clean','concat','less','cssmin',
-                            'uglify','htmlmin','copy','replace'
+  grunt.registerTask('default',['clean','concat','less',
+                            //'cssmin',
+                            //'uglify',
+                            //'htmlmin',
+                            'copy','replace'
                             //,'clean:temp'
                           ]);
   

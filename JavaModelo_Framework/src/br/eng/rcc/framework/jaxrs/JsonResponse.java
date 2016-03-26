@@ -16,6 +16,7 @@ public class JsonResponse implements Serializable {
   public int codigo;
   public final int page;
   public final int size;
+  public final byte $$persistencia = 1;
 
   public JsonResponse() {
     this(true, null);

@@ -2,9 +2,6 @@ package br.eng.rcc.framework.utils;
 
 import br.eng.rcc.framework.config.Configuracoes;
 import com.fasterxml.jackson.databind.JsonNode;
-import java.util.List;
-import javax.persistence.Query;
-import javax.persistence.criteria.CommonAbstractCriteria;
 
 /**
  * Esta classe é usada para guadar as informações de uma requisição
@@ -17,13 +14,13 @@ import javax.persistence.criteria.CommonAbstractCriteria;
 public class BuscaInfo {
   
   // Constantes de busca:
-  public static final int ACAO_BUSCAR =       1;
-  public static final int ACAO_CRIAR =        2;
-  public static final int ACAO_EDITAR =       3;
-  public static final int ACAO_DELETAR =      4;
-  public static final int ACAO_TIPO =         5;
-  public static final int ACAO_ADICIONAR =    6;
-  public static final int ACAO_REMOVER =      7;
+  public static final byte ACAO_BUSCAR =       1;
+  public static final byte ACAO_CRIAR =        2;
+  public static final byte ACAO_EDITAR =       3;
+  public static final byte ACAO_DELETAR =      4;
+  public static final byte ACAO_TIPO =         5;
+  public static final byte ACAO_ADICIONAR =    6;
+  public static final byte ACAO_REMOVER =      7;
   
   //========================================================================
   
@@ -81,17 +78,17 @@ public class BuscaInfo {
    * Esta busca irá sempre representar o modelo UM, e este campo indica se o
    * modelo UM é de ID ou não.
    */
-  public boolean modeloId;
+  public boolean id = false;
   /**
    * Indica qual ação será aplicada a entidade.
    */
-  public byte acao;
+  public byte acao = ACAO_BUSCAR;
   
   
   //=========================================================================
   
-  public CommonAbstractCriteria criteria;
-  public Query criteriaQuery;
-  public List resultado;
+  //public CommonAbstractCriteria criteria;
+  //public Query criteriaQuery;
+  //public List resultado;
   
 }

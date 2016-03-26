@@ -1,5 +1,5 @@
 
-package br.eng.rcc.framework.jaxrs.persistencia;
+package br.eng.rcc.framework.persistencia;
 
 import br.eng.rcc.framework.jaxrs.MsgException;
 import java.beans.BeanInfo;

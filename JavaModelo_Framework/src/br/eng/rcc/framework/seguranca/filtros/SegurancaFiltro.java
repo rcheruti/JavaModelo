@@ -3,14 +3,14 @@ package br.eng.rcc.framework.seguranca.filtros;
 
 import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.config.SegurancaConfig;
+import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
-import br.eng.rcc.framework.jaxrs.JsonResponseWriter;
-import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.config.SegurancaNode;
 import br.eng.rcc.framework.seguranca.config.SegurancaRootNode;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -43,15 +43,14 @@ public class SegurancaFiltro implements Filter{
   @Inject
   private SegurancaServico segurancaServico;
   
-
-  @Inject
-  private JsonResponseWriter writer;
+  private ObjectMapper mapper;
 
   
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
     pattern = Pattern.compile( Configuracoes.segurancaRegExp );
     redirectPage = Configuracoes.loginPath;
+    mapper = new JacksonObjectMapperContextResolver().getContext(null);
   }
 
   @Override
@@ -83,9 +82,7 @@ public class SegurancaFiltro implements Filter{
       String header = req.getHeader("X-Requested-With");
       if( "XMLHttpRequest".equals(header) ){
         JsonResponse res = new JsonResponse(false, JsonResponse.ERROR_DESLOGADO, null, "Você está deslogado");
-        writer.writeTo(res, res.getClass(), null,
-                new Annotation[0], MediaType.APPLICATION_JSON_TYPE, null,
-                response.getOutputStream());
+        mapper.writeValue(resp.getOutputStream(), res);
         return;
       }
       //resp.sendRedirect( req.getContextPath()+redirectPage );
