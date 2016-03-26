@@ -6,6 +6,7 @@ Module.controller('Carro',['$scope','Entidades',
   
   function recarregar(){
     Entidades.query( 'Cor' ).order(['nome']).get().then(function(data){
+      console.log( 'data', data );
       $scope.cores = data.data[0];
     }) ; 
     Entidades.query('Carro').join(['cores','portas','valor','portas.janelas',

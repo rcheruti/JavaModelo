@@ -122,12 +122,13 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
         size: 20,
         page: 0,
         url: '/persistencia',
+          // o cache usa no indece o número da AÇÃO:
         cacheTimeout: {
-          "POST/tipo": -1 , // -1 para nunca expirar
-          "POST/buscar": 180000 , // 3min timeout
-          "POST": 180000 ,
-          "PUT": 180000 ,
-          "DELETE": 180000 
+          "5": -1 , // -1 para nunca expirar
+          "1": 180000 , // 3min timeout
+          "2": 180000 ,
+          "3": 180000 ,
+          "4": 180000 
         } // ms
       },
       headers = {
@@ -167,6 +168,8 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     this._build = null;
     this._cache = false;
     this._clearCache = false;
+    this._inObj = null;
+    this._inPath = this.entidade.nome;
   }
   
   var proto = Query.prototype;
@@ -225,6 +228,11 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     return this;
   };
   
+  proto.in = function( obj, path ){
+    this._inObj = obj;
+    this._inPath = path;
+    return this;
+  };
   proto.build = function( force ){
     if( this._build && !force ) return this;
     // Montar Query String:
@@ -249,15 +257,8 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     return this;
   };
   proto.send = function(){
-    var entidade = this.entidade;
-    var cache = entidade.cache;
-    var cacheKey = this._method + this._path;
-    if( this._clearCache 
-      || (entidade.ultimoCache[cacheKey] 
-        && entidade.cacheTimeout[cacheKey] > 0
-        && (Date.now() - entidade.ultimoCache[cacheKey]) > entidade.cacheTimeout[cacheKey]
-      ) ) cache[cacheKey] = null;
-    else if( cache[cacheKey] ) return $q.resolve( cache[cacheKey] );
+    var cached = this.getCache();
+    if( cached ) return $q.resolve( _send.call(that, cached) );
     
     var that = this; 
     return $http({
@@ -265,24 +266,40 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
       url: this._url,
       headers: headers,
       data: this._build
-    }).then(function(data){
-      data = data.data;
-      if( that._cache ){
-        entidade.ultimoCache[cacheKey] = Date.now();
-        cache[cacheKey] = data;
-      }
-      return data; // passando o "data" do "angular $http"
-    });
+    }).then(function(data){ return _send.call(that, data.data); });
   };
+  function _send(data){
+    if( this._cache ){
+      this.entidade.ultimoCache[ this._acao ] = Date.now();
+      this.entidade.cache[ this._acao ] = data;
+    }
+    if( this._inObj ){
+      var key = this._inPath.split('.');
+      var objToBind = _getObjByPath( this._inObj, key.slice(0,key.length-1) );
+      key = key[key.length-1];
+      objToBind[key] = _getObjByPath( data, this.entidade.dataPath );
+      _apply( this, this._inObj );
+    }
+    return data; 
+  }
   
+  proto.getCache = function(){
+    var entidade = this.entidade;
+    var cache = entidade.cache;
+    var cacheKey = this._acao;
+    if( this._clearCache 
+      || (entidade.ultimoCache[cacheKey] 
+        && entidade.cacheTimeout[cacheKey] > 0
+        && (Date.now() - entidade.ultimoCache[cacheKey]) > entidade.cacheTimeout[cacheKey]
+      ) ) return cache[cacheKey] = null;
+    else if( cache[cacheKey] ) return cache[cacheKey];
+  };
   proto.clearBuild = function(){
     this._build = false;
     return this;
   };
   __construirSetter( proto, 'cache', '_cache', true );
   __construirSetter( proto, 'clearCache', '_clearCache', true );
-  //__construirSetter( proto, 'path', '_path' );
-  //__construirSetter( proto, 'method', '_method' );
   __construirSetter( proto, 'apply', '_apply' );
   
   
@@ -305,16 +322,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
   }
   function __construirRequisicaoIn( pro, nomeFunc, methodFunc ){
     pro[nomeFunc] = function( obj, key, _data ){
-      if( !key ) key = this.entidade.nome;
-      key = key.split('.');
-      var objToBind = _getObjByPath( obj, key.slice(0,key.length-1) );
-      key = key[key.length-1];
-      var that = this;
-      return this[methodFunc]( _data ).then(function(data){
-        objToBind[key] = _getObjByPath( data, that.entidade.dataPath );
-        _apply( that, obj );
-        return data;
-      });
+      return this.in( obj, key )[methodFunc]( _data );
     };
   }
   function __construirSetter( pro, nomeFunc, nomeAttr, defaultVal ){
@@ -333,21 +341,13 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
   
 //============================================================================
   
-  function MuitosQuery(){
-    this._querys = [];
-    this._method = '';
-    this.$scope = null;
-    this._build = false;
-    this._path = '';
-    this._buscarId = false;
+  function MuitosQuery( listaQuerys ){
+    var arr = listaQuerys || [];
+    if( !(arr instanceof Array) ) arr = [ arr ];
+    this._querys = arr;
   }
   
   var muitosProto = MuitosQuery.prototype;
-  muitosProto.clearBuild = proto.clearBuild;
-  muitosProto.apply = proto.apply ;
-  muitosProto.id = proto.id ;
-  muitosProto.path = proto.path ;
-  muitosProto.method = proto.method ;
   
   muitosProto.add = function( query ){
     this._querys.push( query );
@@ -363,47 +363,72 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     return this;
   };
   
-  muitosProto.build = function(){
+  muitosProto.send = function(){
+    if( !this._querys.length ) return $q(function(res,rej){});
+    var _build = [], _cacheds = [];
     for( var i = 0; i < this._querys.length; i++ ){
-      this._querys[i].build();
+      var q = this._querys[i];
+      q.build();
+      var cached = q.getCache();
+      if( cached ) _cacheds[i] = cached ;
+      else _build.push( q._build );
     }
-    this._build = true;
-    return this;
-  } ;
-  muitosProto.send = function(){} ;
+    if( !_build.length ) return;
+    
+    var that = this;
+    return $http({
+      method: 'POST',
+      url: defaults.url,
+      headers: headers,
+      data: _build
+    }).then(function(data){ 
+      data = data.data ;
+      var arr = data.data ;
+      // restaurar o vetor completo da requisição JS:
+      for(var g in _cacheds){
+        arr.splice( g, 0, _cacheds[g].data );
+      }
+      // copia da resposta JsonResponse:
+      for(var g in arr){
+        var copia = _cacheds[g];
+        if( !copia ){
+          var copia = {};
+          for(var k in data){
+            copia[k] = data[k];
+          }
+          copia.data = [ arr[g] ]; // novo array, para garantir index 0
+          copia.size = that._querys[g]._size;
+          copia.page = that._querys[g]._page;
+        }
+        _send.call( that._querys[g], copia );
+      }
+      
+      return data;
+    });
+  };
   
-  
-  __construirRequisicao( muitosProto, 'get','POST', '/buscar' );
-  __construirRequisicao( muitosProto, 'put','PUT' );
-  __construirRequisicao( muitosProto, 'post','POST' );
-  __construirRequisicao( muitosProto, 'delete','DELETE' );
-  
-  __construirRequisicaoIn( muitosProto, 'tipoIn','tipo' );
-  __construirRequisicaoIn( muitosProto, 'getIn','get' );
-  __construirRequisicaoIn( muitosProto, 'putIn','put' );
-  __construirRequisicaoIn( muitosProto, 'postIn','post' );
-  __construirRequisicaoIn( muitosProto, 'deleteIn','delete' );
   
   
 //============================================================================
 Module.provider('Entidades',[function(){
     
   this.defaults = defaults;
+  var that = this;
   this.$get = ['context',function(context){
-    var that = this;
+    that.defaults.url = context.root+ that.defaults.url;
     var ref = {
       query: function( ent ){
         if( typeof ent === 'string' ) ent = ref.entidade(ent);
         return new Query( ent );
       },
-      muitosQuery: function( arrQ ){
-        if( !arrQ ) return new MuitosQuery(  );
+      queryMuitos: function( arrQ ){
+        return new MuitosQuery( arrQ );
       },
       entidade: function( nome, config, override ){
         var ent = entidadesCache[nome];
         if( ent && !override ) return ent;
         if( !config ) config = {};
-        if( !config.url ) config.url = context.root+ defaults.url ;
+        if( !config.url ) config.url = defaults.url ;
         ent = new Entidade( nome, config );
         that[nome] = entidadesCache[nome] = ent;
         return ent;
