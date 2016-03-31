@@ -102,6 +102,162 @@ public class EntidadesService {
   } 
   
   //=====================================================================
+  /**
+   * Este é o serviço princiopal, daqui a busca será encaminhada para o método 
+   * correto de acordo com os parâmetros do objeto {@link BuscaInfo}.
+   * <br><br>
+   * 
+   * @param busca Informações da busca que será executada
+   * @return Object O resultado da resposta. Pode ser apenas um objeto ou uma lista
+   * @throws Exception 
+   */
+  public Object processar(BuscaInfo busca) throws Exception{
+    Object ooo = null;
+    switch( busca.acao ){
+      case BuscaInfo.ACAO_TIPO:
+        ooo = this.tipo( busca.classe );
+        break;
+      case BuscaInfo.ACAO_BUSCAR:
+        if( busca.id ){
+          List lista = new ArrayList<>();
+          List<String> ids = PersistenciaUtils.getIds(em, busca.classe);
+          if (ids == null || ids.isEmpty()) {
+            throw new MsgException(String
+              .format("Não encontramos os campos de Id dessa classe: '%s'", busca.entidade));
+          }
+
+          Iterable<JsonNode> it;
+          if( busca.data.isArray() ) it = busca.data;
+          else{
+            List x = new ArrayList(1);
+            x.add( busca.data );
+            it = x;
+          }
+          for( JsonNode node : it ){
+            if( node == null || !node.isObject() ) continue;
+            busca.query = new String[ ids.size() ][];
+            int i = 0;
+            for( String idAttr : ids ){
+              String[] idS = idAttr.split("\\.");
+              JsonNode prop = node;
+              for( String s : idS ) prop = prop.get(s);
+              if( prop == null ) continue;
+              busca.query[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
+            }
+
+            List listaBusca = this.buscar(busca);
+            for( Object x : listaBusca ) lista.add(x);
+          }
+          ooo = lista;
+        }else{
+          ooo = this.buscar( busca );
+        }
+        break;
+      case BuscaInfo.ACAO_CRIAR:
+        if( busca.id ){
+          throw new MsgException("Não é permitido criar entidades a partir do ID");
+        }
+        ooo = this.criar( busca );
+        break;
+      case BuscaInfo.ACAO_EDITAR:
+        if( busca.id ){
+          int res = 0;
+          List<String> ids = PersistenciaUtils.getIds(em, busca.classe);
+          if (ids == null || ids.isEmpty()) {
+            throw new MsgException(String
+              .format("Não encontramos os campos de Id dessa classe: '%s'", busca.entidade));
+          }
+
+          Iterable<JsonNode> it;
+          if( busca.data.isArray() ) it = busca.data;
+          else{
+            List x = new ArrayList(1);
+            x.add( busca.data );
+            it = x;
+          }
+          for( JsonNode node : it ){
+            if( node == null || !node.isObject() ) continue;
+            busca.query = new String[ ids.size() ][];
+            int i = 0;
+            for( String idAttr : ids ){
+              String[] idS = idAttr.split("\\.");
+              JsonNode prop = node;
+              for( String s : idS ) prop = prop.get(s);
+              if( prop == null ) continue;
+              busca.query[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
+            }
+
+            res += this.editar(busca);
+          }
+          ooo = res;
+        }else{
+          ooo = this.editar( busca );
+        }
+        break;
+      case BuscaInfo.ACAO_DELETAR:
+        if( busca.id ){
+          int res = 0;
+          List<String> ids = PersistenciaUtils.getIds(em, busca.classe);
+          if (ids == null || ids.isEmpty()) {
+            throw new MsgException(String
+              .format("Não encontramos os campos de Id dessa classe: '%s'", busca.entidade));
+          }
+
+          Iterable<JsonNode> it;
+          if( busca.data.isArray() ) it = busca.data;
+          else{
+            List x = new ArrayList(1);
+            x.add( busca.data );
+            it = x;
+          }
+          for( JsonNode node : it ){
+            if( node == null || !node.isObject() ) continue;
+            busca.query = new String[ ids.size() ][];
+            int i = 0;
+            for( String idAttr : ids ){
+              String[] idS = idAttr.split("\\.");
+              JsonNode prop = node;
+              for( String s : idS ) prop = prop.get(s);
+              if( prop == null ) continue;
+              busca.query[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
+            }
+
+            res += this.deletar(busca);
+          }
+          ooo = res;
+        }else{
+          ooo = this.deletar( busca );
+        }
+        break;
+      case BuscaInfo.ACAO_ADICIONAR:
+        throw new MsgException("Ainda não existe impl. para ADICIONAR");
+        //break;
+      case BuscaInfo.ACAO_REMOVER:
+        throw new MsgException("Ainda não existe impl. para REMOVER");
+        //break;
+    }
+    return ooo;
+  }
+  
+  public List<Object> processar(Collection<BuscaInfo> buscas) {
+    List<Object> resposta = new ArrayList<>( buscas.size() );
+    Object ooo = null;
+    for( BuscaInfo busca : buscas ){
+      try{
+        ooo = processar(busca);
+        resposta.add(ooo);
+      }catch(MsgException ex){
+        resposta.add( new JsonResponse(false, ex.getCodigo(),
+                ex.getData(), ex.getMensagem()) );
+      }catch(Exception ex){
+        resposta.add( new JsonResponse(false, JsonResponse.ERROR_DESCONHECIDO,
+                null, "Exceção inesperada: "+ ex.getMessage() ) );
+      }
+    }
+    return resposta;
+  }
+  
+  //=====================================================================
   
   public Map<String, String> tipo(Class<?> klass) {
     checker.check(klass, Seguranca.SELECT | Seguranca.INSERT
@@ -326,8 +482,48 @@ public class EntidadesService {
     return qtd;
   }
   
-  public void adicionar(BuscaInfo info){
+  public void adicionar(BuscaInfo info) throws JsonProcessingException{
+    List<JsonNode> objs = new ArrayList<>();
+    if( info.data.isArray() ) 
+      for(JsonNode node : info.data) 
+        objs.add( node );
+    else objs.add( info.data );
     
+    Map<String, ClassCache.BeanUtil> map = cache.getInfo( info.entidade );
+    try{
+      for( JsonNode node : objs ){
+        BuscaInfo clone = info.clone();
+        Object root = mapper.treeToValue(node, info.classe );
+        Iterator<String> itKeys = node.fieldNames();
+        while( itKeys.hasNext() ){
+          String key = itKeys.next();
+          ClassCache.BeanUtil util = map.get(key);
+          if( util.isAssociacao() ){
+            Object ooo = null;
+            try{
+              ooo = this.processar(clone);
+            }catch(Exception ex){
+              continue;
+            }
+            Collection col;
+            if( ooo instanceof Collection ) col = (Collection) ooo;
+            else{
+              col = new ArrayList<>();
+              col.add(ooo);
+            }
+            
+            if( util.isColecao() ){
+              
+            }else{
+              Object objX = mapper.treeToValue(node.path(key), util.getJavaType());
+              util.getSetter().invoke(root, objX);
+            }
+          }
+        }
+      }
+    } catch (IllegalAccessException | InvocationTargetException ex) {
+      throw new RuntimeException("Problemas de Introspecção ou Reflexão ao criar entidades", ex);
+    }
   }
   
   public void remover(){

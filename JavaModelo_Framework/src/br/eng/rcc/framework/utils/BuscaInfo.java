@@ -91,4 +91,20 @@ public class BuscaInfo {
   //public Query criteriaQuery;
   //public List resultado;
   
+  @Override
+  public BuscaInfo clone(){
+    BuscaInfo x = new BuscaInfo();
+    x.acao = this.acao;
+    x.classe = this.classe;
+    x.data = this.data;
+    x.entidade = this.entidade;
+    x.id = this.id;
+    x.join = this.join;
+    x.order = this.order;
+    x.page = this.page;
+    x.query = this.query;
+    x.size = this.size;
+    return x;
+  }
+  
 }
