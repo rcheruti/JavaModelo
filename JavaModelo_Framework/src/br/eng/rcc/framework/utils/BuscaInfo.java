@@ -2,6 +2,7 @@ package br.eng.rcc.framework.utils;
 
 import br.eng.rcc.framework.config.Configuracoes;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
  * Esta classe é usada para guadar as informações de uma requisição
@@ -71,7 +72,7 @@ public class BuscaInfo {
   /**
    * Valor que vem no corpo da mensagem HTTP.
    */
-  public JsonNode data;
+  public ArrayNode data;
   /**
    * Indica se o modelo de script que esta busca esta pedindo é de ID.
    * <br><br>

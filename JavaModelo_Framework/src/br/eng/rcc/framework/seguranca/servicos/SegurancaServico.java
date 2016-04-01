@@ -8,15 +8,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import br.eng.rcc.framework.interfaces.IUsuario;
 import br.eng.rcc.framework.interfaces.SegurancaPersistenciaInterceptador;
+import br.eng.rcc.framework.utils.BuscaInfo;
 import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 
 /**
  * Recursos desta classe estarão disponpiveis na CDI.
@@ -38,7 +37,7 @@ public class SegurancaServico {
 
   protected Map<Class, Supplier> suppliers = new HashMap<>(30);
   protected Map<AnnotatedElement, Seguranca[]> segurancas = new HashMap<>(50);
-  protected Map<Class<? extends SegurancaPersistenciaInterceptador>, SegurancaPersistenciaInterceptador> persistencias = new HashMap<>(30);
+  protected Map<AnnotatedElement, List<SegurancaPersistenciaInterceptador>> checkPersistencias = new HashMap<>(50);
   
   //=============================================================================
   
@@ -194,69 +193,39 @@ public class SegurancaServico {
   }
   
   
-  public void checkPersistencia(AnnotatedElement annotated, CriteriaBuilder cb, CriteriaQuery query){
-    Seguranca[] lista = getSegurancas(annotated);
-    if( lista == null )return;
-    for( Seguranca s : lista ){
-      SegurancaPersistenciaInterceptador spi = persistencias.get(s.persistenciaSelect());
-      if( spi == null){
-        try{
-          spi = s.persistenciaSelect().newInstance();
-          persistencias.put(s.persistenciaSelect(), spi);
-        }catch(InstantiationException | IllegalAccessException ex){
-          throw new MsgException(JsonResponse.ERROR_DESCONHECIDO, ex.getMessage(), ex);
-        }
-      }
-      spi.check(cb, query);
+  //===========================================================================
+  
+  
+  public void filterPersistencia(BuscaInfo busca){
+    for( SegurancaPersistenciaInterceptador x : _getCheckPersistencia( busca.classe ) ){
+      x.filter( busca );
     }
   }
-  public void checkPersistencia(AnnotatedElement annotated, CriteriaBuilder cb, CriteriaUpdate query){
-    Seguranca[] lista = getSegurancas(annotated);
-    if( lista == null )return;
-    for( Seguranca s : lista ){
-      SegurancaPersistenciaInterceptador spi = persistencias.get(s.persistenciaSelect());
-      if( spi == null){
-        try{
-          spi = s.persistenciaSelect().newInstance();
-          persistencias.put(s.persistenciaSelect(), spi);
-        }catch(InstantiationException | IllegalAccessException ex){
-          throw new MsgException(JsonResponse.ERROR_DESCONHECIDO, ex.getMessage(), ex);
-        }
-      }
-      spi.check(cb, query);
+  public <T> List<T> filterPersistencia(BuscaInfo busca, List<T> objs){
+    for( SegurancaPersistenciaInterceptador x : _getCheckPersistencia( busca.classe ) ){
+      objs = x.filter( objs );
     }
+    return objs;
   }
-  public void checkPersistencia(AnnotatedElement annotated, CriteriaBuilder cb, CriteriaDelete query){
-    Seguranca[] lista = getSegurancas(annotated);
-    if( lista == null )return;
-    for( Seguranca s : lista ){
-      SegurancaPersistenciaInterceptador spi = persistencias.get(s.persistenciaSelect());
-      if( spi == null){
-        try{
-          spi = s.persistenciaSelect().newInstance();
-          persistencias.put(s.persistenciaSelect(), spi);
-        }catch(InstantiationException | IllegalAccessException ex){
-          throw new MsgException(JsonResponse.ERROR_DESCONHECIDO, ex.getMessage(), ex);
+  private List<SegurancaPersistenciaInterceptador> _getCheckPersistencia(AnnotatedElement annotated){
+    List<SegurancaPersistenciaInterceptador> spi = checkPersistencias.get(annotated);
+    if( spi == null ){
+      spi = new ArrayList<>();
+      checkPersistencias.put( annotated , spi);
+      Seguranca[] lista = getSegurancas(annotated);
+      if( lista != null ){
+        for( Seguranca s : lista ){
+          for( Class<? extends SegurancaPersistenciaInterceptador> spiX : s.filters() ){
+            try{
+              spi.add( spiX.newInstance() );
+            }catch(InstantiationException | IllegalAccessException ex){
+              throw new MsgException(JsonResponse.ERROR_DESCONHECIDO, ex.getMessage(), ex);
+            }
+          }
         }
       }
-      spi.check(cb, query);
     }
-  }
-  public void checkPersistencia(AnnotatedElement annotated, Object obj){
-    Seguranca[] lista = getSegurancas(annotated);
-    if( lista == null )return;
-    for( Seguranca s : lista ){
-      SegurancaPersistenciaInterceptador spi = persistencias.get(s.persistenciaSelect());
-      if( spi == null){
-        try{
-          spi = s.persistenciaSelect().newInstance();
-          persistencias.put(s.persistenciaSelect(), spi);
-        }catch(InstantiationException | IllegalAccessException ex){
-          throw new MsgException(JsonResponse.ERROR_DESCONHECIDO, ex.getMessage(), ex);
-        }
-      }
-      spi.check(obj);
-    }
+    return spi;
   }
   
   

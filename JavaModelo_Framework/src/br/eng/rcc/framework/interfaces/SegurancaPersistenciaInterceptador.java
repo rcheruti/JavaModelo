@@ -1,10 +1,8 @@
 
 package br.eng.rcc.framework.interfaces;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
+import br.eng.rcc.framework.utils.BuscaInfo;
+import java.util.List;
 
 /**
  * Essa interface é usada por ... para permitir que o programador
@@ -12,34 +10,14 @@ import javax.persistence.criteria.CriteriaUpdate;
  * 
  * Esses métodos serão executados após ... fazer as configurações
  * iniciais da busca, qualquer alteração tem que ser feita com cuidado para não
- * quebrar as configurações que já foram adicionadas por {@link EntidadesUmService}.
+ * quebrar as configurações que já foram adicionadas em {@link BuscaInfo}.
  * 
  * @param <T> O tipo da classe esperado (será desconsiderado durante a execução!)
  */
 public interface SegurancaPersistenciaInterceptador<T> {
   
-  /**
-   * Permite a configuração das buscas (SELECT) em {@link EntidadesUmService}.
-   * @param cb
-   * @param query 
-   */
-  default void check(CriteriaBuilder cb, CriteriaQuery query){};
-  /**
-   * Permite a configuração das atualizações (UPDATE) em {@link EntidadesUmService}.
-   * @param cb
-   * @param query 
-   */
-  default void check(CriteriaBuilder cb, CriteriaUpdate query){};
-  /**
-   * Permite a configuração das exclusões (DELETE) em {@link EntidadesUmService}.
-   * @param cb
-   * @param query 
-   */
-  default void check(CriteriaBuilder cb, CriteriaDelete query){};
-  /**
-   * Permite a configuração das inserções (INSERT) em {@link EntidadesUmService}.
-   * @param obj 
-   */
-  default void check(T obj){};
+  default void filter(BuscaInfo busca){};
+  
+  default List<T> filter(List<T> objs){ return objs; };
     
 }

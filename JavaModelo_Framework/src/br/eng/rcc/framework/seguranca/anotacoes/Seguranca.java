@@ -1,7 +1,6 @@
 package br.eng.rcc.framework.seguranca.anotacoes;
 
 import br.eng.rcc.framework.interfaces.SegurancaPersistenciaInterceptador;
-import br.eng.rcc.framework.seguranca.predicados.NullPersistenciaInterceptador;
 import br.eng.rcc.framework.seguranca.predicados.NullSupplier;
 import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
@@ -114,20 +113,7 @@ public @interface Seguranca {
   Class<? extends Supplier<? extends Predicate>> predicado() default NullSupplier.class;
   
   
-  
   @Nonbinding
-  Class<? extends SegurancaPersistenciaInterceptador> persistenciaInsert() default NullPersistenciaInterceptador.class;
-
-  @Nonbinding
-  Class<? extends SegurancaPersistenciaInterceptador> persistenciaUpdate() default NullPersistenciaInterceptador.class;
-
-  @Nonbinding
-  Class<? extends SegurancaPersistenciaInterceptador> persistenciaDelete() default NullPersistenciaInterceptador.class;
-
-  @Nonbinding
-  Class<? extends SegurancaPersistenciaInterceptador> persistenciaSelect() default NullPersistenciaInterceptador.class;
-  
-  
-  
+  Class<? extends SegurancaPersistenciaInterceptador>[] filters() default { } ;
   
 }

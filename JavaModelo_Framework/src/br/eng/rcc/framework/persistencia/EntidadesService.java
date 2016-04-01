@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeType;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -125,15 +126,8 @@ public class EntidadesService {
             throw new MsgException(String
               .format("Não encontramos os campos de Id dessa classe: '%s'", busca.entidade));
           }
-
-          Iterable<JsonNode> it;
-          if( busca.data.isArray() ) it = busca.data;
-          else{
-            List x = new ArrayList(1);
-            x.add( busca.data );
-            it = x;
-          }
-          for( JsonNode node : it ){
+          
+          for( JsonNode node : busca.data ){
             if( node == null || !node.isObject() ) continue;
             busca.query = new String[ ids.size() ][];
             int i = 0;
@@ -144,20 +138,26 @@ public class EntidadesService {
               if( prop == null ) continue;
               busca.query[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
             }
-
+            
+            checker.filterPersistencia(busca);
             List listaBusca = this.buscar(busca);
+            checker.filterPersistencia(busca, listaBusca);
             for( Object x : listaBusca ) lista.add(x);
           }
           ooo = lista;
         }else{
+          checker.filterPersistencia(busca);
           ooo = this.buscar( busca );
+          checker.filterPersistencia(busca, (List)ooo );
         }
         break;
       case BuscaInfo.ACAO_CRIAR:
         if( busca.id ){
           throw new MsgException("Não é permitido criar entidades a partir do ID");
         }
+        checker.filterPersistencia(busca);
         ooo = this.criar( busca );
+        checker.filterPersistencia(busca, (List)ooo );
         break;
       case BuscaInfo.ACAO_EDITAR:
         if( busca.id ){
@@ -167,15 +167,8 @@ public class EntidadesService {
             throw new MsgException(String
               .format("Não encontramos os campos de Id dessa classe: '%s'", busca.entidade));
           }
-
-          Iterable<JsonNode> it;
-          if( busca.data.isArray() ) it = busca.data;
-          else{
-            List x = new ArrayList(1);
-            x.add( busca.data );
-            it = x;
-          }
-          for( JsonNode node : it ){
+          
+          for( JsonNode node : busca.data ){
             if( node == null || !node.isObject() ) continue;
             busca.query = new String[ ids.size() ][];
             int i = 0;
@@ -186,12 +179,16 @@ public class EntidadesService {
               if( prop == null ) continue;
               busca.query[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
             }
-
+            
+            checker.filterPersistencia(busca);
             res += this.editar(busca);
+            checker.filterPersistencia(busca, Arrays.asList(res) );
           }
           ooo = res;
         }else{
+          checker.filterPersistencia(busca);
           ooo = this.editar( busca );
+          checker.filterPersistencia(busca, Arrays.asList(ooo) );
         }
         break;
       case BuscaInfo.ACAO_DELETAR:
@@ -202,15 +199,8 @@ public class EntidadesService {
             throw new MsgException(String
               .format("Não encontramos os campos de Id dessa classe: '%s'", busca.entidade));
           }
-
-          Iterable<JsonNode> it;
-          if( busca.data.isArray() ) it = busca.data;
-          else{
-            List x = new ArrayList(1);
-            x.add( busca.data );
-            it = x;
-          }
-          for( JsonNode node : it ){
+          
+          for( JsonNode node : busca.data ){
             if( node == null || !node.isObject() ) continue;
             busca.query = new String[ ids.size() ][];
             int i = 0;
@@ -222,11 +212,15 @@ public class EntidadesService {
               busca.query[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
             }
 
+            checker.filterPersistencia(busca);
             res += this.deletar(busca);
+            checker.filterPersistencia(busca, Arrays.asList(ooo) );
           }
           ooo = res;
         }else{
+          checker.filterPersistencia(busca);
           ooo = this.deletar( busca );
+          checker.filterPersistencia(busca, Arrays.asList(ooo) );
         }
         break;
       case BuscaInfo.ACAO_ADICIONAR:
@@ -306,7 +300,6 @@ public class EntidadesService {
     // Cláusula WHERE do banco:
     query.where( WhereBuilder.build(cb, root, info.query) );
 
-    checker.checkPersistencia(info.classe, cb, query);
     // A busca ao banco:
     Query q = em.createQuery(query);
     q.setFirstResult( info.page * info.size );
@@ -363,7 +356,6 @@ public class EntidadesService {
       throw new RuntimeException("Problemas de Introspecção ou Reflexão ao criar entidades", ex);
     }
     for (Object obj : objs) {
-      checker.checkPersistencia(info.classe, obj);
       em.persist(obj);
     }
     this.em.flush();
@@ -415,7 +407,6 @@ public class EntidadesService {
       query.set(exp, valor );
     }
     
-    checker.checkPersistencia(info.classe, cb, query);
 
     int ups = em.createQuery(query).executeUpdate();
     return ups;
@@ -475,7 +466,6 @@ public class EntidadesService {
     }
     query.where(preds);
 
-    checker.checkPersistencia(klass, cb, query);
 
     // A busca ao banco:
     int qtd = em.createQuery(query).executeUpdate();

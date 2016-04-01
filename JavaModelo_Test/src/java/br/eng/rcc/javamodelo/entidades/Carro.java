@@ -25,7 +25,7 @@ import lombok.ToString;
 @Data
 @ToString(exclude = {"cores"})  
 @EqualsAndHashCode(exclude={"cores", "portas","valor"})
-@Seguranca(persistenciaSelect = SegInter.class)
+@Seguranca(filters = { SegInter.class })
 public class Carro implements Serializable{
   
   @Id

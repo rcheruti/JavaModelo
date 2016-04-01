@@ -1,7 +1,10 @@
 package br.eng.rcc.framework.utils;
 
+import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
 import br.eng.rcc.framework.persistencia.ClassCache;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -12,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.inject.Inject;
 import javax.persistence.EmbeddedId;
 import javax.persistence.EntityManager;
 import javax.persistence.Id;
@@ -26,6 +30,9 @@ public class PersistenciaUtils {
        .compile("([\\w.]++)\\s*+(=|!=|<|>|<=|>=|(?:not)?like|is(?:not)?null)\\s*+((['\"]).*?\\4|[\\w\\.]++)\\s*+([&\\|]?)", Pattern.CASE_INSENSITIVE);
   private static final Pattern valorPattern = Pattern
        .compile("^(['\"]).*\\1$", Pattern.CASE_INSENSITIVE);
+  
+  private static ObjectMapper mapper;
+  
   
   
   public static void resolverLazy(ClassCache cache, Object[] lista, 
@@ -134,7 +141,16 @@ public class PersistenciaUtils {
       BuscaInfo busca = new BuscaInfo();
       busca.entidade = node.get("entidade").asText();
       busca.classe = cache.get(busca.entidade);
-      busca.data = node.path("data");
+      if( !node.path("data").isArray() ){
+        if( mapper == null ){
+          mapper = new JacksonObjectMapperContextResolver().getContext(null);
+        }
+        busca.data = mapper.createArrayNode();
+        busca.data.add( node.path("data") );
+      }else{
+        busca.data = (ArrayNode)node.get("data");
+      }
+      
       if( node.has("size") ) busca.size = node.get("size").intValue();
       if( node.has("page") ) busca.page = node.get("page").intValue();
       if( node.has("id") ) busca.id = node.get("id").booleanValue();
