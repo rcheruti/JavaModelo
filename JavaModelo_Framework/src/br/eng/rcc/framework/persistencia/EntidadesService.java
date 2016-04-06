@@ -102,8 +102,8 @@ public class EntidadesService {
       mapper = resolver.getContext(null);
   } 
   
-  //=====================================================================
-  /**
+    //=====================================================================
+/**
    * Este é o serviço princiopal, daqui a busca será encaminhada para o método 
    * correto de acordo com os parâmetros do objeto {@link BuscaInfo}.
    * <br><br>
@@ -229,8 +229,11 @@ public class EntidadesService {
       case BuscaInfo.ACAO_REMOVER:
         throw new MsgException("Ainda não existe impl. para REMOVER");
         //break;
+      case BuscaInfo.ACAO_PAGINAR:
+        ooo = this.paginas( busca );
+        break;
     }
-    return ooo;
+    return ooo; 
   }
   
   public List<Object> processar(Collection<BuscaInfo> buscas) {
@@ -275,6 +278,26 @@ public class EntidadesService {
     }
 
     return map;
+  }
+  
+  public long paginas(BuscaInfo info){
+    checker.check( info.classe, Seguranca.SELECT );
+    
+    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaQuery query = cb.createQuery( Long.class );
+    Root root = query.from( info.classe );
+    query.select( cb.count(root) );
+    
+    // Cláusula WHERE do banco:
+    query.where( WhereBuilder.build(cb, root, info.query) );
+    
+    // A busca ao banco:
+    Query q = em.createQuery(query);
+    
+    // O resultado
+    List<Long> res = q.getResultList();
+    
+    return res.get(0);
   }
   
   @Transactional
@@ -451,13 +474,12 @@ public class EntidadesService {
 
   @Transactional
   public int deletar(BuscaInfo info) {
-    Class<?> klass = cache.get(info.entidade, em);
-    checker.check(klass, Seguranca.DELETE);
+    checker.check( info.classe, Seguranca.DELETE);
     
     // ----  Criando a busca ao banco:
     CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaDelete query = cb.createCriteriaDelete(klass);
-    Root root = query.from(klass);
+    CriteriaDelete query = cb.createCriteriaDelete( info.classe );
+    Root root = query.from( info.classe );
 
     // Cláusula WHERE do banco:
     Predicate[] preds = WhereBuilder.build(cb, root, info.query);
@@ -473,15 +495,10 @@ public class EntidadesService {
   }
   
   public void adicionar(BuscaInfo info) throws JsonProcessingException{
-    List<JsonNode> objs = new ArrayList<>();
-    if( info.data.isArray() ) 
-      for(JsonNode node : info.data) 
-        objs.add( node );
-    else objs.add( info.data );
     
     Map<String, ClassCache.BeanUtil> map = cache.getInfo( info.entidade );
     try{
-      for( JsonNode node : objs ){
+      for( JsonNode node : info.data ){
         BuscaInfo clone = info.clone();
         Object root = mapper.treeToValue(node, info.classe );
         Iterator<String> itKeys = node.fieldNames();
@@ -531,10 +548,14 @@ public class EntidadesService {
     for (String s : orders) {
       try {
         String[] ordersOrder = s.trim().split("\\s+");
+        String[] listaProps = ordersOrder[0].split("\\.");
+        Path path = root.get(listaProps[0]);
+        for(int i = 1; i < listaProps.length; i++) path = path.get( listaProps[i] );
+        
         if (ordersOrder.length > 1 && ordersOrder[1].matches("(?i)desc")) {
-          lista.add(cb.desc(root.get(ordersOrder[0])));
+          lista.add(cb.desc( path ));
         } else {
-          lista.add(cb.asc(root.get(ordersOrder[0])));
+          lista.add(cb.asc( path ));
         }
       } catch (IllegalArgumentException ex) {
       }
@@ -542,46 +563,5 @@ public class EntidadesService {
     query.orderBy(lista);
   }
   
-  
-  /*
-  private static final Map<Class,Integer> mapConvercao = new HashMap<>(20);
-  static{
-    // 0: byte
-    // 1: int
-    // 2: long
-    // 3: double
-    // 4: datas -> String para interpretar, usando padrão ISO
-    mapConvercao.put( Boolean.class, 0);
-    mapConvercao.put( boolean.class, 0);
-    mapConvercao.put( Byte.class, 1);
-    mapConvercao.put( byte.class, 1);
-    mapConvercao.put( Short.class, 1);
-    mapConvercao.put( short.class, 1);
-    mapConvercao.put( Integer.class, 1);
-    mapConvercao.put( int.class, 1);
-    mapConvercao.put( Long.class, 2);
-    mapConvercao.put( long.class, 2);
-    mapConvercao.put( BigInteger.class, 2);
-    mapConvercao.put( Float.class, 3);
-    mapConvercao.put( float.class, 3);
-    mapConvercao.put( Double.class, 3);
-    mapConvercao.put( double.class, 3);
-    mapConvercao.put( BigDecimal.class, 3);
-    mapConvercao.put( Date.class, 4);
-    mapConvercao.put( Time.class, 4);
-    mapConvercao.put( Calendar.class, 4);
-  }
-  private Object as( JsonNode node, Class<?> tipo ){
-    if( tipo == null || node == null ) return null;
-    if( Integer.class.isAssignableFrom(tipo) || int.class.isAssignableFrom(tipo) ) return node.asInt();
-    if( Long.class.isAssignableFrom(tipo) ) return node.asLong();
-    if( Double.class.isAssignableFrom(tipo) ) return node.asDouble();
-    if( Number.class.isAssignableFrom(tipo) ) return node.asLong();
-    if( String.class.isAssignableFrom(tipo) ) return node.asText();
-    if( Date.class.isAssignableFrom(tipo) ) throw new MsgException(JsonResponse.ERROR_EXCECAO,null,"Fazer impl. de Json para Date");
-    
-    return null;
-  }
-  /* */
   
 }

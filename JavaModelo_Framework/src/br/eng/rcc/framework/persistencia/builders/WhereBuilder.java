@@ -1,5 +1,14 @@
 package br.eng.rcc.framework.persistencia.builders;
 
+import br.eng.rcc.framework.jaxrs.JsonResponse;
+import br.eng.rcc.framework.jaxrs.MsgException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Time;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -43,12 +52,46 @@ public class WhereBuilder {
         for (int i = 1; i < vet0.length; i++) {
           exp1 = exp1.get(vet0[i]);
         }
-        preds[len] = map.get(vet[1]).apply(cb, exp1, vet[2]);
+        preds[len] = map.get(vet[1]).apply(cb, exp1,  as(exp1,vet[2]) );
       } catch (IllegalArgumentException ex) {
       }
       len++;
     }
     return preds;
   }
-
+  
+  
+  
+  private static final SimpleDateFormat dateFormat = new SimpleDateFormat();
+  
+  private static Comparable as( Path exp1, String val ){
+    if( exp1 == null || val == null ) return null;
+    Class tipo = exp1.getJavaType();
+    if( Boolean.class.isAssignableFrom(tipo) || boolean.class.isAssignableFrom(tipo) ) return Boolean.valueOf(val);
+    if( Byte.class.isAssignableFrom(tipo) || byte.class.isAssignableFrom(tipo) ) return Byte.valueOf(val);
+    if( Character.class.isAssignableFrom(tipo) || char.class.isAssignableFrom(tipo) ) return val.isEmpty()?'\0':val.charAt(0);
+    if( Short.class.isAssignableFrom(tipo) || short.class.isAssignableFrom(tipo) ) return Short.valueOf(val);
+    if( Integer.class.isAssignableFrom(tipo) || int.class.isAssignableFrom(tipo) ) return Integer.valueOf(val);
+    if( Long.class.isAssignableFrom(tipo) || long.class.isAssignableFrom(tipo) ) return Long.valueOf(val);
+    if( Float.class.isAssignableFrom(tipo) || float.class.isAssignableFrom(tipo)) return Float.valueOf(val);
+    if( Double.class.isAssignableFrom(tipo) || double.class.isAssignableFrom(tipo)) return Double.valueOf(val);
+    if( String.class.isAssignableFrom(tipo) ) return val;
+    if( BigInteger.class.isAssignableFrom(tipo) ) return new BigInteger(val);
+    if( BigDecimal.class.isAssignableFrom(tipo) ) return new BigDecimal(val);
+    try{
+      if( Date.class.isAssignableFrom(tipo) ) return dateFormat.parse(val);
+      if( Calendar.class.isAssignableFrom(tipo) ){
+        Calendar ca = Calendar.getInstance();
+        ca.setTime( dateFormat.parse(val) );
+        return ca;
+      }
+      if( Time.class.isAssignableFrom(tipo) ) return new Time( dateFormat.parse(val).getTime() );
+    }catch(ParseException ex){
+      throw new MsgException(JsonResponse.ERROR_EXCECAO,null,"Formato de Date errado", ex);
+    }
+    
+    return null;
+  }
+  
+  
 }

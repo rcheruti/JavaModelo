@@ -1,9 +1,11 @@
 (function(){
-  
+  /*
   var injector = angular.injector(['ng'],true),
       $http = injector.get('$http'),
       $q = injector.get('$q')
       ;
+      /* */
+  var $http = null, $q = null, Entidades = null;
   
   function _getObjByPath( obj, path ){
     if( !path ) return obj;
@@ -312,13 +314,97 @@
   };
   
   
+//============================================================================
+    // Auxiliares:
+  
+  function _copiarCom( objArr, arrParam ){
+    var retornarVetor = true;
+    if( !(objArr instanceof Array) ){
+      objArr = [ objArr ];
+      retornarVetor = false;
+    }
+      // montar estrutura de busca
+    var arr = [];
+    for( var g = 0; g < arrParam.length; g++ ){
+      var val = arrParam[g] ;
+      if( typeof val === 'number' ) arr.push( [val] );
+      else arr.push( val.split('.') );
+    }
+      // iniciar busca e copiar
+    var arrCopia = [],copia, obj, tempObj, tempCopia, vet, k;
+    for( var ok = 0; ok < objArr.length; ok++ ){
+      obj = objArr[ok];
+      copia = {};
+      arrCopia.push( copia );
+      for(var g = 0; g < arr.length; g++ ){
+        vet = arr[g];
+        tempObj = obj;
+        tempCopia = copia;
+        for( k = 0; k < vet.length -1; k++ ){
+          tempObj = tempObj[ vet[k] ];
+          if( !tempCopia[ vet[k] ] ) tempCopia[ vet[k] ] = {};
+          tempCopia = tempCopia[ vet[k] ];
+        }
+        tempCopia[ vet[k] ] = tempObj[ vet[k] ];
+      }
+    }
+    
+    if( retornarVetor ) return arrCopia;
+    return copia;
+  }
+  
+  function _copiarSem( objArr, arrParam ){
+    var retornarVetor = true;
+    if( !(objArr instanceof Array) ){
+      objArr = [ objArr ];
+      retornarVetor = false;
+    }
+      // montar estrutura de busca
+    var arr = [];
+    for( var g = 0; g < arrParam.length; g++ ){
+      var val = arrParam[g] ;
+      if( typeof val === 'number' ) arr.push( [val] );
+      else arr.push( val.split('.') );
+    }
+    var excluir = {}, tempExc;
+    for( var g = 0; g < arr.length; g++ ){
+      var vet = arr[g];
+      tempExc = excluir;
+      for( k = 0; k < vet.length -1; k++ ){
+        tempExc = tempExc[ vet[k] ];
+      }
+      tempExc[ vet[k] ] = true; // para ser verdadeiro na comparação
+    }
+      // iniciar busca e copiar
+    var resp = [];
+    for( var ok = 0; ok < objArr.length; ok++ ){
+      resp.push( _copiaSem_Deep( {}, objArr[ok], excluir ) );
+    }
+    
+    if( retornarVetor ) return resp;
+    return resp[0];
+  }
+  function _copiaSem_Deep( para, de, comp ){
+    for( var g in de ){
+      if( !comp[g] ){
+        para[g] = de[g];
+        continue;
+      }
+      // CONTINUAR AQUI
+    }
+  }
   
 //============================================================================
 Module.provider('Entidades',[function(){
-    
+  
   this.defaults = defaults;
   var that = this;
-  this.$get = ['context',function(context){
+  
+  this.$get = ['context','$http','$q',function(context,inj$http, inj$q){
+    
+    $http = inj$http;
+    $q = inj$q;
+
     that.defaults.url = context.root+ that.defaults.url;
     var ref = {
       query: function( ent ){
@@ -339,7 +425,12 @@ Module.provider('Entidades',[function(){
       },
       get: function( nome ){
         return entidadesCache[nome] ;
-      }
+      },
+      
+        // Shallow copy
+      copiarCom: _copiarCom,
+        // Shallow copy
+      copiarSem: _copiarSem
     };
     
     ref.eq = ref.equal = '=';
@@ -360,7 +451,8 @@ Module.provider('Entidades',[function(){
     ref.TIPO =        5;
     ref.ADICIONAR =   6;
     ref.REMOVER =     7;
-    return ref;
+    
+    return Entidades = ref;
   }];
 
 }]);

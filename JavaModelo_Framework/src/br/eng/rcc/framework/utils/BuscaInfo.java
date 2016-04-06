@@ -1,7 +1,6 @@
 package br.eng.rcc.framework.utils;
 
 import br.eng.rcc.framework.config.Configuracoes;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 /**
@@ -22,6 +21,7 @@ public class BuscaInfo {
   public static final byte ACAO_TIPO =         5;
   public static final byte ACAO_ADICIONAR =    6;
   public static final byte ACAO_REMOVER =      7;
+  public static final byte ACAO_PAGINAR =      10;
   
   //========================================================================
   
