@@ -13,6 +13,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -228,9 +229,20 @@ public class ClassCache {
       }
       public void add(Object that, Object... params)
               throws IllegalAccessException, InvocationTargetException{
-        if( add != null ) 
-          for( Object param : params )
-            add.invoke(that, param);
+        try{
+          Collection col = (Collection)getter.invoke(that);
+          if( col == null ){
+            if( Set.class.equals( colecaoType ) ) col = new HashSet<>();
+            else if( List.class.equals( colecaoType )
+              || Collection.class.equals( colecaoType ) )
+                col = new ArrayList<>();
+            else col = (Collection)colecaoType.newInstance();
+            setter.invoke(that, col);
+          }
+          for( Object param : params ) col.add( param );
+        }catch(Exception ex){
+          throw new InvocationTargetException(ex);
+        }
       }
       public void remove(Object that, Object... params)
               throws IllegalAccessException, InvocationTargetException{

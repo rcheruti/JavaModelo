@@ -11,6 +11,8 @@ import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Time;
@@ -23,6 +25,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -112,130 +115,46 @@ public class EntidadesService {
    * @return Object O resultado da resposta. Pode ser apenas um objeto ou uma lista
    * @throws Exception 
    */
+  @Transactional
   public Object processar(BuscaInfo busca) throws Exception{
     Object ooo = null;
     switch( busca.acao ){
       case BuscaInfo.ACAO_TIPO:
-        ooo = this.tipo( busca.classe );
+        busca.id = false;
+        ooo = chamarBusca( busca, this::tipo ).get();
         break;
       case BuscaInfo.ACAO_BUSCAR:
-        if( busca.id ){
-          List lista = new ArrayList<>();
-          List<String> ids = PersistenciaUtils.getIds(em, busca.classe);
-          if (ids == null || ids.isEmpty()) {
-            throw new MsgException(String
-              .format("Não encontramos os campos de Id dessa classe: '%s'", busca.entidade));
-          }
-          
-          for( JsonNode node : busca.data ){
-            if( node == null || !node.isObject() ) continue;
-            busca.query = new String[ ids.size() ][];
-            int i = 0;
-            for( String idAttr : ids ){
-              String[] idS = idAttr.split("\\.");
-              JsonNode prop = node;
-              for( String s : idS ) prop = prop.get(s);
-              if( prop == null ) continue;
-              busca.query[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
-            }
-            
-            checker.filterPersistencia(busca);
-            List listaBusca = this.buscar(busca);
-            checker.filterPersistencia(busca, listaBusca);
-            for( Object x : listaBusca ) lista.add(x);
-          }
-          ooo = lista;
-        }else{
-          checker.filterPersistencia(busca);
-          ooo = this.buscar( busca );
-          checker.filterPersistencia(busca, (List)ooo );
-        }
+        ooo = chamarBusca( busca, this::buscar ).get();
         break;
       case BuscaInfo.ACAO_CRIAR:
         if( busca.id ){
           throw new MsgException("Não é permitido criar entidades a partir do ID");
         }
-        checker.filterPersistencia(busca);
-        ooo = this.criar( busca );
-        checker.filterPersistencia(busca, (List)ooo );
+        ooo = chamarBusca( busca, this::criar ).get();
         break;
       case BuscaInfo.ACAO_EDITAR:
-        if( busca.id ){
-          int res = 0;
-          List<String> ids = PersistenciaUtils.getIds(em, busca.classe);
-          if (ids == null || ids.isEmpty()) {
-            throw new MsgException(String
-              .format("Não encontramos os campos de Id dessa classe: '%s'", busca.entidade));
-          }
-          
-          for( JsonNode node : busca.data ){
-            if( node == null || !node.isObject() ) continue;
-            busca.query = new String[ ids.size() ][];
-            int i = 0;
-            for( String idAttr : ids ){
-              String[] idS = idAttr.split("\\.");
-              JsonNode prop = node;
-              for( String s : idS ) prop = prop.get(s);
-              if( prop == null ) continue;
-              busca.query[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
-            }
-            
-            checker.filterPersistencia(busca);
-            res += this.editar(busca);
-            checker.filterPersistencia(busca, Arrays.asList(res) );
-          }
-          ooo = res;
-        }else{
-          checker.filterPersistencia(busca);
-          ooo = this.editar( busca );
-          checker.filterPersistencia(busca, Arrays.asList(ooo) );
-        }
+        ooo = chamarBusca( busca, this::editar ).get();
         break;
       case BuscaInfo.ACAO_DELETAR:
-        if( busca.id ){
-          int res = 0;
-          List<String> ids = PersistenciaUtils.getIds(em, busca.classe);
-          if (ids == null || ids.isEmpty()) {
-            throw new MsgException(String
-              .format("Não encontramos os campos de Id dessa classe: '%s'", busca.entidade));
-          }
-          
-          for( JsonNode node : busca.data ){
-            if( node == null || !node.isObject() ) continue;
-            busca.query = new String[ ids.size() ][];
-            int i = 0;
-            for( String idAttr : ids ){
-              String[] idS = idAttr.split("\\.");
-              JsonNode prop = node;
-              for( String s : idS ) prop = prop.get(s);
-              if( prop == null ) continue;
-              busca.query[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
-            }
-
-            checker.filterPersistencia(busca);
-            res += this.deletar(busca);
-            checker.filterPersistencia(busca, Arrays.asList(ooo) );
-          }
-          ooo = res;
-        }else{
-          checker.filterPersistencia(busca);
-          ooo = this.deletar( busca );
-          checker.filterPersistencia(busca, Arrays.asList(ooo) );
-        }
+        ooo = chamarBusca( busca, this::deletar ).get();
         break;
       case BuscaInfo.ACAO_ADICIONAR:
-        throw new MsgException("Ainda não existe impl. para ADICIONAR");
-        //break;
+        //throw new MsgException("Ainda não existe impl. para ADICIONAR");
+        ooo = chamarBusca( busca, this::adicionar ).get();
+        break;
       case BuscaInfo.ACAO_REMOVER:
-        throw new MsgException("Ainda não existe impl. para REMOVER");
-        //break;
+        //throw new MsgException("Ainda não existe impl. para REMOVER");
+        ooo = chamarBusca( busca, this::remover ).get();
+        break;
       case BuscaInfo.ACAO_PAGINAR:
-        ooo = this.paginas( busca );
+        busca.id = false;
+        ooo = chamarBusca( busca, this::paginas ).get();
         break;
     }
     return ooo; 
   }
   
+  @Transactional
   public List<Object> processar(Collection<BuscaInfo> buscas) {
     List<Object> resposta = new ArrayList<>( buscas.size() );
     Object ooo = null;
@@ -249,6 +168,7 @@ public class EntidadesService {
       }catch(Exception ex){
         resposta.add( new JsonResponse(false, JsonResponse.ERROR_DESCONHECIDO,
                 null, "Exceção inesperada: "+ ex.getMessage() ) );
+        ex.printStackTrace();
       }
     }
     return resposta;
@@ -256,12 +176,12 @@ public class EntidadesService {
   
   //=====================================================================
   
-  public Map<String, String> tipo(Class<?> klass) {
-    checker.check(klass, Seguranca.SELECT | Seguranca.INSERT
+  public Map<String, String> tipo( BuscaInfo info ) {
+    checker.check(info.classe, Seguranca.SELECT | Seguranca.INSERT
             | Seguranca.DELETE | Seguranca.UPDATE);
 
     Metamodel meta = this.em.getMetamodel();
-    ManagedType entity = meta.managedType(klass);
+    ManagedType entity = meta.managedType(info.classe);
 
     Map<String, String> map = new HashMap<>(20);
     Set<Attribute> attrs = entity.getDeclaredAttributes();
@@ -280,8 +200,9 @@ public class EntidadesService {
     return map;
   }
   
-  public long paginas(BuscaInfo info){
+  public int paginas(BuscaInfo info){
     checker.check( info.classe, Seguranca.SELECT );
+    if( info.size == 0 ) return 0;
     
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaQuery query = cb.createQuery( Long.class );
@@ -297,7 +218,7 @@ public class EntidadesService {
     // O resultado
     List<Long> res = q.getResultList();
     
-    return res.get(0);
+    return (int)Math.ceil( res.get(0).doubleValue() / info.size );
   }
   
   @Transactional
@@ -338,14 +259,17 @@ public class EntidadesService {
   }
   
   @Transactional
-  public List<Object> criar(BuscaInfo info) throws JsonProcessingException{
+  public List<Object> criar(BuscaInfo info){
     checker.check(info.classe, Seguranca.INSERT);
     List<Object> objs = new ArrayList<>();
-    if( info.data.isArray() ) 
-      for(JsonNode node : info.data) 
-        objs.add( mapper.treeToValue(node, info.classe) );
-    else objs.add( mapper.treeToValue(info.data, info.classe) );
-
+    
+    try{
+      for( JsonNode node : info.data )
+        objs.add( mapper.treeToValue( node, info.classe) );
+    }catch( JsonProcessingException ex ){
+      throw new RuntimeException("JsonProcessingException atirada!", ex);
+    }
+    
     // precisamos colocar o objeto no lado inverso da relação para que tudo entre
     // no banco com os valores corretos
     Map<String, ClassCache.BeanUtil> map = cache.getInfo( info.entidade );
@@ -394,13 +318,15 @@ public class EntidadesService {
     checker.check(info.classe, Seguranca.UPDATE);
     
     Map<String,Object> listaAtualizar = new HashMap<>();
-    editarArvore(listaAtualizar, info.data, null);
+    editarArvore(listaAtualizar, info.data.path(0), null);
     
     // ----  Criando a busca ao banco:
     CriteriaBuilder cb = em.getCriteriaBuilder();
     CriteriaUpdate query = cb.createCriteriaUpdate(info.classe);
     Root root = query.from(info.classe);
-
+    
+    
+    
     // Cláusula WHERE do banco:
     Predicate[] preds = WhereBuilder.build(cb, root, info.query);
     if (preds == null || preds.length < 1) {
@@ -408,9 +334,11 @@ public class EntidadesService {
     }
     query.where(preds);
     
+    List<String> ids = PersistenciaUtils.getIds(em, info.classe);
+    
     atualizar:
     for( String entryName : listaAtualizar.keySet() ){
-      for(String[] sss : info.query) if( entryName.equals(sss[0]) ){
+      for(String sss : ids) if( entryName.equals(sss) ){
         continue atualizar;
       }
       String[] listaStr = entryName.split("\\.");
@@ -419,7 +347,9 @@ public class EntidadesService {
       for( int i = 1; i < listaStr.length; i++ ) exp = exp.get( listaStr[i] );
       
       Object valor = listaAtualizar.get( entryName );
-        if( exp.getJavaType().equals(Date.class) ){
+        if( valor == null ){
+          // não vamos fazer nada aqui
+        }else if( exp.getJavaType().equals(Date.class) ){
           valor = javax.xml.bind.DatatypeConverter.parseDateTime( (String)valor ).getTime();
         }else if( exp.getJavaType().equals(Calendar.class) ){
           valor = javax.xml.bind.DatatypeConverter.parseDateTime( (String)valor );
@@ -494,47 +424,45 @@ public class EntidadesService {
     return qtd;
   }
   
-  public void adicionar(BuscaInfo info) throws JsonProcessingException{
+  @Transactional
+  public int adicionar(BuscaInfo info) {
     
     Map<String, ClassCache.BeanUtil> map = cache.getInfo( info.entidade );
+    int adds = 0;
     try{
+      List<Object> oooS = this.buscar(info);;
       for( JsonNode node : info.data ){
-        BuscaInfo clone = info.clone();
-        Object root = mapper.treeToValue(node, info.classe );
+        
         Iterator<String> itKeys = node.fieldNames();
         while( itKeys.hasNext() ){
           String key = itKeys.next();
           ClassCache.BeanUtil util = map.get(key);
           if( util.isAssociacao() ){
-            Object ooo = null;
-            try{
-              ooo = this.processar(clone);
-            }catch(Exception ex){
-              continue;
-            }
-            Collection col;
-            if( ooo instanceof Collection ) col = (Collection) ooo;
-            else{
-              col = new ArrayList<>();
-              col.add(ooo);
-            }
-            
             if( util.isColecao() ){
-              
+              for( JsonNode n : node.path(key) ){
+                Object objX = mapper.treeToValue(n, util.getJavaType());
+                for( Object x : oooS ) util.add(x, objX);
+                adds += oooS.size();
+              }
             }else{
               Object objX = mapper.treeToValue(node.path(key), util.getJavaType());
-              util.getSetter().invoke(root, objX);
+              for( Object x : oooS ) util.set(x, objX);
+              adds += oooS.size();
             }
           }
         }
       }
-    } catch (IllegalAccessException | InvocationTargetException ex) {
+      for(Object x : oooS) em.merge( x );
+    } catch (IllegalAccessException | JsonProcessingException |
+            InvocationTargetException ex) {
       throw new RuntimeException("Problemas de Introspecção ou Reflexão ao criar entidades", ex);
     }
+    return adds;
   }
   
-  public void remover(){
-    
+  @Transactional
+  public int remover(BuscaInfo info){
+    throw new MsgException("Ainda não existe impl. para REMOVER");
   }
   
   //============================================================================
@@ -563,5 +491,61 @@ public class EntidadesService {
     query.orderBy(lista);
   }
   
+  private Optional chamarBusca( BuscaInfo busca, IChamadaBusca metodo ){
+    Object ooo = null;
+    if( busca.id ){
+      List lista = new ArrayList<>(); // para resposta em lista ;
+      int resp = 0; // para respostas em número
+      
+      List<String> ids = PersistenciaUtils.getIds(em, busca.classe);
+      if (ids == null || ids.isEmpty()) {
+        throw new MsgException(String
+          .format("Não encontramos os campos de Id dessa classe: '%s'", busca.entidade));
+      }
+      
+      ArrayNode dataArray = busca.data;
+      for( JsonNode node : dataArray ){
+        if( node == null || !node.isObject() ) continue;
+        busca.query = new String[ ids.size() ][];
+        int i = 0;
+        for( String idAttr : ids ){
+          String[] idS = idAttr.split("\\.");
+          JsonNode prop = node;
+          for( String s : idS ) prop = prop.get(s);
+          if( prop == null ) continue;
+          busca.query[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
+        }
+        
+        ArrayNode arr = new ArrayNode(JsonNodeFactory.instance);
+        arr.add(node);
+        busca.data = arr ;
+        
+        checker.filterPersistencia(busca);
+        ooo = metodo.chamarBusca(busca);
+        if( ooo instanceof List ){
+          checker.filterPersistencia(busca, (List)ooo );
+          for( Object x : (List)ooo ) lista.add(x);
+        }else{
+          checker.filterPersistencia(busca, Arrays.asList( ooo ) );
+          resp += (int)ooo;
+        }
+      }
+      if( !lista.isEmpty() ) ooo = lista;
+      else ooo = resp;
+    }else{
+      checker.filterPersistencia(busca);
+      ooo = metodo.chamarBusca(busca);
+      if( ooo instanceof List ){
+        checker.filterPersistencia(busca, (List)ooo );
+      }else{
+        checker.filterPersistencia(busca, Arrays.asList( ooo ) );
+      }
+    }
+    return Optional.of( ooo );
+  }
+  
+  private static interface IChamadaBusca {
+    Object chamarBusca( BuscaInfo busca );
+  }
   
 }

@@ -2,6 +2,7 @@ package br.eng.rcc.framework.utils;
 
 import br.eng.rcc.framework.config.Configuracoes;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import java.util.Arrays;
 
 /**
  * Esta classe é usada para guadar as informações de uma requisição
@@ -11,7 +12,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
  * decidam que caminho seguir no decorrer do script.
  * 
  */
-public class BuscaInfo {
+public class BuscaInfo implements Cloneable{
   
   // Constantes de busca:
   public static final byte ACAO_BUSCAR =       1;
@@ -93,18 +94,21 @@ public class BuscaInfo {
   //public List resultado;
   
   @Override
-  public BuscaInfo clone(){
+  public BuscaInfo clone() {
+    //BuscaInfo x = (BuscaInfo)super.clone();
     BuscaInfo x = new BuscaInfo();
     x.acao = this.acao;
     x.classe = this.classe;
-    x.data = this.data;
+    x.size = this.size;
+    x.page = this.page;
     x.entidade = this.entidade;
     x.id = this.id;
-    x.join = this.join;
-    x.order = this.order;
-    x.page = this.page;
-    x.query = this.query;
-    x.size = this.size;
+    x.join = Arrays.copyOf(this.join, this.join.length);
+    x.order = Arrays.copyOf(this.order, this.order.length);
+    x.query = new String[ this.query.length ][];
+    for( int i = 0; i < this.query.length; i++ )
+      x.query[i] = Arrays.copyOf( this.query[i] , this.query[i].length );
+    x.data = this.data.deepCopy();
     return x;
   }
   
