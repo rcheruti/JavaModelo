@@ -39,7 +39,8 @@ public class RewriteFiltro implements Filter {
             || regexp.matcher(uri).find()) {
       fc.doFilter(sr, sr1);
     } else {
-      req.getRequestDispatcher(Configuracoes.indexPath).forward(sr, sr1);
+      //req.getRequestDispatcher(Configuracoes.indexPath).forward(sr, sr1);
+      resp.sendRedirect( req.getContextPath()+Configuracoes.indexPath );
     }
   }
 

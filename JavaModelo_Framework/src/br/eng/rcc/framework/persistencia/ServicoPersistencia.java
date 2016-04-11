@@ -9,7 +9,6 @@ import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -19,7 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-@WebServlet(value="/persistencia")
+@WebServlet(value="/persistencia/*")
 public class ServicoPersistencia extends HttpServlet{
   
   @Inject
@@ -42,10 +41,10 @@ public class ServicoPersistencia extends HttpServlet{
   protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
           throws ServletException, IOException {
     
-    JsonNode json = mapper.readTree( req.getInputStream() );
-    if( json == null ){
+    if( req.getContentLength() < 2 ){
       throw new MsgException("Envie um JSON no corpo da mensagem");
     }
+    JsonNode json = mapper.readTree( req.getInputStream() );
     
     List<BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
     List<Object> resposta = entService.processar(buscas);
@@ -64,19 +63,25 @@ public class ServicoPersistencia extends HttpServlet{
   @Override
   protected void doDelete(HttpServletRequest req, HttpServletResponse resp) 
           throws ServletException, IOException {
-    super.doPost(req, resp);
+    this.doPost(req, resp);
   }
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
           throws ServletException, IOException {
-    super.doPost(req, resp);
+    
+    String path = req.getPathInfo();
+    if( "/context".equals(path) ){
+      resp.getWriter().write( req.getContextPath() );
+      return;
+    }
+    this.doPost(req, resp);
   }
 
   @Override
   protected void doPut(HttpServletRequest req, HttpServletResponse resp) 
           throws ServletException, IOException {
-    super.doPost(req, resp);
+    this.doPost(req, resp);
   }
   //===========================================================================
   

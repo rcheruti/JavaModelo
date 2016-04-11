@@ -845,7 +845,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     this.entidade = ent || {};
     this._size = this.entidade.size;
     this._page = this.entidade.page;
-    this._param = []; // query
+    this._where = []; // query
     this._join = [];
     this._order = [];
     this._data = null;
@@ -892,7 +892,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     }
     return this;
   };
-  proto.param = function (nome, comp, val, logicOp, quoteVal) {
+  proto.where = function (nome, comp, val, logicOp, quoteVal) {
     if (!nome || !comp)
       return this;
     comp = comp.toLowerCase();
@@ -913,7 +913,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     } else if (quoteVal) {
       val = '"' + val + '"';
     }
-    this._param.push(nome + ' ' + comp + ' ' + val + logicOp);
+    this._where.push(nome + ' ' + comp + ' ' + val + logicOp);
     return this;
   };
   
@@ -926,8 +926,8 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     if( this._build && !force ) return this;
     // Montar Query String:
     var queryStr = '';
-    for (var g in this._param) {
-      queryStr += this._param[g];
+    for (var g in this._where) {
+      queryStr += this._where[g];
     }
     queryStr = queryStr.replace(/[&\|\s]+$/, '');
     //if (queryStr) queryStr = '?' + queryStr;
@@ -936,7 +936,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
       entidade: this.entidade.nome,
       page: this._page,
       size: this._size,
-      query: queryStr,
+      where: queryStr,
       join: this._join,
       order: this._order,
       data: this._data,
@@ -997,12 +997,14 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
   __construirRequisicao( proto, 'post',2 );
   __construirRequisicao( proto, 'put',3 );
   __construirRequisicao( proto, 'delete',4 );
+  __construirRequisicao( proto, 'paginacao',10 );
   
   __construirRequisicaoIn( proto, 'tipoIn','tipo' );
   __construirRequisicaoIn( proto, 'getIn','get' );
   __construirRequisicaoIn( proto, 'postIn','post' );
   __construirRequisicaoIn( proto, 'putIn','put' );
   __construirRequisicaoIn( proto, 'deleteIn','delete' );
+  __construirRequisicaoIn( proto, 'paginacaoIn','paginacao' );
   
   function __construirRequisicao( pro, nomeFunc, acao ){
     pro[nomeFunc] = function( _data ){
@@ -1234,6 +1236,7 @@ Module.provider('Entidades',[function(){
     ref.TIPO =        5;
     ref.ADICIONAR =   6;
     ref.REMOVER =     7;
+    ref.PAGINACAO =   10;
     
     return Entidades = ref;
   }];
@@ -1800,8 +1803,8 @@ Module.controller('Janela',['$scope','Entidades',
     function($scope,Entidades){
     
   function recarregar(){
-    Entidades.query( 'Janela' ).param('porta',Entidades.nnl).getIn($scope,'janelasPortas'); 
-    Entidades.query( 'Janela' ).param('porta',Entidades.nl).getIn($scope,'janelasSemPortas'); 
+    Entidades.query( 'Janela' ).where('porta',Entidades.nnl).getIn($scope,'janelasPortas'); 
+    Entidades.query( 'Janela' ).where('porta',Entidades.nl).getIn($scope,'janelasSemPortas'); 
   }
   recarregar();
   

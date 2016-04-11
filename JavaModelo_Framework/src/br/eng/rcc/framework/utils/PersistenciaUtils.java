@@ -165,11 +165,11 @@ public class PersistenciaUtils {
         busca.order = arr.toArray(new String[0]);
       }
       
-      if( node.has("query") ) busca.query = PersistenciaUtils.parseQueryString( node.get("query").asText() );
+      if( node.has("where") ) busca.where = PersistenciaUtils.parseQueryString( node.get("where").asText() );
       
       if( busca.join == null ) busca.join = new String[0];
       if( busca.order == null ) busca.order = new String[0];
-      if( busca.query == null ) busca.query = new String[0][];
+      if( busca.where == null ) busca.where = new String[0][];
       
       buscas.add(busca);
     }

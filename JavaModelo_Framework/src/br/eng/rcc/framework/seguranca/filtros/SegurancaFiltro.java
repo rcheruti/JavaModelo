@@ -66,8 +66,8 @@ public class SegurancaFiltro implements Filter{
         mapper.writeValue(resp.getOutputStream(), res);
         return;
       }
-      //resp.sendRedirect( req.getContextPath()+redirectPage );
-      req.getRequestDispatcher( redirectPage ).forward(request, response);
+      resp.sendRedirect( req.getContextPath()+redirectPage );
+      //req.getRequestDispatcher( redirectPage ).forward(request, response);
       return; // Sair, pois nao podemos deixar processar a requisição
     }
     

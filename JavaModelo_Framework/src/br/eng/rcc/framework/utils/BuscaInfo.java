@@ -61,7 +61,7 @@ public class BuscaInfo implements Cloneable{
    * ]
    * </pre>
    */
-  public String[][] query;
+  public String[][] where;
   /**
    * Nome simples da classe dessa entidade, como a JPA mapeia as entidades.
    */
@@ -105,9 +105,9 @@ public class BuscaInfo implements Cloneable{
     x.id = this.id;
     x.join = Arrays.copyOf(this.join, this.join.length);
     x.order = Arrays.copyOf(this.order, this.order.length);
-    x.query = new String[ this.query.length ][];
-    for( int i = 0; i < this.query.length; i++ )
-      x.query[i] = Arrays.copyOf( this.query[i] , this.query[i].length );
+    x.where = new String[ this.where.length ][];
+    for( int i = 0; i < this.where.length; i++ )
+      x.where[i] = Arrays.copyOf( this.where[i] , this.where[i].length );
     x.data = this.data.deepCopy();
     return x;
   }

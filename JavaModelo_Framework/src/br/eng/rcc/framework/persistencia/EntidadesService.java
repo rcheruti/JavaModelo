@@ -210,7 +210,7 @@ public class EntidadesService {
     query.select( cb.count(root) );
     
     // Cláusula WHERE do banco:
-    query.where( WhereBuilder.build(cb, root, info.query) );
+    query.where( WhereBuilder.build(cb, root, info.where) );
     
     // A busca ao banco:
     Query q = em.createQuery(query);
@@ -242,7 +242,7 @@ public class EntidadesService {
 
 
     // Cláusula WHERE do banco:
-    query.where( WhereBuilder.build(cb, root, info.query) );
+    query.where( WhereBuilder.build(cb, root, info.where) );
 
     // A busca ao banco:
     Query q = em.createQuery(query);
@@ -328,7 +328,7 @@ public class EntidadesService {
     
     
     // Cláusula WHERE do banco:
-    Predicate[] preds = WhereBuilder.build(cb, root, info.query);
+    Predicate[] preds = WhereBuilder.build(cb, root, info.where);
     if (preds == null || preds.length < 1) {
       throw new MsgException(JsonResponse.ERROR_EXCECAO,null,"Os parâmetros de filtragem da QueryString não são válidos.");
     }
@@ -412,7 +412,7 @@ public class EntidadesService {
     Root root = query.from( info.classe );
 
     // Cláusula WHERE do banco:
-    Predicate[] preds = WhereBuilder.build(cb, root, info.query);
+    Predicate[] preds = WhereBuilder.build(cb, root, info.where);
     if (preds.length < 1) {
       throw new MsgException(JsonResponse.ERROR_EXCECAO,null,"Os parâmetros de filtragem da QueryString não são válidos.");
     }
@@ -506,14 +506,14 @@ public class EntidadesService {
       ArrayNode dataArray = busca.data;
       for( JsonNode node : dataArray ){
         if( node == null || !node.isObject() ) continue;
-        busca.query = new String[ ids.size() ][];
+        busca.where = new String[ ids.size() ][];
         int i = 0;
         for( String idAttr : ids ){
           String[] idS = idAttr.split("\\.");
           JsonNode prop = node;
           for( String s : idS ) prop = prop.get(s);
           if( prop == null ) continue;
-          busca.query[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
+          busca.where[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
         }
         
         ArrayNode arr = new ArrayNode(JsonNodeFactory.instance);
