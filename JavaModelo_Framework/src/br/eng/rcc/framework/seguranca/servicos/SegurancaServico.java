@@ -4,7 +4,6 @@ import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.anotacoes.Segurancas;
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import br.eng.rcc.framework.interfaces.IUsuario;
 import br.eng.rcc.framework.interfaces.SegurancaPersistenciaInterceptador;
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import javax.enterprise.context.RequestScoped;
 
 /**
  * Recursos desta classe estarão disponpiveis na CDI.
@@ -29,7 +29,7 @@ import java.util.function.Supplier;
  *
  * @author rcheruti
  */
-@ApplicationScoped
+@RequestScoped
 public class SegurancaServico {
   
   @Inject

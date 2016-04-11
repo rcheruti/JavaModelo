@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import br.eng.rcc.framework.interfaces.IUsuario;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 
 /**
  * Esta classe fornece funções para acessar o usuário que está disponível na
@@ -14,7 +14,7 @@ import javax.enterprise.context.ApplicationScoped;
  * 
  * 
  */
-@ApplicationScoped
+@RequestScoped
 public class UsuarioServico {
   
   @Inject

@@ -33,7 +33,6 @@ import java.util.function.Supplier;
  * </ul>
  *
  *
- * @author rcheruti
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
@@ -110,6 +109,7 @@ public @interface Seguranca {
    * usado para testar o acesso
    */
   @Nonbinding
+  @Deprecated
   Class<? extends Supplier<? extends Predicate>> predicado() default NullSupplier.class;
   
   
