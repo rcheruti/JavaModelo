@@ -183,50 +183,155 @@ public class ClassCache {
     
     public static class BeanUtil {
       
-      private String nome;
-      private boolean associacao;
-      private boolean colecao;
-      private boolean embutido;
-      private Method getter;
-      private Method setter;
-      private Method add;
-      private Method remove;
-      private Class javaType;
-      private Class colecaoType;
-      private ClassCache classCache;
-      private String mapeado;
+      /**
+       * Nome do atributo que esse utilitário representa
+       */
+      protected String nome;
+      /**
+       * Informa se esse atributo é uma associação segundo o {@link EntityManager}
+       */
+      protected boolean associacao;
+      /**
+       * Informa se esse atributo é uma coleção segundo o {@link EntityManager}
+       */
+      protected boolean colecao;
+      /**
+       * Informa se esse atributo é uma relação embutidade segundo o {@link EntityManager}
+       */
+      protected boolean embutido;
+      /**
+       * Guarda o método <b>getter</b> desse atributo <i>(JavaBeans)</i>
+       */
+      protected Method getter;
+      /**
+       * Guarda o método <b>setter</b> desse atributo <i>(JavaBeans)</i>
+       */
+      protected Method setter;
+      /**
+       * Guarda o método <b>add(Object)</b> desse atributo, case ele seja uma coleção
+       */
+      protected Method add;
+      /**
+       * Guarda o método <b>remove(Object)</b> desse atributo, case ele seja uma coleção
+       */
+      protected Method remove;
+      /**
+       * Guarda a classe do tipo desse atributo, ou o tipo genérico caso ele seja uma coleção
+       */
+      protected Class javaType;
+      /**
+       * Guarda a classe da coleção desse atributo, caso ele seja uma coleção
+       */
+      protected Class colecaoType;
+      /**
+       * Guarda uma referência para o cache de classes
+       */
+      protected ClassCache classCache;
+      /**
+       * Guarda o nome do atributo da inversão (atributo que tem a relação inversa)
+       */
+      protected String mapeado;
       
+      /**
+       * Informa se esse atributo é uma associação segundo o {@link EntityManager}
+       * @return <code>true</code> se esse atributo é uma associação
+       */
       public boolean isAssociacao(){ return associacao; }
+      /**
+       * Informa se esse atributo é uma coleção segundo o {@link EntityManager}
+       * @return <code>true</code> se esse atributo é uma coleção
+       */
       public boolean isColecao(){ return colecao; }
+      /**
+       * Informa se esse atributo é uma relação embutidade segundo o {@link EntityManager}
+       * @return <code>true</code> se esse atributo é uma relação embutida
+       */
       public boolean isEmbutido(){ return embutido; }
+      /**
+       * @return o método <b>getter</b> desse atributo <i>(JavaBeans)</i>
+       */
       public Method getGetter(){ return getter; }
+      /**
+       * @return o método <b>setter</b> desse atributo <i>(JavaBeans)</i>
+       */
       public Method getSetter(){ return setter; }
+      /**
+       * @return o método <b>add(Object)</b> desse atributo, case ele seja uma coleção
+       */
       public Method getAdd(){ return add; }
+      /**
+       * @return o método <b>remove(Object)</b> desse atributo, case ele seja uma coleção
+       */
       public Method getRemove(){ return remove; }
+      /**
+       * @return o nome do atributo que esse utilitário representa
+       */
       public String getNome(){ return nome; }
+      /**
+       * @return a classe do tipo desse atributo, ou o tipo genérico caso ele seja uma coleção
+       */
       public Class getJavaType(){ return javaType; }
+      /**
+       * @return a classe da coleção desse atributo, caso ele seja uma coleção
+       */
       public Class getColecaoType(){ return colecaoType; }
+      /**
+       * @return o nome do atributo da inversão (o nome em "mappedBy" por exemplo)
+       */
       public String getMapeado(){ return mapeado; }
       
-      
+      /**
+       * 
+       * @return o mapa de utilitários da classe desse atributo, caso esse atributo
+       *  seja uma relação de entidades (mesmo que seja uma coleção, onde será 
+       *  retornado um mapa do tipo genérico)
+       */
       public Map<String,BeanUtil> path(){
         return classCache.getInfo(javaType.getSimpleName());
       }
+      /**
+       * @return o utilitário que representa a inversão dessa relação (ex.: "mappedBy"),
+       *  para que seja simples configurar os dois lados da relação
+       */
       public BeanUtil getInverse(){
         if( !associacao || mapeado == null ) return null;
         Map<String,BeanUtil> map = this.path();
         if( map != null ) return map.get(mapeado);
         return null;
       }
+      /**
+       * Uma forma simples de invocar o método <code>getter</code>
+       * 
+       * @param that o objeto onde a reflexão será aplicada
+       * @return o valor atual guardado no objeto
+       * @throws IllegalAccessException
+       * @throws InvocationTargetException 
+       */
       public Object get(Object that) 
               throws IllegalAccessException, InvocationTargetException{ 
         if( getter == null ) return null;
         return getter.invoke(that);
       }
+      /**
+       * Uma forma simples de invocar o método <code>setter</code>
+       * 
+       * @param that o objeto onde a reflexão será aplicada
+       * @param param o valor que será aplicado na reflexão
+       * @throws IllegalAccessException
+       * @throws InvocationTargetException 
+       */
       public void set(Object that, Object param)
               throws IllegalAccessException, InvocationTargetException{
         if( setter != null ) setter.invoke(that, param);
       }
+      /**
+       * Uma forma simples de invocar o método <code>add(Object)</code>
+       * 
+       * @param that o objeto onde a reflexão será aplicada
+       * @param params os valores que serão aplicados na reflexão
+       * @throws IllegalAccessException
+       * @throws InvocationTargetException 
+       */
       public void add(Object that, Object... params)
               throws IllegalAccessException, InvocationTargetException{
         try{
@@ -244,6 +349,14 @@ public class ClassCache {
           throw new InvocationTargetException(ex);
         }
       }
+      /**
+       * Uma forma simples de invocar o método <code>remove(Object)</code>
+       * 
+       * @param that o objeto onde a reflexão será aplicada
+       * @param params os valores que serão aplicados na reflexão
+       * @throws IllegalAccessException
+       * @throws InvocationTargetException 
+       */
       public void remove(Object that, Object... params)
               throws IllegalAccessException, InvocationTargetException{
         if( remove != null ) 

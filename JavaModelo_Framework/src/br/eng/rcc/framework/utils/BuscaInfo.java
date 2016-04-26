@@ -93,6 +93,31 @@ public class BuscaInfo implements Cloneable{
   //public Query criteriaQuery;
   //public List resultado;
   
+  /**
+   * Este método irá criar um novo objeto {@link BuscaInfo}, copiando todos os atributos
+   * do objeto original para que não haja ligação (referência) nenhuma entre o
+   * novo objeto e o antigo objeto.
+   * <br><br>
+   * A cópia dos atributos é feita dessa maneira:
+   * <ul>
+   *  <li>
+   *    Atributos nativos são copiados para o novo objeto (não existe referências aqui,
+   *    então nenhum problema acontecerá)
+   *  </li>
+   *  <li>
+   *    Atributos que são vetores de nativos ou {@link String} são copiados 
+   *    usando {@link Arrays.copyOf} (objetos {@link String} não permitem que o vetor de 
+   *    caracteres sejá alterado, então não haverá problemas aqui)
+   *  </li>
+   *  <li>
+   *    Para o atributo <b>where</b> é criado um novo vetor, e para cada item do vetor
+   *    no antigo objeto (cada item também é um vetor) é usado {@link Arrays.copyOf}
+   *    para copiar o vetor de {@link String}.
+   *  </li>
+   * </ul>
+   * 
+   * @return Um novo objeto {@link BuscaInfo}
+   */
   @Override
   public BuscaInfo clone() {
     //BuscaInfo x = (BuscaInfo)super.clone();
