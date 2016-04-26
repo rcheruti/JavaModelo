@@ -9,9 +9,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.awt.Color;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Any;
+import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -33,30 +35,23 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class UtilsDownloadExcel {
   
   @Inject
-  private EntityManager em;
+  protected EntidadesService entServ;
   
   @Inject
-  private EntidadesService entServ;
+  protected ClassCache cache;
   
-  @Inject
-  private ClassCache cache;
+  @Inject @Any
+  protected Instance<IExcelStyle> injectEstilos;
   
+  protected IExcelStyle estilos;
   
-  
-  public static XSSFCellStyle createStyle(XSSFWorkbook workbook) {
-    Font font = workbook.createFont();
-    font.setBold(true);
-
-    // Cor da celula: rgb( 142 , 169 , 219 )
-    XSSFCellStyle styleHeader = (XSSFCellStyle) workbook.createCellStyle();
-    styleHeader.setFillPattern(XSSFCellStyle.SOLID_FOREGROUND);
-    styleHeader.setFillForegroundColor(new XSSFColor(new Color(142, 169, 219)));
-    styleHeader.setFillBackgroundColor(new XSSFColor(new Color(142, 169, 219)));
-    styleHeader.setFont(font);
-    styleHeader.setAlignment(XSSFCellStyle.ALIGN_CENTER);
-
-    return styleHeader;
+  @PostConstruct
+  public void postConstruct(){
+    estilos = injectEstilos.get();
+    if( estilos == null ) estilos = new DefaultExcelEstilo();
   }
+  
+  //------------------------------------------------------------------------
   
   /*
   public static Response download( 
@@ -66,45 +61,12 @@ public class UtilsDownloadExcel {
           List<String> selecionar,
           String[] ordem, boolean asc ){
     
-    CriteriaBuilder cb = em.getCriteriaBuilder();
-    CriteriaQuery<Object[]> query = cb.createQuery( Object[].class );
-    Root root = query.from( klass );
-    List<Path> paths = selecionar.stream().map((x)->root.get(x)).collect( Collectors.toList() );
-    query.multiselect( paths.toArray(new Path[0]) );
-    
-    if( ordem != null ){
-      List ordens = new ArrayList<>();
-      for( String s : ordem ){
-        ordens.add( asc? cb.asc( root.get(s) ) : cb.desc( root.get(s) ) );
-      }
-      query.orderBy(ordens);
-    }
-    List<Object[]> lista = em.createQuery(query).getResultList();
+    ...
     
     //=========================================================================
-    XSSFWorkbook workbook = new XSSFWorkbook();
-    XSSFSheet sheet = workbook.createSheet( sheetName );
-    XSSFCellStyle styleHeader = createStyle( workbook );
     
-    XSSFRow row = sheet.createRow( 0 );
-    for( int i = 0; i < cabs.size(); i++ ){
-        Cell cell = row.createCell( i );
-        cell.setCellStyle(styleHeader);
-        cell.setCellValue( cabs.get(i) );
-    }
-    
-    int nextRow = 1 ;
-    XSSFCell cell = null;
-    for(Object[] objs : lista){
-      row = sheet.createRow( nextRow++ );
-      for( int i = 0; i < cabs.size(); i++ ){
-        cell = row.createCell( i );
-        cell.setCellValue( objs[i]==null? null : objs[i].toString() );
-      }
-    }
-    int cabsInt = cabs.size();
-    while( cabsInt-- > 0 ) sheet.autoSizeColumn(cabsInt);
-    
+    ...
+  
     StreamingOutput sOut = ( out )->{ workbook.write( out ); };
     Response.ResponseBuilder resp = Response.ok( sOut ); 
     resp.header("Content-Disposition", "attachment; filename=\""+ sheetName +".xlsx\"");
@@ -160,14 +122,15 @@ public class UtilsDownloadExcel {
       // exportar:
     XSSFWorkbook workbook = new XSSFWorkbook();
     XSSFSheet sheet = workbook.createSheet( nodeNome.asText() );
-    //XSSFCellStyle styleHeader = createStyle( workbook );
+    XSSFCellStyle styleHeader = estilos.titulos( workbook );
+    XSSFCellStyle styleBody = estilos.atributos( workbook );
     
     int i;
     XSSFRow row = sheet.createRow( 0 );
     i = 0;
     for( JsonNode tNode : nodeTitu ){
       Cell cell = row.createCell( i );
-      //cell.setCellStyle(styleHeader);
+      cell.setCellStyle(styleHeader);
       cell.setCellValue( tNode.asText() );
       i++;
     }
@@ -181,6 +144,7 @@ public class UtilsDownloadExcel {
         ClassCache.BeanUtil util = beanUtils.get( nodeString.asText() );
         Object valor = util.getGetter().invoke(objEnt);
         cell = row.createCell( i );
+        cell.setCellStyle(styleBody);
         cell.setCellValue( valor==null? null : valor.toString() );
         i++;
       }
