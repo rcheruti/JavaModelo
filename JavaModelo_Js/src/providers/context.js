@@ -25,6 +25,7 @@ Module.provider('context',[function(){
     };
     var _funcs = {
       root: function(/*, params _context */){
+        provider.context.root = 'x';
         provider.context.root = _context.apply(this, arguments);
         provider.context.services = corrigirUrl( provider.context.root + provider.context.path.services );
         provider.context.websocket = corrigirUrl( provider.context.root + provider.context.path.websocket );
@@ -53,7 +54,11 @@ Module.provider('context',[function(){
     angular.extend( this, _funcs );
     
     function corrigirUrl(str){
-      return str.replace(/\/\/+/g,'/');
+      str = str.trim().replace(/\/\/+/g,'/');
+      if( !provider.context.root ){
+        str = str.replace(/^\s*\//,'');
+      }
+      return str;
     }
     
     this.$get = [function(){

@@ -19,7 +19,7 @@ module.exports = function (grunt) {
     srcJsC:'src_web/js/critico/',
     srcJsN:'src_web/js/normal/',
     htmlPaginas:'src_web/paginas/',
-    htmlIndex:'src_web/index.jsp',
+    htmlIndex:'src_web/index.html',
     temp:'web_temp/',
     test:'test/'
   };
@@ -200,7 +200,7 @@ module.exports = function (grunt) {
         files:[{
           expand:true,
           flatten:true,
-          src: [p.src+ 'index.jsp', p.src+ 'login.jsp'],
+          src: [p.src+ 'index.html', p.src+ 'login.html'],
           dest: p.dist 
         }]
       }

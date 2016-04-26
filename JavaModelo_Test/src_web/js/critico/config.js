@@ -7,7 +7,6 @@ Module.config(['contextProvider','UsuarioProvider','EntidadesProvider',
   //EntidadesProvider.defaults.cacheTimeout["POST/tipo"] = 5000 ;
   //UsuarioProvider.carregarAoIniciar = false;
   
-  contextProvider.root( window.contextRoot );
   contextProvider.services('/s');
   contextProvider.websocket('/websocket');
   

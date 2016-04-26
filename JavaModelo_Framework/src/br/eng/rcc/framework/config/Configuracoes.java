@@ -40,7 +40,7 @@ public class Configuracoes {
    * o usuário para a página configurada em {@link indexPath}.
    */
   public static String rewriteRegExp = 
-      "^/?s/|^/?css/|^/?js/|^/?img/|^/?index\\.html|^/?login\\.html|^/?index\\.jsp|^/?login\\.jsp" ;
+      "^/?s/|^/?css/|^/?js/|^/?img/|^/?index\\.html|^/?login\\.html|^/?index\\.jsp|^/?login\\.jsp|^/?persistencia/context" ;
   
   /**
    * Expressão Regular que será usada por {@link SegurancaFiltro} proteger o sistema de tentativas
@@ -50,20 +50,20 @@ public class Configuracoes {
    * {@link loginPath}.
    */
   public static String segurancaRegExp = 
-      "(?i:^/?(?:img|css|js|s/seguranca/login|login.html|login.jsp))" ;
+      "(?i:^/?(?:img|css|js|s/seguranca/login|login.html|login.jsp|persistencia/context))" ;
   
   
   /**
    * Endereço da página de login do sistema.
    * (Atenção: não incluir o Contexto do sistema nesse valor)
    */
-  public static String loginPath = "/login.jsp";
+  public static String loginPath = "/login.html";
   
   /**
    * Endereço da página inicial do sistema, após o login ser efetuado.
    * (Atenção: não incluir o Contexto do sistema nesse valor)
    */
-  public static String indexPath = "/index.jsp";
+  public static String indexPath = "/index.html";
   
   /**
    * Nome do script de criptografia que será passado para o "Apache Codec Commons" para fazer a 
@@ -84,14 +84,14 @@ public class Configuracoes {
   
   /**
    * Quantidade de iterações da chave quando uma chave de "SecretKey" for usavada.
-   * <br/><br/>
+   * <br><br>
    * Ex.: "PBKDF2WithHmacSHA1"
    */
   public static int criptografiaIteration = 5;
   
   /**
    * Tamanho da chave quando uma chave de "SecretKey" for usavada.
-   * <br/><br/>
+   * <br><br>
    * Ex.: "PBKDF2WithHmacSHA1"
    */
   public static int criptografiaKeyLength = 512;
@@ -129,5 +129,17 @@ public class Configuracoes {
    * {@link EntityManager}, deve ser preenchido logo que o sistema iniciar.
    */
   public static boolean preCarregarCache = false;
+  
+  /**
+   * Informa o nome da unidade de persistência que deve ser usada para criar
+   * os gerenciadores de entidades.
+   * <br><br>
+   * Caso essa configuração seja <code>null</code> ou uma {@link String} vazia,
+   * uma unidade aleatória será escolhida como unidade de persistência.
+   * <br><br>
+   * Caso haja apenas 1 unidade disponível, a seleção aleatória irá selecionar 
+   * essa unidade.
+   */
+  public static String persistenceUnit = "";
   
 }

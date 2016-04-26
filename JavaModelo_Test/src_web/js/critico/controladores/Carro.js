@@ -1,5 +1,5 @@
-Module.controller('Carro',['$scope','Entidades',
-    function($scope,Entidades){
+Module.controller('Carro',['$scope','Entidades','$http',
+    function($scope,Entidades, $http){
   
   $scope.cores = [];
   $scope.carro = {};
@@ -23,6 +23,30 @@ Module.controller('Carro',['$scope','Entidades',
   $scope.deleteCarro = function( carro ){
     var sim = confirm('Deletar?');
     sim && Entidades.query('Carro').id().delete( carro ).then( recarregar );
+  };
+  
+  $scope.exportarCarros = function(){
+    var data = { 
+      entidade:'Carro', 
+      data: { nome:'Carros - Export', 
+        titulos:['ID','Nome'] ,
+        atributos:['id','nome'] 
+      }
+    };
+    
+    var form = document.createElement("form");
+    form.action = 'exportar';
+    form.method = 'post';
+    form.target = "_self";
+    var input = document.createElement("textarea");
+    input.name = 'json';
+    input.value = JSON.stringify( data );
+    form.appendChild(input);
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+    
   };
   
 }]);

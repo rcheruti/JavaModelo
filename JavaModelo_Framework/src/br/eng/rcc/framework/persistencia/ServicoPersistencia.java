@@ -71,8 +71,10 @@ public class ServicoPersistencia extends HttpServlet{
           throws ServletException, IOException {
     
     String path = req.getPathInfo();
+    System.out.printf("--- path: '%s' \n", path );
     if( "/context".equals(path) ){
       resp.getWriter().write( req.getContextPath() );
+      resp.flushBuffer();
       return;
     }
     this.doPost(req, resp);

@@ -1,10 +1,10 @@
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+
 <!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>JavaModelo Test</title>
+    <title>JavaModelo Test: Login</title>
     
     <style>* {
   border: none;
@@ -92,204 +92,7 @@ ul li {
   transform: translate3d(0, -15%, 0);
 }
 </style>
-    <script>
-        window.contextRoot = '${pageContext.servletContext.contextPath}';
-    </script>
     
-  </head>
-  <body ng-app="Module" ng-strict-di="true">
-    
-    <div class="bodyMargin" ui-view="login">
-      
-      <div class="homePage">
-        <div class="menu" ng-controller="Menu">
-          <button ng-click="logout()">Logout</button>
-          <span>{{ logoutMsg }}</span>
-          <a ui-sref="carro">Carros</a>
-          <a ui-sref="janela">Janelas</a>
-          <a ui-sref="tipo">Tipos</a>
-          <a ui-sref="tipoMany">Tipos Many</a>
-        </div>
-
-        <h1>Hello World!</h1>
-
-        <div ui-view="conteudo"></div>
-      </div>
-
-    </div>
-    
-    <!-- ================================================ -->
-    <div id="paginas" style="display:none;">
-      <script type="text/ng-template" id="carro.html">
-
-<div class="carro" ng-controller="Carro">
-  
-  <div class="form">
-    <input ng-model="carro.nome" placeholder="Nome">
-    
-    <br>
-    <input ng-model="carro.portas.cor" placeholder="Cor da porta">
-    
-    <br>
-    <br>
-    <select ng-options="c.nome for c in cores" ng-model="carro.cores">
-      <option value="">--------------</option>
-    </select>
-    
-    <br>
-    <br>
-    <input ng-model="carro.valor.valor" placeholder="Valor">
-    
-    <br>
-    <br>
-    <button ng-click="postCarro()">Gravar</button>
-  </div>
-  
-  
-  <div>
-    <div class="titulo">Cores</div>
-    <ul>
-      <li ng-repeat="x in cores">{{ x.nome}} ({{ x.rgb}}) [{{ x.hex}}]</li>
-    </ul>
-  </div>
-  
-  <div >
-    <div class="titulo">Carros:</div>
-    <ul>
-      <li ng-repeat="c in coisas.carros">
-        <button ng-click="deleteCarro(c)">Deletar</button>
-        <span>{{ c.nome}} [ID: {{ c.id }}]</span>
-        <span> (criado em: "{{ c.registroUsuario.atualizacao }}")</span>
-        
-        <br/>
-        <span>- Valor: {{ c.valor.valor }}</span>
-        
-        <br/>
-        <span>- Cores:</span>
-        <ul>
-          <li ng-repeat="x in c.cores">{{ x.nome}} ({{ x.rgb}}) [{{ x.hex}}]</li>
-        </ul>
-        
-        <span>- Portas:</span>
-        <ul>
-          <li ng-repeat="x in c.portas">
-            <span>Cor: {{ x.cor }}</span>
-            <br/>
-            <span>- Janelas:</span>
-            <ul>
-              <li ng-repeat="j in x.janelas">{{ j.id }}, janela elétrica: {{ j.eletrica }}</li>
-            </ul>
-          </li>
-        </ul>
-        
-      <br/><br/>
-      </li>
-    </ul>
-      
-  </div>
-  
-</div></script>
-<script type="text/ng-template" id="index.html">
-<div class="homePage">
-  <div class="menu" ng-controller="Menu">
-    <button ng-click="logout()">Logout</button>
-    <span>{{ logoutMsg }}</span>
-    <a ui-sref="carro">Carros</a>
-    <a ui-sref="tipo">Tipos</a>
-    <a ui-sref="tipoMany">Tipos Many</a>
-  </div>
-
-  <h1>Hello World!</h1>
-
-  <div ui-view="conteudo"></div>
-</div>
-</script>
-<script type="text/ng-template" id="janela.html">
-
-<div class="carro" ng-controller="Janela">
-  
-  <div class="form">
-    
-    <div>Janelas com portas:</div>
-    <div ng-repeat="x in janelasPortas">ID: {{ x.id }}</div>
-    
-    <br/><br/>
-    <div>Janelas sem portas:</div>
-    <div ng-repeat="x in janelasSemPortas">ID: {{ x.id }}</div>
-    
-  </div>
-  
-  
-  
-</div></script>
-<script type="text/ng-template" id="login.html">
-<div class="loginForm" ng-controller="LoginForm">
-  <label>
-    <span>Login</span>
-    <input ng-model="login"/>
-  </label>
-
-  <br/><br/>
-
-  <label>
-    <span>Senha</span>
-    <input ng-model="senha" type="password"/>
-  </label>
-
-  <br/><br/>
-
-  <button type="button" ng-click="entrar()">Log in</button>
-  <br/><br/>
-
-  <div class="msg trans" ng-class="msgClasses">{{ msg }}</div>
-</div></script>
-<script type="text/ng-template" id="tipo.html"><div class="tipo" ng-controller="Tipo">
-  
-  <form class="form">
-    <label>
-      <input type="checkbox" ng-model="override" />
-      Override
-    </label>
-    
-    <br/><br/>
-    <div ng-repeat="x in entidadeLista | orderBy:x">
-      <label>
-        <input type="radio" name="ent" ng-model="$parent.entidade" ng-value="x" 
-               ng-change="mostrarTipo(x)"/>
-        {{ x }}
-      </label>
-    </div>
-  </form>
-  
-  <div>Override: "{{ override }}"</div>
-  <div>Tipo da entidade: "{{ entidade }}"</div>
-  <pre>{{ tipo | json }}</pre>
-  
-</div></script>
-<script type="text/ng-template" id="tipoMany.html"><div class="tipoMany" ng-controller="TipoMany">
-  
-  <form class="form">
-    <label>
-      <input type="checkbox" ng-model="override" />
-      Override
-    </label>
-    
-    <br/><br/>
-    <div ng-repeat="x in entidadeLista | orderBy:x">
-      <label>
-        <input type="checkbox" ng-model="entidade"  
-               ng-change="mostrarTipo($index)"/>
-        {{ x }}
-      </label>
-    </div>
-  </form>
-  
-  <div>Override: "{{ override }}"</div>
-  <div>Tipo da entidade: "{{ entidade }}"</div>
-  <pre>{{ tipo | json }}</pre>
-  
-</div></script>
-    </div>
     <script>/*
  AngularJS v1.5.0-beta.2
  (c) 2010-2015 Google, Inc. http://angularjs.org
@@ -692,23 +495,35 @@ d.target.blur&&d.target.blur())}}}function l(d){d=d.touches&&d.touches.length?d.
 var Module = angular.module('JavaModelo',['ng','ui.router']);
 
   // Configuração dos interceptadores desse módule
-Module.config(['$httpProvider',
+Module.config(['$httpProvider','contextProvider',
           //'$compileProvider','$logProvider','HostInterProvider',
-        function($httpProvider
+        function($httpProvider,contextProvider
           //,$compileProvider,$logProvider,HostInterProvider
             ){
-    
-    //$httpProvider.useApplyAsync( true );
-    //$compileProvider.debugInfoEnabled( true );
-    //$logProvider.debugEnabled( true );
-    
-    //HostInterProvider.url = 'http://127.0.0.1:8080';
-    
-    $httpProvider.interceptors.push( 'LoginInter' );
-    $httpProvider.interceptors.push( 'HostInter' );
-    
-    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-    
+
+  //$httpProvider.useApplyAsync( true );
+  //$compileProvider.debugInfoEnabled( true );
+  //$logProvider.debugEnabled( true );
+
+  //HostInterProvider.url = 'http://127.0.0.1:8080';
+
+  // Pegar o context;
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (xhttp.readyState === 4 && xhttp.status === 200) {
+      //console.log( 'novo context', xhttp.responseText );
+      window.contextRoot = xhttp.responseText;
+    }
+  };
+  xhttp.open("GET", "persistencia/context", false);
+  xhttp.send();
+  contextProvider.root( window.contextRoot );
+  
+  $httpProvider.interceptors.push( 'LoginInter' );
+  $httpProvider.interceptors.push( 'HostInter' );
+
+  $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
 }]);
 
 
@@ -1315,7 +1130,7 @@ Module.provider('HostInter',[function(){
     var ref = {
       request:function( request ){
         if( provider.ativo ){
-          request.url = provider.url + context.services + request.url ;
+          request.url = provider.url + request.url ;
         }
         return request;
       }
@@ -1331,7 +1146,7 @@ Module.provider('LoginInter',[function(state){ // '$state'
   
   provider.handler = null;
   provider.state = ''; // login
-  provider.url = '/login.jsp';
+  provider.url = '/login.html';
   provider.ativo = true;
   provider.ERRORCODE_LOGIN = 401 ;
 
@@ -1443,6 +1258,7 @@ Module.provider('context',[function(){
     };
     var _funcs = {
       root: function(/*, params _context */){
+        provider.context.root = 'x';
         provider.context.root = _context.apply(this, arguments);
         provider.context.services = corrigirUrl( provider.context.root + provider.context.path.services );
         provider.context.websocket = corrigirUrl( provider.context.root + provider.context.path.websocket );
@@ -1471,7 +1287,11 @@ Module.provider('context',[function(){
     angular.extend( this, _funcs );
     
     function corrigirUrl(str){
-      return str.replace(/\/\/+/g,'/');
+      str = str.trim().replace(/\/\/+/g,'/');
+      if( !provider.context.root ){
+        str = str.replace(/^\s*\//,'');
+      }
+      return str;
     }
     
     this.$get = [function(){
@@ -1737,81 +1557,21 @@ Module.provider('context',[function(){
   //=====================  public LazyLoader object  ======================
   window.LazyLoader = LazyLoader;
 })(window, document);
-
-
+</script>
+    <script>
 window.Module = angular.module('Module',['ngAnimate','ngTouch','ngRoute','ui.router','JavaModelo']);
-
-Module.config(['contextProvider','UsuarioProvider','EntidadesProvider',
-    function(contextProvider, UsuarioProvider,EntidadesProvider){
+Module.config(['contextProvider',
+    function(contextProvider){
   
   //EntidadesProvider.defaults.cacheTimeout["POST/tipo"] = 5000 ;
   //UsuarioProvider.carregarAoIniciar = false;
   
-  contextProvider.root( window.contextRoot );
   contextProvider.services('/s');
   contextProvider.websocket('/websocket');
   
 }]);
 
-Module.run(['Entidades','$window','Usuario','$q',
-    function(Entidades,$window,Usuario, $q){
-  
-  $window.Carro = Entidades.entidade('Carro');
-  $window.Cor = Entidades.entidade('Cor');
-  
-  Entidades.entidade('Porta');
-  Entidades.entidade('Usuario'); 
-  Entidades.entidade('Valor');
-  Entidades.entidade('RegistroUsuario');
-  
-  Usuario.then(function(u){
-    console.log('Usuario::: ', u);
-  });
-  
-  
-}]);
-
-Module.controller('Carro',['$scope','Entidades',
-    function($scope,Entidades){
-  
-  $scope.cores = [];
-  $scope.carro = {};
-  
-  function recarregar(){
-    Entidades.query( 'Cor' ).order(['nome']).get().then(function(data){
-      console.log( 'data', data );
-      $scope.cores = data.data[0];
-    }) ; 
-    Entidades.query('Carro').join(['cores','portas','valor','portas.janelas',
-        'registroUsuario'])
-      .order(['nome']).getIn( $scope, 'coisas.carros' );
-  }
-  recarregar();
-  
-  
-  $scope.postCarro = function(){
-    Entidades.query('Carro').post( $scope.carro ).then( recarregar );
-  };
-  
-  $scope.deleteCarro = function( carro ){
-    var sim = confirm('Deletar?');
-    sim && Entidades.query('Carro').id().delete( carro ).then( recarregar );
-  };
-  
-}]);
-Module.controller('Janela',['$scope','Entidades',
-    function($scope,Entidades){
-    
-  function recarregar(){
-    Entidades.query( 'Janela' ).where('porta',Entidades.nnl).getIn($scope,'janelasPortas'); 
-    Entidades.query( 'Janela' ).where('porta',Entidades.nl).getIn($scope,'janelasSemPortas'); 
-  }
-  recarregar();
-  
-  
-  
-}]);
-Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','state',
+Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','$state',
     function($scope,$http,$timeout,$window,context,state){
   $scope.msg = '';
   $scope.msgClasses = 'fade right';
@@ -1826,9 +1586,9 @@ Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','
           $scope.msg = data.msg ;
           $scope.msgClasses = '';
           timeOut = $timeout(function(){ 
-            //var url = $window.location.origin + context.root ;
-            //$window.location = url;
-            state.go('index');
+            var url = $window.location.origin + context.root ;
+            $window.location = url;
+            //state.go('index');
           }, 1000);
         }else{
           $scope.msgClasses = '';
@@ -1841,90 +1601,31 @@ Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','
       });
   };
 }]);
-Module.controller('Menu',['$scope','$http','$window','context',
-    function($scope,$http,$window,context){
-  
-  $scope.logoutMsg = '';
-  
-  $scope.logout = function(){
-    $http.post( context.services+ '/seguranca/logout').then(function(data){
-      if( data.data.status ){
-        var url = $window.location.origin + context.root ;
-        $window.location = url;
-      }else{
-        $scope.logoutMsg = 'Falha no logout.';
-      }
-    });
-  };
-  
-}]);
-Module.controller('Tipo',['$scope','Entidades',
-    function($scope,Entidades){
-  
-  $scope.tipo = null;
-  $scope.entidade = null;
-  $scope.override = false;
-  $scope.entidadeLista = [
-    'Carro','Porta','Usuario','Valor','Cor','RegistroUsuario'
-  ];
-  
-  $scope.mostrarTipo = function(x){
-    Entidades.query( $scope.entidade ).cache(true).clearCache( $scope.override )
-      .tipoIn( $scope, 'tipo' );
-  };
-  
-}]);
-Module.controller('TipoMany',['$scope','Entidades',
-    function($scope,Entidades){
-  
-  $scope.tipo = null;
-  $scope.entidade = null;
-  $scope.override = false;
-  $scope.entidadeLista = [
-    'Carro','Porta','Usuario','Valor','Cor'
-  ];
-  
-  var q = Entidades.queryMuitos();
-  for(var g in $scope.entidadeLista){
-    q.add( Entidades.query($scope.entidadeLista[g])
-      .in( $scope, 'tipo.'+g ).acao( Entidades.TIPO ) );
-  }
-  q.send();
-  console.log( 'Entidades::queryMuitos', q );
-  console.log( '$scope', $scope );
-  
-  $scope.mostrarTipo = function(x){
-    //Entidades.query( $scope.entidade ).tipoIn( $scope, 'tipo', $scope.override );
-  };
-  
-}]);
+    </script>
+  </head>
+  <body ng-app="Module" ng-strict-di="true">
+    
+    
+    <div class="loginForm" ng-controller="LoginForm">
+      <label>
+        <span>Login</span>
+        <input ng-model="login"/>
+      </label>
 
+      <br/><br/>
 
+      <label>
+        <span>Senha</span>
+        <input ng-model="senha" type="password"/>
+      </label>
 
+      <br/><br/>
 
+      <button type="button" ng-click="entrar()">Log in</button>
+      <br/><br/>
 
-
-Module.config(['$stateProvider','$routeProvider',
-    function($stateProvider,$routeProvider){
-      
-  $routeProvider.otherwise('/#/carro');
-  
-  $stateProvider.state('index',
-    { url: '/index', views:{login:{ templateUrl:'index.html' }}}
-  ).state('login',
-    { url: '/login', views:{login:{ templateUrl:'login.html' }}}
-  ).state('carro',
-    { url: '/carro', views:{conteudo:{ templateUrl:'carro.html' }}}
-  ).state('tipo',
-    { url: '/tipo', views:{conteudo:{ templateUrl:'tipo.html' }}}
-  ).state('tipoMany',
-    { url: '/tipoMany', views:{conteudo:{ templateUrl:'tipoMany.html' }}}
-  ).state('janela',
-    { url: '/janela', views:{conteudo:{ templateUrl:'janela.html' }}}
-  );
-  
-}]);
-</script>
+      <div class="msg trans" ng-class="msgClasses">{{ msg }}</div>
+    </div>
     
   </body>
 </html>

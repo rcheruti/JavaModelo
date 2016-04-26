@@ -400,23 +400,35 @@ d.target.blur&&d.target.blur())}}}function l(d){d=d.touches&&d.touches.length?d.
 var Module = angular.module('JavaModelo',['ng','ui.router']);
 
   // Configuração dos interceptadores desse módule
-Module.config(['$httpProvider',
+Module.config(['$httpProvider','contextProvider',
           //'$compileProvider','$logProvider','HostInterProvider',
-        function($httpProvider
+        function($httpProvider,contextProvider
           //,$compileProvider,$logProvider,HostInterProvider
             ){
-    
-    //$httpProvider.useApplyAsync( true );
-    //$compileProvider.debugInfoEnabled( true );
-    //$logProvider.debugEnabled( true );
-    
-    //HostInterProvider.url = 'http://127.0.0.1:8080';
-    
-    $httpProvider.interceptors.push( 'LoginInter' );
-    $httpProvider.interceptors.push( 'HostInter' );
-    
-    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-    
+
+  //$httpProvider.useApplyAsync( true );
+  //$compileProvider.debugInfoEnabled( true );
+  //$logProvider.debugEnabled( true );
+
+  //HostInterProvider.url = 'http://127.0.0.1:8080';
+
+  // Pegar o context;
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (xhttp.readyState === 4 && xhttp.status === 200) {
+      //console.log( 'novo context', xhttp.responseText );
+      window.contextRoot = xhttp.responseText;
+    }
+  };
+  xhttp.open("GET", "persistencia/context", false);
+  xhttp.send();
+  contextProvider.root( window.contextRoot );
+  
+  $httpProvider.interceptors.push( 'LoginInter' );
+  $httpProvider.interceptors.push( 'HostInter' );
+
+  $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
 }]);
 
 
@@ -1023,7 +1035,7 @@ Module.provider('HostInter',[function(){
     var ref = {
       request:function( request ){
         if( provider.ativo ){
-          request.url = provider.url + context.services + request.url ;
+          request.url = provider.url + request.url ;
         }
         return request;
       }
@@ -1039,7 +1051,7 @@ Module.provider('LoginInter',[function(state){ // '$state'
   
   provider.handler = null;
   provider.state = ''; // login
-  provider.url = '/login.jsp';
+  provider.url = '/login.html';
   provider.ativo = true;
   provider.ERRORCODE_LOGIN = 401 ;
 
@@ -1151,6 +1163,7 @@ Module.provider('context',[function(){
     };
     var _funcs = {
       root: function(/*, params _context */){
+        provider.context.root = 'x';
         provider.context.root = _context.apply(this, arguments);
         provider.context.services = corrigirUrl( provider.context.root + provider.context.path.services );
         provider.context.websocket = corrigirUrl( provider.context.root + provider.context.path.websocket );
@@ -1179,7 +1192,11 @@ Module.provider('context',[function(){
     angular.extend( this, _funcs );
     
     function corrigirUrl(str){
-      return str.replace(/\/\/+/g,'/');
+      str = str.trim().replace(/\/\/+/g,'/');
+      if( !provider.context.root ){
+        str = str.replace(/^\s*\//,'');
+      }
+      return str;
     }
     
     this.$get = [function(){

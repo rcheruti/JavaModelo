@@ -4,7 +4,7 @@ Module.provider('LoginInter',[function(state){ // '$state'
   
   provider.handler = null;
   provider.state = ''; // login
-  provider.url = '/login.jsp';
+  provider.url = '/login.html';
   provider.ativo = true;
   provider.ERRORCODE_LOGIN = 401 ;
 
