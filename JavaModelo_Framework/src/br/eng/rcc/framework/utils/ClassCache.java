@@ -37,6 +37,7 @@ public class ClassCache {
 
   private SoftReference< Map<String, Class<?>>> ref;
   private SoftReference< Map<String, Map<String, ClasseAtributoUtil>>> beanInfos;
+  private SoftReference< Map<String, ClasseUtil>> beanUtils;
 
   //===================================================================
   public Class<?> get(String entidadeName) {
@@ -77,14 +78,111 @@ public class ClassCache {
     recarregarBeanInfo(em);
     return beanInfos.get().get(entidadeName);
   }
-  public Map<String, ClasseAtributoUtil> getInfo(Class<?> classe) {
-    return getInfo("", emInj);
+  public ClasseUtil getUtil(String entidadeName) {
+    return getUtil(entidadeName, emInj);
   }
-  public Map<String, ClasseAtributoUtil> getInfo(Class<?> classe, EntityManager em) {
-    recarregarBeanInfo(em);
-    return beanInfos.get().get(null);
+  public ClasseUtil getUtil(String entidadeName, EntityManager em) {
+    recarregarBeanUtils(em);
+    return beanUtils.get().get(entidadeName);
   }
+  
+  private void recarregarBeanUtils(EntityManager em){
+    if (em == null || beanUtils != null && beanUtils.get() != null)return;
+    
+    synchronized (this) {
+      if (beanUtils != null && beanUtils.get() != null)return;
+      
+      reloadCache(em);
+      try{
+        Map<String, Class<?>> map = ref.get();
+        Metamodel meta = em.getMetamodel();
+        Map<String, ClasseUtil> mapInfo = new HashMap<>(60);
+        for (String nome : map.keySet()) {
+          Class<?> klass = map.get(nome);
+          
+          ClasseUtil klassUtil = new ClasseUtil();
+          klassUtil.javaType = klass;
+          klassUtil.nome = nome;
+          klassUtil.mapaAtributos = new HashMap<>(12);
+          
+          System.out.printf("---  ClasseUtil para: %s \n", klassUtil.nome );
+          mapInfo.put( klassUtil.nome, klassUtil );
+          
+          ManagedType type = meta.managedType(klass);
+          BeanInfo info = Introspector.getBeanInfo(klass);
+          PropertyDescriptor[] propDescs = info.getPropertyDescriptors();
+          for (PropertyDescriptor propDesc : propDescs){
+            
+            ClasseAtributoUtil beanUtil = new ClasseAtributoUtil();
+            
+            beanUtil.classCache = this;
+            beanUtil.nome = propDesc.getName();
+            beanUtil.getter = propDesc.getReadMethod();
+            beanUtil.setter = propDesc.getWriteMethod();
+            
+            klassUtil.mapaAtributos.put(beanUtil.nome, beanUtil);
+            
+            Class<?> javaType = propDesc.getPropertyType();
+            if( Collection.class.isAssignableFrom(javaType) ){
+              beanUtil.colecaoType = javaType;
+              beanUtil.colecao = true;
+            }else{
+              beanUtil.javaType = javaType;
+            }
+            
+            try{
+              Attribute attr = type.getAttribute( propDesc.getName() );
 
+              Field field = ((Field) attr.getJavaMember());
+
+              beanUtil.associacao = attr.isAssociation();
+
+              if (attr instanceof PluralAttribute) {
+                //beanUtil.colecaoType = attr.getJavaType();
+                beanUtil.javaType = ((PluralAttribute) attr).getBindableJavaType();
+              } else {
+                //beanUtil.javaType = attr.getJavaType();
+              }
+              if (attr.isCollection()) {
+                beanUtil.colecao = attr.isCollection();
+                Class<?> cColl = attr.getJavaType();
+                if (Collection.class.isAssignableFrom(cColl)) {
+                  beanUtil.add = cColl.getMethod("add", Object.class);
+                  beanUtil.remove = cColl.getMethod("remove", Object.class);
+                }
+              }
+
+              // pegando anotações:
+              if (attr.isAssociation()) {
+                OneToMany annOTM = field.getAnnotation(OneToMany.class);
+                if (annOTM != null) {
+                  beanUtil.mapeado = annOTM.mappedBy();
+                } else {
+                  OneToOne annOTO = field.getAnnotation(OneToOne.class);
+                  if (annOTO != null) {
+                    beanUtil.mapeado = annOTO.mappedBy();
+                  }
+                }
+              } else {
+                // verificando os embutidos:
+                Embedded annEMBD = field.getAnnotation(Embedded.class);
+                if (annEMBD != null) {
+                  beanUtil.embutido = true;
+                }
+              }
+            }catch(IllegalArgumentException ex){
+              // nada aqui
+            }
+            
+          }
+        }
+        beanUtils = new SoftReference( mapInfo );
+      } catch (IntrospectionException | NoSuchMethodException ex) { 
+        throw new RuntimeException("Exceção de Instrospecção", ex);
+      }
+    }
+  }
+  
   private void recarregarBeanInfo(EntityManager em) {
     if (em == null || beanInfos != null && beanInfos.get() != null)return;
 

@@ -14,8 +14,14 @@ public interface IBeanUtil {
    * @throws IllegalAccessException pela classe que representa o método da reflexão
    * @throws InvocationTargetException pela classe que representa o método da reflexão
    */
-  Object get(Object from, String... paths)
+  default Object get(Object from, String... paths)
+          throws IllegalAccessException, InvocationTargetException{
+    return get(from, 0, paths);
+  }
+  Object get(Object from, int index, String... paths)
           throws IllegalAccessException, InvocationTargetException;
+  
+  
   /**
    * Configura o valor que deve ser guardado nesse atributo.
    * @param from o objeto onde será chamado o setter
@@ -26,8 +32,14 @@ public interface IBeanUtil {
    * @throws IllegalAccessException pela classe que representa o método da reflexão
    * @throws InvocationTargetException pela classe que representa o método da reflexão
    */
-  void set(Object from, Object val, String... paths)
+  default void set(Object from, Object val, String... paths)
+          throws IllegalAccessException, InvocationTargetException{
+    set(from, val, 0, paths);
+  }
+  void set(Object from, Object val, int index, String... paths)
           throws IllegalAccessException, InvocationTargetException;
+  
+  
   /**
    * @return o nome desse atributo/classe, como estará definido no EntityManager.s
    */
@@ -43,7 +55,9 @@ public interface IBeanUtil {
    *    na árvore que está sendo pesquisada (na árvore de classes).
    * @return o próximo utilitário deste caminho
    */
-  IBeanUtil path(String... paths);
+  default IBeanUtil path(String... paths){
+    return path(0, paths);
+  }
   IBeanUtil path(int index, String... paths);
   
   

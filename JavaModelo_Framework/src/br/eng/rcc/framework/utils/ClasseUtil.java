@@ -28,21 +28,17 @@ public class ClasseUtil implements IBeanUtil{
   
   
   @Override
-  public IBeanUtil path(String... paths){
-    return path( 0, paths );
-  }
-  @Override
-  public IBeanUtil path(int idx, String... paths){
-    if( idx == 0 && paths.length == 1 ){
+  public IBeanUtil path(int index, String... paths){
+    if( index > -1 && paths.length == 1 ){
       paths = paths[0].split("\\.");
     }
+    if( index < 0 ) index *= -1;
     
-    String meuPath = paths[idx];
+    String meuPath = paths[index];
     ClasseAtributoUtil util = mapaAtributos.get( meuPath );
     if( util == null ) return null;
     
-    idx++;
-    if( idx < paths.length ) return util.path(idx, paths); 
+    if( index < paths.length -1 ) return util.path(0).path(index +1, paths); 
     return util;
   }
   
@@ -60,15 +56,29 @@ public class ClasseUtil implements IBeanUtil{
   
   
   @Override
-  public Object get(Object from, String... path)
+  public Object get(Object from, int index, String... paths)
           throws IllegalAccessException, InvocationTargetException{
-    
-    return null;
+    if( from == null ) return null;
+    if( index > -1 && paths.length == 1 ){
+      paths = paths[0].split("\\.");
+    }
+    if( index < 0 ) index *= -1;
+    if( paths.length == 0 || index >= paths.length ) return null;
+    ClasseAtributoUtil util = mapaAtributos.get( paths[index] );
+    if( util == null ) return null;
+    return util.get(from, index , paths);
   }
   @Override
-  public void set(Object from, Object val, String... path)
+  public void set(Object from, Object val, int index, String... paths)
           throws IllegalAccessException, InvocationTargetException{
-    
+    if( index > -1 && paths.length == 1 ){
+      paths = paths[0].split("\\.");
+    }
+    if( index < 0 ) index *= -1;
+    if( paths.length == 0 || index >= paths.length ) return;
+    ClasseAtributoUtil util = mapaAtributos.get( paths[index] );
+    if( util == null ) return;
+    util.set(from, val, index , paths);
   }
   
   

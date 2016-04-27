@@ -29,8 +29,8 @@ Module.controller('Carro',['$scope','Entidades','$http',
     var data = { 
       entidade:'Carro', 
       data: { nome:'Carros - Export', 
-        titulos:['ID','Nome'] ,
-        atributos:['id','nome'] 
+        titulos:['ID','Nome','Valor'] ,
+        atributos:['id','nome','valor.valor'] 
       }
     };
     

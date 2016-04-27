@@ -4,6 +4,7 @@ package br.eng.rcc.framework.utils;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -134,14 +135,13 @@ public class ClasseAtributoUtil implements IBeanUtil{
     return null;
   }
   
+  
+  
   @Override
-  public IBeanUtil path(String... paths){
-    return path( 0, paths );
-  }
-  @Override
-  public IBeanUtil path(int idx, String... paths){
-    //return classCache.getInfo(javaType.getSimpleName());
-    return null;
+  public IBeanUtil path(int index, String... paths){
+    IBeanUtil util = classCache.getUtil(javaType.getSimpleName());
+    if( paths.length == 0 || paths.length == index ) return util;
+    return util.path( index, paths );
   }
   
   
@@ -149,29 +149,51 @@ public class ClasseAtributoUtil implements IBeanUtil{
   /**
    * Uma forma simples de invocar o método <code>getter</code>
    * 
-   * @param that o objeto onde a reflexão será aplicada
+   * @param from o objeto onde a reflexão será aplicada
+   * @param index o index para ler de "paths"
+   * @param paths o caminho que deve ser seguido para encontrar o atributo
    * @return o valor atual guardado no objeto
    * @throws IllegalAccessException
    * @throws InvocationTargetException 
    */
   @Override
-  public Object get(Object that, String... paths) 
+  public Object get(Object from, int index, String... paths) 
           throws IllegalAccessException, InvocationTargetException{ 
+    if( from == null ) return null;
+    if( index > -1 && paths.length == 1 ){
+      paths = paths[0].split("\\.");
+    }
+    if( index < 0 ) index *= -1;
+    if( index < paths.length-1 ){
+      Object novoFrom = get(from, -1, paths[index]);
+      return path(0).get(novoFrom, index +1, paths);
+    }
     if( getter == null ) return null;
-    return getter.invoke(that);
+    return getter.invoke(from);
   }
   /**
    * Uma forma simples de invocar o método <code>setter</code>
    * 
-   * @param that o objeto onde a reflexão será aplicada
-   * @param param o valor que será aplicado na reflexão
+   * @param from o objeto onde a reflexão será aplicada
+   * @param val o valor que será aplicado na reflexão
+   * @param index o index para ler de "paths"
+   * @param paths o caminho que deve ser seguido para encontrar o atributo
    * @throws IllegalAccessException
    * @throws InvocationTargetException 
    */
   @Override
-  public void set(Object that, Object param, String... paths)
+  public void set(Object from, Object val, int index, String... paths)
           throws IllegalAccessException, InvocationTargetException{
-    if( setter != null ) setter.invoke(that, param);
+    if( index > -1 && paths.length == 1 ){
+      paths = paths[0].split("\\.");
+    }
+    if( index < 0 ) index *= -1;
+    if( index < paths.length-1 ){
+      Object novoFrom = get(from, -1, paths[index]);
+      path(0).set(novoFrom, val, index +1, paths);
+    }else{
+      if( setter != null ) setter.invoke(from, val);
+    }
   }
   /**
    * Uma forma simples de invocar o método <code>add(Object)</code>

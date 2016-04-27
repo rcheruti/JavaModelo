@@ -6,7 +6,11 @@ import br.eng.rcc.framework.utils.ClassCache;
 import br.eng.rcc.framework.persistencia.EntidadesService;
 import br.eng.rcc.framework.utils.ClasseAtributoUtil;
 import br.eng.rcc.framework.utils.BuscaInfo;
+import br.eng.rcc.framework.utils.ClasseUtil;
+import br.eng.rcc.framework.utils.IBeanUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
@@ -107,9 +111,9 @@ public class UtilsDownloadExcel {
       throw new MsgException(JsonResponse.ERROR_EXCECAO, null, 
             "Informe o objeto com as configs de exportação no atributo 'data'!");
     
-    Map<String, ClasseAtributoUtil> beanUtils = cache.getInfo( info.entidade );
+    ClasseUtil classUtil = cache.getUtil( info.entidade );
     for( JsonNode nodeString : nodeAttr ){
-      Object x = beanUtils.get( nodeString.asText() );
+      Object x = classUtil.path( nodeString.asText() );
       if( x == null ) throw new MsgException(JsonResponse.ERROR_EXCECAO, null,
             String.format("O atributo '%s' não existe na entidade %s.", 
                     nodeString.asText(), info.entidade ));
@@ -118,6 +122,19 @@ public class UtilsDownloadExcel {
       // busca:
     BuscaInfo clone = info.clone();
     clone.acao = BuscaInfo.ACAO_BUSCAR;
+    List<String> joins = new ArrayList<>();
+    for( JsonNode nodeString : nodeAttr ){
+      String[] strs = nodeString.asText().split("\\.");
+      if( strs.length > 1 ){
+        for(int i = 1; i < strs.length ; i++){
+          joins.add( String.join(".", Arrays.copyOfRange(strs, 0, i ) ) );
+        }
+      }
+    }
+    if( joins.size() > 0 ){
+      joins.addAll( Arrays.asList(clone.join) );
+      clone.join = joins.toArray(new String[0]);
+    }
     List<Object> lista = (List<Object>)entServ.processar(clone);
     
       // exportar:
@@ -142,8 +159,7 @@ public class UtilsDownloadExcel {
       row = sheet.createRow( nextRow++ );
       i = 0;
       for( JsonNode nodeString : nodeAttr ){
-        ClasseAtributoUtil util = beanUtils.get( nodeString.asText() );
-        Object valor = util.get(objEnt);
+        Object valor = classUtil.get(objEnt, nodeString.asText());
         cell = row.createCell( i );
         cell.setCellStyle(styleBody);
         cell.setCellValue( valor==null? null : valor.toString() );
