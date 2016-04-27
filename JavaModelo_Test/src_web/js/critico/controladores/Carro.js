@@ -37,7 +37,7 @@ Module.controller('Carro',['$scope','Entidades','$http',
     var form = document.createElement("form");
     form.action = 'exportar';
     form.method = 'post';
-    form.target = "_self";
+    form.target = "_blank";
     var input = document.createElement("textarea");
     input.name = 'json';
     input.value = JSON.stringify( data );

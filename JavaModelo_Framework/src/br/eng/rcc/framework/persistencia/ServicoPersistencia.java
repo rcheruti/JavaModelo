@@ -1,6 +1,7 @@
 
 package br.eng.rcc.framework.persistencia;
 
+import br.eng.rcc.framework.utils.ClassCache;
 import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;

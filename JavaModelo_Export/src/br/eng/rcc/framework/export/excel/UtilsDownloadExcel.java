@@ -2,8 +2,9 @@ package br.eng.rcc.framework.export.excel;
 
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
-import br.eng.rcc.framework.persistencia.ClassCache;
+import br.eng.rcc.framework.utils.ClassCache;
 import br.eng.rcc.framework.persistencia.EntidadesService;
+import br.eng.rcc.framework.utils.ClasseAtributoUtil;
 import br.eng.rcc.framework.utils.BuscaInfo;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.List;
@@ -44,8 +45,11 @@ public class UtilsDownloadExcel {
   
   @PostConstruct
   public void postConstruct(){
-    estilos = injectEstilos.get();
-    if( estilos == null ) estilos = new DefaultExcelEstilo();
+    if( !injectEstilos.isUnsatisfied() ){
+      estilos = injectEstilos.get();
+    }else{
+      estilos = new DefaultExcelEstilo();
+    }
   }
   
   //------------------------------------------------------------------------
@@ -103,7 +107,7 @@ public class UtilsDownloadExcel {
       throw new MsgException(JsonResponse.ERROR_EXCECAO, null, 
             "Informe o objeto com as configs de exportação no atributo 'data'!");
     
-    Map<String, ClassCache.BeanUtil> beanUtils = cache.getInfo( info.entidade );
+    Map<String, ClasseAtributoUtil> beanUtils = cache.getInfo( info.entidade );
     for( JsonNode nodeString : nodeAttr ){
       Object x = beanUtils.get( nodeString.asText() );
       if( x == null ) throw new MsgException(JsonResponse.ERROR_EXCECAO, null,
@@ -138,8 +142,8 @@ public class UtilsDownloadExcel {
       row = sheet.createRow( nextRow++ );
       i = 0;
       for( JsonNode nodeString : nodeAttr ){
-        ClassCache.BeanUtil util = beanUtils.get( nodeString.asText() );
-        Object valor = util.getGetter().invoke(objEnt);
+        ClasseAtributoUtil util = beanUtils.get( nodeString.asText() );
+        Object valor = util.get(objEnt);
         cell = row.createCell( i );
         cell.setCellStyle(styleBody);
         cell.setCellValue( valor==null? null : valor.toString() );
@@ -147,7 +151,7 @@ public class UtilsDownloadExcel {
       }
     }
     
-    for( i = nodeAttr.size(); i >= 0; i-- ) sheet.autoSizeColumn( i++ );
+    for( i = nodeAttr.size()-1; i >= 0; i-- ) sheet.autoSizeColumn( i );
     
     return workbook;
   }

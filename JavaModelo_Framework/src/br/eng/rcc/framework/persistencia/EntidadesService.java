@@ -1,11 +1,13 @@
 package br.eng.rcc.framework.persistencia;
 
+import br.eng.rcc.framework.utils.ClassCache;
 import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.persistencia.builders.WhereBuilder;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
+import br.eng.rcc.framework.utils.ClasseAtributoUtil;
 import br.eng.rcc.framework.utils.BuscaInfo;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -272,11 +274,11 @@ public class EntidadesService {
     
     // precisamos colocar o objeto no lado inverso da relação para que tudo entre
     // no banco com os valores corretos
-    Map<String, ClassCache.BeanUtil> map = cache.getInfo( info.entidade );
+    Map<String, ClasseAtributoUtil> map = cache.getInfo( info.entidade );
     try {
-      for (ClassCache.BeanUtil util : map.values()) {
+      for (ClasseAtributoUtil util : map.values()) {
         if (util.isAssociacao()) {
-          ClassCache.BeanUtil inverso = util.getInverse();
+          ClasseAtributoUtil inverso = util.getInverse();
           if (inverso == null) {
             continue;
           }
@@ -427,7 +429,7 @@ public class EntidadesService {
   @Transactional
   public int adicionar(BuscaInfo info) {
     
-    Map<String, ClassCache.BeanUtil> map = cache.getInfo( info.entidade );
+    Map<String, ClasseAtributoUtil> map = cache.getInfo( info.entidade );
     int adds = 0;
     try{
       List<Object> oooS = this.buscar(info);;
@@ -436,7 +438,7 @@ public class EntidadesService {
         Iterator<String> itKeys = node.fieldNames();
         while( itKeys.hasNext() ){
           String key = itKeys.next();
-          ClassCache.BeanUtil util = map.get(key);
+          ClasseAtributoUtil util = map.get(key);
           if( util.isAssociacao() ){
             if( util.isColecao() ){
               for( JsonNode n : node.path(key) ){

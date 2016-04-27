@@ -2,14 +2,12 @@
 package br.eng.rcc.framework.export.excel;
 
 import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
-import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
-import br.eng.rcc.framework.persistencia.ClassCache;
+import br.eng.rcc.framework.utils.ClassCache;
 import br.eng.rcc.framework.utils.BuscaInfo;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 import javax.inject.Inject;
@@ -63,7 +61,8 @@ public class ExcelServlet extends HttpServlet{
       resp.flushBuffer();
       
     }catch(Exception ex){
-      
+      System.out.printf("Alguma coisa deu errado! \n");
+      throw new RuntimeException(ex);
     }
     
   }

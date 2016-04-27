@@ -1,7 +1,6 @@
 package br.eng.rcc.framework.utils;
 
 import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
-import br.eng.rcc.framework.persistencia.ClassCache;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -45,13 +44,13 @@ public class PersistenciaUtils {
       }
     }
     if( klass == null ) return;
-    Map<String, ClassCache.BeanUtil> map = cache.getInfo( klass.getSimpleName() );
-    List<ClassCache.BeanUtil> fieldsEncontrados = new ArrayList<>();
-    List<ClassCache.BeanUtil> fieldsToNull = new ArrayList<>();
+    Map<String, ClasseAtributoUtil> map = cache.getInfo( klass.getSimpleName() );
+    List<ClasseAtributoUtil> fieldsEncontrados = new ArrayList<>();
+    List<ClasseAtributoUtil> fieldsToNull = new ArrayList<>();
       
     try{
       String[] nParams = getArrayLevel(-1, null, params );
-      for( ClassCache.BeanUtil bu : map.values() ){
+      for( ClasseAtributoUtil bu : map.values() ){
         if( bu.isAssociacao() || bu.isEmbutido() ){
           if( constainsInArray(nParams, bu.getNome()) ){
             fieldsEncontrados.add(bu);
@@ -61,14 +60,14 @@ public class PersistenciaUtils {
         }
       }
       
-      for( ClassCache.BeanUtil bu : fieldsToNull ){
+      for( ClasseAtributoUtil bu : fieldsToNull ){
         for( Object obj : lista ){
           if( obj == null ) continue;
           bu.set(obj, null);
         }
       }
       //String[] novoParams = copyWithoutNulls(params);
-      for( ClassCache.BeanUtil bu : fieldsEncontrados ){
+      for( ClasseAtributoUtil bu : fieldsEncontrados ){
         String[] novoParams = getArrayLevel(1, bu.getNome(), params );
         for( Object obj : lista ){
           if( obj == null ) continue;

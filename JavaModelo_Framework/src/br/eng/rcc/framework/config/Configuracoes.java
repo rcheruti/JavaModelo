@@ -40,7 +40,7 @@ public class Configuracoes {
    * o usuário para a página configurada em {@link indexPath}.
    */
   public static String rewriteRegExp = 
-      "^/?s/|^/?css/|^/?js/|^/?img/|^/?index\\.html|^/?login\\.html|^/?index\\.jsp|^/?login\\.jsp|^/?persistencia/context" ;
+      "(?i:^/?(s/|css/|js/|img/|index.html|login.html|index.jsp|login.jsp|persistencia/context|exportar))" ;
   
   /**
    * Expressão Regular que será usada por {@link SegurancaFiltro} proteger o sistema de tentativas
