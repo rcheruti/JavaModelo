@@ -17,6 +17,7 @@ module.exports = function (grunt) {
     serverDir: 'C:/wamp/www-JavaModelo'
   };
   
+  
   // nomes finais
   var nf = {
     jsNormal:           p.temp+"jsNormal.js",
@@ -25,7 +26,9 @@ module.exports = function (grunt) {
     jsNormalLogin:      p.temp+"jsNormalLogin.js",
     cssNormal:          p.temp+"cssNormal.css",
     cssCritico:         p.temp+"cssCritico.css",
-    htmlPaginas:        p.temp+"htmlPaginas.html"
+    htmlPaginas:        p.temp+"htmlPaginas.html",
+    deployMin:          false,
+    hostInter:          'http://127.0.0.1:9090/JavaModelo_Test/'
   };
   
   grunt.registerTask('default', ['clean','concat','less',
@@ -56,6 +59,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-replace');
   
+  if( !p.serverDir ) p.serverDir = 'FAKEDIR_abcdefghijk';
   // Project configuration.
   grunt.initConfig({
     montar:{
@@ -70,17 +74,25 @@ module.exports = function (grunt) {
           jsCritico:        p.temp+"jsCritico.min.js",
           jsCriticoLogin:   p.temp+"jsCriticoLogin.min.js",
           jsNormalLogin:    p.temp+"jsNormalLogin.min.js",
-          htmlPaginas:      p.temp+"htmlPaginas.min.html"
+          htmlPaginas:      p.temp+"htmlPaginas.min.html",
+          hostInter:        '',
+          deployMin:        true
         }
       }
     },
     // ---------------  limpeza
     clean:{
+      options:{
+        force: true
+      },
       temp:{
         src: [ p.temp ]
       },
       dist:{
         src: [ p.dist ]
+      },
+      server:{
+        src: [ p.serverDir? p.serverDir : 'FAKEDIR_abcdefghijk' ]
       }
     },
     // ----------------  juntando os arquivos
@@ -105,7 +117,7 @@ module.exports = function (grunt) {
       },
       jsCriticoLogin:{
         src:[ 
-          p.srcJsC+ 'libs/*.js',
+          p.srcJsC+ 'libs/*.js'
         ],
         dest: p.temp+'jsCriticoLogin.js'
       },
@@ -231,7 +243,10 @@ module.exports = function (grunt) {
             'cssNormal.min.css',
             'jsNormal.min.js'
           ],
-          dest: p.dist
+          dest: p.dist,
+          filter: function(path){
+            return !nf.deployMin || (nf.deployMin && /\.min\./.test(path) );
+          }
         }]
       },
       server:{
@@ -287,12 +302,22 @@ module.exports = function (grunt) {
               var arr = nf.jsNormalLogin.split('/');
               return arr[ arr.length - 1 ];
             }
+          },{
+            match: 'hostInter',
+            replacement: function(){
+              return nf.hostInter;
+            }
           }]
         },
         files:[{
           expand:true,
           flatten:true,
           src: [p.src+ 'index.html', p.src+ 'login.html'],
+          dest: p.dist 
+        },{
+          expand:true,
+          flatten:true,
+          src: [ p.dist+ '**/*.*' ],
           dest: p.dist 
         }]
       }

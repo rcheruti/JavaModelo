@@ -403,22 +403,39 @@ var urlContext = 'persistencia/context',
     hiProvider = null,
     ctxProvider = null;
   
-Module.run([function(){
+Module.run(['$templateCache','$rootElement',
+    function($templateCache,$rootElement){
   
-  if( hiProvider.ativo ) return;
-  
-  // Pegar o context;
-  var url = urlContext;
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (xhttp.readyState === 4 && xhttp.status === 200) {
-      //console.log( 'novo context', xhttp.responseText );
-      window.contextRoot = xhttp.responseText;
+  if( !hiProvider.ativo ){
+    // Pegar o context;
+    var url = urlContext;
+    var xhttp = new XMLHttpRequest();
+    xhttp.withCredentials = true;
+    xhttp.onreadystatechange = function() {
+      if (xhttp.readyState === 4 && xhttp.status === 200) {
+        //console.log( 'novo context', xhttp.responseText );
+        window.contextRoot = xhttp.responseText;
+      }
+    };
+    xhttp.open("GET", url, false);
+    xhttp.send();
+    ctxProvider.root( window.contextRoot );
+  }else{
+    var scripts = $rootElement[0].querySelectorAll('script[type="text/ng-template"]');
+    console.log( scripts );
+    
+    window.$templateCache = $templateCache;
+    
+    var url = hiProvider.url.replace(/\/$/,'');
+    for(var i = 0; i < scripts.length; i++){
+      var key = scripts[i].id ;
+      var nome = url+ '/'+ key.replace(/^\//,'') ;
+      console.log( nome, key, $templateCache.get(key) );
+      $templateCache.put( nome, scripts[i].textContent );
     }
-  };
-  xhttp.open("GET", url, false);
-  xhttp.send();
-  ctxProvider.root( window.contextRoot );
+  }
+  
+  
   
 }]);
   
@@ -443,7 +460,9 @@ Module.config(['$httpProvider','contextProvider','HostInterProvider',
   $httpProvider.interceptors.push( 'HostInter' );
 
   $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-
+  $httpProvider.defaults.withCredentials = true;
+  
+  
 }]);
 
 
@@ -1049,7 +1068,8 @@ Module.provider('HostInter',[function(){
 
     var ref = {
       request:function( request ){
-        if( provider.ativo ){
+        console.log( request );
+        if( provider.ativo && !request.noHostInter ){
           request.url = (provider.url + request.url).replace(/\/+/g,'/')
             .replace(/(\w):\/+/g,'$1://') ;
         }
@@ -1291,8 +1311,8 @@ Module.config(['contextProvider','HostInterProvider',
   //EntidadesProvider.defaults.cacheTimeout["POST/tipo"] = 5000 ;
   //UsuarioProvider.carregarAoIniciar = false;
   
-  HostInterProvider.ativo = true;
-  HostInterProvider.url = 'http://127.0.0.1:9090/JavaModelo_Test/';
+  HostInterProvider.ativo = !!'http://127.0.0.1:9090/JavaModelo_Test/'; // trocado por "grunt:replace"
+  HostInterProvider.url = 'http://127.0.0.1:9090/JavaModelo_Test/'; // trocado por "grunt:replace"
   
   contextProvider.services('/s');
   contextProvider.websocket('/websocket');

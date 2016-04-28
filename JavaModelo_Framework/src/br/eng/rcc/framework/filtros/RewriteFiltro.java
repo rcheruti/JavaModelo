@@ -35,8 +35,10 @@ public class RewriteFiltro implements Filter {
     resp.addHeader("cache-control", "no-cache");
 
     String header = req.getHeader("X-Requested-With");
-    if ("XMLHttpRequest".equals(header)
-            || regexp.matcher(uri).find()) {
+    if (
+          "OPTIONS".equals( req.getMethod().toUpperCase() ) 
+          || "XMLHttpRequest".equals(header)
+          || regexp.matcher(uri).find()) {
       fc.doFilter(sr, sr1);
     } else {
       //req.getRequestDispatcher(Configuracoes.indexPath).forward(sr, sr1);

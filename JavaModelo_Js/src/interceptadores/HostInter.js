@@ -15,7 +15,8 @@ Module.provider('HostInter',[function(){
 
     var ref = {
       request:function( request ){
-        if( provider.ativo ){
+        console.log( request );
+        if( provider.ativo && !request.noHostInter ){
           request.url = (provider.url + request.url).replace(/\/+/g,'/')
             .replace(/(\w):\/+/g,'$1://') ;
         }

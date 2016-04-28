@@ -7,8 +7,8 @@ Module.config(['contextProvider','HostInterProvider',
   //EntidadesProvider.defaults.cacheTimeout["POST/tipo"] = 5000 ;
   //UsuarioProvider.carregarAoIniciar = false;
   
-  HostInterProvider.ativo = true;
-  HostInterProvider.url = 'http://127.0.0.1:9090/JavaModelo_Test/';
+  HostInterProvider.ativo = !!'@@hostInter'; // trocado por "grunt:replace"
+  HostInterProvider.url = '@@hostInter'; // trocado por "grunt:replace"
   
   contextProvider.services('/s');
   contextProvider.websocket('/websocket');

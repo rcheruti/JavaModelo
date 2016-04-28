@@ -1,6 +1,7 @@
 
 package br.eng.rcc.framework.listeners;
 
+import br.eng.rcc.framework.filtros.CORSFiltro;
 import br.eng.rcc.framework.filtros.ExceptionFiltro;
 import br.eng.rcc.framework.filtros.RewriteFiltro;
 import br.eng.rcc.framework.seguranca.filtros.SegurancaFiltro;
@@ -22,6 +23,8 @@ public class FiltroRegistrador implements ServletContextListener{
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         ServletContext ctx = sce.getServletContext(); 
+        ctx.addFilter(CORSFiltro.class.getName(), CORSFiltro.class)
+          .addMappingForUrlPatterns(null, true, "/*");
         ctx.addFilter(ExceptionFiltro.class.getName(), ExceptionFiltro.class)
           .addMappingForUrlPatterns(EnumSet.of( DispatcherType.REQUEST, 
                                                 DispatcherType.FORWARD, 

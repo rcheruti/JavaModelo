@@ -49,7 +49,8 @@ public class SegurancaFiltro implements Filter{
     Matcher matcher = pattern.matcher(uri);
     
     // Checar se essa é uma URL pública
-    if( matcher.find() ){
+    if( "OPTIONS".equals( req.getMethod().toUpperCase() ) 
+        || matcher.find() ){
       chain.doFilter(request, response);
       return;
     }
@@ -67,8 +68,7 @@ public class SegurancaFiltro implements Filter{
         return;
       }
       resp.sendRedirect( req.getContextPath()+redirectPage );
-      //req.getRequestDispatcher( redirectPage ).forward(request, response);
-      return; // Sair, pois nao podemos deixar processar a requisição
+      return; 
     }
     
     // Tudo ok aqui
