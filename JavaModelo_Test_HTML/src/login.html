@@ -8,40 +8,6 @@
     
     <style>@@cssCritico</style>
     
-    <script>@@jsCriticoLogin</script>
-    <script>
-
-Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','$state',
-    function($scope,$http,$timeout,$window,context,state){
-  $scope.msg = '';
-  $scope.msgClasses = 'fade right';
-  var timeOut = null;
-  $scope.entrar = function(){
-    $http
-      .post( context.services+ '/seguranca/login', { login: $scope.login, senha: $scope.senha } )
-      .then(function(data){
-        $timeout.cancel( timeOut );
-        data = data.data;
-        if(data.status){
-          $scope.msg = data.msg ;
-          $scope.msgClasses = '';
-          timeOut = $timeout(function(){ 
-            var url = $window.location.origin + context.root ;
-            $window.location = url;
-            //state.go('index');
-          }, 1000);
-        }else{
-          $scope.msgClasses = '';
-          $scope.msg = data.msg ;
-          timeOut = $timeout(function(){
-            $scope.msgClasses = 'fade right';
-            timeOut = $timeout(function(){ $scope.msg = ''; },200);
-          }, 2500 );
-        }
-      });
-  };
-}]);
-    </script>
   </head>
   <body ng-app="Module" ng-strict-di="true">
     
@@ -49,14 +15,14 @@ Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','
     <div class="loginForm" ng-controller="LoginForm">
       <label>
         <span>Login</span>
-        <input ng-model="login"/>
+        <input name="email" ng-model="login" ng-keydown="keydown($event)"/>
       </label>
 
       <br/><br/>
 
       <label>
         <span>Senha</span>
-        <input ng-model="senha" type="password"/>
+        <input name="senha" ng-model="senha" type="password" ng-keydown="keydown($event)"/>
       </label>
 
       <br/><br/>
@@ -66,6 +32,17 @@ Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','
 
       <div class="msg trans" ng-class="msgClasses">{{ msg }}</div>
     </div>
+    
+    
+    
+    
+    
+    
+    
+    <script>@@jsCriticoLogin</script>
+    
+    <link href="@@cssNormal" rel="stylesheet" type="text/css"/>
+    <script src="@@jsNormalLogin"></script>
     
   </body>
 </html>

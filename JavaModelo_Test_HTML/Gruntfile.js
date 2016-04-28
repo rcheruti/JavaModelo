@@ -19,19 +19,20 @@ module.exports = function (grunt) {
   
   // nomes finais
   var nf = {
-    jsNormal: p.temp+"/jsNormal.js",
-    jsCritico: p.temp+"/jsCritico.js",
-    jsCriticoLogin: p.temp+"/jsCriticoLogin.js",
-    cssNormal: p.temp+"/cssNormal.css",
-    cssCritico: p.temp+"/cssCritico.css",
-    htmlPaginas: p.temp+"/htmlPaginas.html"
+    jsNormal:           p.temp+"jsNormal.js",
+    jsCritico:          p.temp+"jsCritico.js",
+    jsCriticoLogin:     p.temp+"jsCriticoLogin.js",
+    jsNormalLogin:      p.temp+"jsNormalLogin.js",
+    cssNormal:          p.temp+"cssNormal.css",
+    cssCritico:         p.temp+"cssCritico.css",
+    htmlPaginas:        p.temp+"htmlPaginas.html"
   };
   
   grunt.registerTask('default', ['clean','concat','less',
-    'copy:dist','replace']);
+    'copy:dist','replace','copy:server']);
   grunt.registerTask('montarCompleto',['montar:completo','clean','concat','less',
     'cssmin','uglify','htmlmin',
-    'copy:dist','replace']);
+    'copy:dist','replace','copy:server']);
   
   grunt.registerMultiTask('montar','',function(){
     if( this.data.nf ){
@@ -68,6 +69,7 @@ module.exports = function (grunt) {
           jsNormal:         p.temp+"jsCritico.min.js",
           jsCritico:        p.temp+"jsCritico.min.js",
           jsCriticoLogin:   p.temp+"jsCriticoLogin.min.js",
+          jsNormalLogin:    p.temp+"jsNormalLogin.min.js",
           htmlPaginas:      p.temp+"htmlPaginas.min.html"
         }
       }
@@ -96,26 +98,35 @@ module.exports = function (grunt) {
           p.srcJsC+ 'libs/angular/angular.min.js',
           p.srcJsC+ 'libs/angular/*.js',
           p.srcJsC+ 'libs/*.js',
-          p.javaModeloJs ,
           p.srcJsC+ 'config.js',
           p.srcJsC+ '**/*.js'
         ],
-        dest: p.temp+'jsCritico.js',
-        nonull: true
+        dest: p.temp+'jsCritico.js'
       },
       jsCriticoLogin:{
         src:[ 
-          p.srcJsC+ 'libs/angular/angular.min.js',
-          p.srcJsC+ 'libs/angular/*.js',
           p.srcJsC+ 'libs/*.js',
-          p.javaModeloJs ,
-          p.srcJsC+ 'config.js'
         ],
         dest: p.temp+'jsCriticoLogin.js'
       },
+      jsNormalLogin:{
+        src:[ 
+          p.srcJsN+ 'libs/angular/angular.min.js',
+          p.srcJsN+ 'libs/angular/*.js',
+          p.srcJsN+ 'libs/*.js',
+          p.javaModeloJs ,
+          p.srcJsN+ 'config.js',
+          p.src+ 'js/login/**'
+        ],
+        dest: p.temp+'jsNormalLogin.js'
+      },
       jsNormal:{
         src:[ 
+          p.srcJsN+ 'libs/angular/angular.min.js',
+          p.srcJsN+ 'libs/angular/*.js',
+          p.srcJsN+ 'libs/*.js',
           p.javaModeloJs ,
+          p.srcJsN+ 'config.js',
           p.srcJsN+ '**/*.js' 
         ],
         dest: p.temp+'jsNormal.js'
@@ -178,6 +189,12 @@ module.exports = function (grunt) {
           dest: p.temp+'jsCriticoLogin.min.js'
         }]
       },
+      jsNormalLogin:{
+        files:[{
+          src: p.temp+'jsNormalLogin.js' ,
+          dest: p.temp+'jsNormalLogin.min.js'
+        }]
+      },
       jsNormal:{
         files:[{
           src: p.temp+'jsNormal.js' ,
@@ -207,6 +224,10 @@ module.exports = function (grunt) {
           expand: true,
           cwd: p.temp ,
           src:[
+            'jsNormalLogin.js',
+            'jsNormalLogin.min.js',
+            'cssNormal.css',
+            'jsNormal.js',
             'cssNormal.min.css',
             'jsNormal.min.js'
           ],
@@ -239,14 +260,32 @@ module.exports = function (grunt) {
               return grunt.file.read(nf.cssCritico);
             }
           },{
+            match: 'cssNormal',
+            replacement: function(){
+              var arr = nf.cssNormal.split('/');
+              return arr[ arr.length - 1 ];
+            }
+          },{
             match: 'jsCritico',
             replacement: function(){
               return grunt.file.read(nf.jsCritico);
             }
           },{
+            match: 'jsNormal',
+            replacement: function(){
+              var arr = nf.jsNormal.split('/');
+              return arr[ arr.length - 1 ];
+            }
+          },{
             match: 'jsCriticoLogin',
             replacement: function(){
               return grunt.file.read(nf.jsCriticoLogin);
+            }
+          },{
+            match: 'jsNormalLogin',
+            replacement: function(){
+              var arr = nf.jsNormalLogin.split('/');
+              return arr[ arr.length - 1 ];
             }
           }]
         },

@@ -1299,75 +1299,22 @@ Module.config(['contextProvider','HostInterProvider',
   
 }]);
 
-Module.controller('Carro',['$scope','Entidades','$http',
-    function($scope,Entidades, $http){
-  
-  $scope.cores = [];
-  $scope.carro = {};
-  
-  function recarregar(){
-    Entidades.query( 'Cor' ).order(['nome']).get().then(function(data){
-      console.log( 'data', data );
-      $scope.cores = data.data[0];
-    }) ; 
-    Entidades.query('Carro').join(['cores','portas','valor','portas.janelas',
-        'registroUsuario'])
-      .order(['nome']).getIn( $scope, 'coisas.carros' );
-  }
-  recarregar();
-  
-  
-  $scope.postCarro = function(){
-    Entidades.query('Carro').post( $scope.carro ).then( recarregar );
-  };
-  
-  $scope.deleteCarro = function( carro ){
-    var sim = confirm('Deletar?');
-    sim && Entidades.query('Carro').id().delete( carro ).then( recarregar );
-  };
-  
-  $scope.exportarCarros = function(){
-    var data = { 
-      entidade:'Carro', 
-      data: { nome:'Carros - Export', 
-        titulos:['ID','Nome','Valor'] ,
-        atributos:['id','nome','valor.valor'] 
-      }
-    };
-    
-    var form = document.createElement("form");
-    form.action = 'exportar';
-    form.method = 'post';
-    form.target = "_blank";
-    var input = document.createElement("textarea");
-    input.name = 'json';
-    input.value = JSON.stringify( data );
-    form.appendChild(input);
-    form.style.display = 'none';
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-    
-  };
-  
-}]);
-Module.controller('Janela',['$scope','Entidades',
-    function($scope,Entidades){
-    
-  function recarregar(){
-    Entidades.query( 'Janela' ).where('porta',Entidades.nnl).getIn($scope,'janelasPortas'); 
-    Entidades.query( 'Janela' ).where('porta',Entidades.nl).getIn($scope,'janelasSemPortas'); 
-  }
-  recarregar();
-  
-  
-  
-}]);
-Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','state',
+
+
+Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','$state',
     function($scope,$http,$timeout,$window,context,state){
   $scope.msg = '';
   $scope.msgClasses = 'fade right';
   var timeOut = null;
+  
+  
+  $scope.cancelar = function(){
+    $scope.login = '';
+    $scope.senha = '';
+  };
+  $scope.keydown = function( ev ){
+    if( ev.which === 13 )$scope.entrar();
+  };
   $scope.entrar = function(){
     $http
       .post( context.services+ '/seguranca/login', { login: $scope.login, senha: $scope.senha } )
@@ -1378,9 +1325,9 @@ Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','
           $scope.msg = data.msg ;
           $scope.msgClasses = '';
           timeOut = $timeout(function(){ 
-            //var url = $window.location.origin + context.root ;
-            //$window.location = url;
-            state.go('index');
+            var url = $window.location.origin + context.root ;
+            $window.location = url;
+            //state.go('index');
           }, 1000);
         }else{
           $scope.msgClasses = '';
@@ -1392,106 +1339,4 @@ Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','
         }
       });
   };
-}]);
-Module.controller('Menu',['$scope','$http','$window','context',
-    function($scope,$http,$window,context){
-  
-  $scope.logoutMsg = '';
-  
-  $scope.logout = function(){
-    $http.post( context.services+ '/seguranca/logout').then(function(data){
-      if( data.data.status ){
-        var url = $window.location.origin + context.root ;
-        $window.location = url;
-      }else{
-        $scope.logoutMsg = 'Falha no logout.';
-      }
-    });
-  };
-  
-}]);
-Module.controller('Tipo',['$scope','Entidades',
-    function($scope,Entidades){
-  
-  $scope.tipo = null;
-  $scope.entidade = null;
-  $scope.override = false;
-  $scope.entidadeLista = [
-    'Carro','Porta','Usuario','Valor','Cor','RegistroUsuario'
-  ];
-  
-  $scope.mostrarTipo = function(x){
-    Entidades.query( $scope.entidade ).cache(true).clearCache( $scope.override )
-      .tipoIn( $scope, 'tipo' );
-  };
-  
-}]);
-Module.controller('TipoMany',['$scope','Entidades',
-    function($scope,Entidades){
-  
-  $scope.tipo = null;
-  $scope.entidade = null;
-  $scope.override = false;
-  $scope.entidadeLista = [
-    'Carro','Porta','Usuario','Valor','Cor'
-  ];
-  
-  var q = Entidades.queryMuitos();
-  for(var g in $scope.entidadeLista){
-    q.add( Entidades.query($scope.entidadeLista[g])
-      .in( $scope, 'tipo.'+g ).acao( Entidades.TIPO ) );
-  }
-  q.send();
-  console.log( 'Entidades::queryMuitos', q );
-  console.log( '$scope', $scope );
-  
-  $scope.mostrarTipo = function(x){
-    //Entidades.query( $scope.entidade ).tipoIn( $scope, 'tipo', $scope.override );
-  };
-  
-}]);
-
-
-
-
-
-
-Module.config(['$stateProvider','$routeProvider',
-    function($stateProvider,$routeProvider){
-      
-  $routeProvider.otherwise('/#/carro');
-  
-  $stateProvider.state('index',
-    { url: '/index', views:{login:{ templateUrl:'index.html' }}}
-  ).state('login',
-    { url: '/login', views:{login:{ templateUrl:'login.html' }}}
-  ).state('carro',
-    { url: '/carro', views:{conteudo:{ templateUrl:'carro.html' }}}
-  ).state('tipo',
-    { url: '/tipo', views:{conteudo:{ templateUrl:'tipo.html' }}}
-  ).state('tipoMany',
-    { url: '/tipoMany', views:{conteudo:{ templateUrl:'tipoMany.html' }}}
-  ).state('janela',
-    { url: '/janela', views:{conteudo:{ templateUrl:'janela.html' }}}
-  );
-  
-}]);
-
-
-Module.run(['Entidades','$window','Usuario','$q',
-    function(Entidades,$window,Usuario, $q){
-  
-  $window.Carro = Entidades.entidade('Carro');
-  $window.Cor = Entidades.entidade('Cor');
-  
-  Entidades.entidade('Porta');
-  Entidades.entidade('Usuario'); 
-  Entidades.entidade('Valor');
-  Entidades.entidade('RegistroUsuario');
-  
-  Usuario.then(function(u){
-    console.log('Usuario::: ', u);
-  });
-  
-  
 }]);

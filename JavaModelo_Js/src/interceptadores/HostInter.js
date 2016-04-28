@@ -16,7 +16,8 @@ Module.provider('HostInter',[function(){
     var ref = {
       request:function( request ){
         if( provider.ativo ){
-          request.url = (provider.url + request.url).replace(/\/+/g,'/') ;
+          request.url = (provider.url + request.url).replace(/\/+/g,'/')
+            .replace(/(\w):\/+/g,'$1://') ;
         }
         return request;
       }
