@@ -1,6 +1,51 @@
 
 module.exports = function (grunt) {
   
+  // caminhos do processo de montagem:
+  var p = {
+    dist:'dist/',
+    src:'src/',
+    srcCssC:'src/css/critico/',
+    srcCssN:'src/css/normal/',
+    srcJsC:'src/js/critico/',
+    srcJsN:'src/js/normal/',
+    htmlPaginas:'src/paginas/',
+    htmlIndex:'src/index.html',
+    temp:'temp/',
+    test:'test/',
+    javaModeloJs:'../JavaModelo_Js/dist/JavaModelo.js',
+    serverDir: 'C:/wamp/www-JavaModelo'
+  };
+  
+  // nomes finais
+  var nf = {
+    jsNormal: p.temp+"/jsNormal.js",
+    jsCritico: p.temp+"/jsCritico.js",
+    jsCriticoLogin: p.temp+"/jsCriticoLogin.js",
+    cssNormal: p.temp+"/cssNormal.css",
+    cssCritico: p.temp+"/cssCritico.css",
+    htmlPaginas: p.temp+"/htmlPaginas.html"
+  };
+  
+  grunt.registerTask('default', ['clean','concat','less',
+    'copy:dist','replace']);
+  grunt.registerTask('montarCompleto',['montar:completo','clean','concat','less',
+    'cssmin','uglify','htmlmin',
+    'copy:dist','replace']);
+  
+  grunt.registerMultiTask('montar','',function(){
+    if( this.data.nf ){
+      for(var g in this.data.nf){
+        var val = this.data.nf[g];
+        nf[g] = val;
+      }
+    }
+  });
+  
+  //===================  Processo de montagem  ============================
+  
+  var lf = grunt.util.linefeed;
+  
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -10,31 +55,23 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-replace');
   
-  // caminhos do processo de criação:
-  var p = {
-    dist:'web/',
-    src:'src_web/',
-    srcCssC:'src_web/css/critico/',
-    srcCssN:'src_web/css/normal/',
-    srcJsC:'src_web/js/critico/',
-    srcJsN:'src_web/js/normal/',
-    htmlPaginas:'src_web/paginas/',
-    htmlIndex:'src_web/index.html',
-    temp:'web_temp/',
-    test:'test/'
-  };
-  
-  var jsName = 'JavaModelo.js';
-  // nomes de arquivos do processo:
-  var c = {
-    jsBuild: p.dist+jsName,
-    jsMin: p.dist+'JavaModelo.min.js'
-  };
-  
-  var lf = grunt.util.linefeed;
-  
   // Project configuration.
   grunt.initConfig({
+    montar:{
+      normal:{
+        
+      },
+      completo:{
+        nf:{
+          cssCritico:       p.temp+"cssCritico.min.css",
+          cssNormal:        p.temp+"cssNormal.min.css",
+          jsNormal:         p.temp+"jsCritico.min.js",
+          jsCritico:        p.temp+"jsCritico.min.js",
+          jsCriticoLogin:   p.temp+"jsCriticoLogin.min.js",
+          htmlPaginas:      p.temp+"htmlPaginas.min.html"
+        }
+      }
+    },
     // ---------------  limpeza
     clean:{
       temp:{
@@ -59,22 +96,28 @@ module.exports = function (grunt) {
           p.srcJsC+ 'libs/angular/angular.min.js',
           p.srcJsC+ 'libs/angular/*.js',
           p.srcJsC+ 'libs/*.js',
+          p.javaModeloJs ,
           p.srcJsC+ 'config.js',
           p.srcJsC+ '**/*.js'
         ],
-        dest: p.temp+'jsCritico.js'
+        dest: p.temp+'jsCritico.js',
+        nonull: true
       },
       jsCriticoLogin:{
         src:[ 
           p.srcJsC+ 'libs/angular/angular.min.js',
           p.srcJsC+ 'libs/angular/*.js',
           p.srcJsC+ 'libs/*.js',
-          //p.srcJsC+ '**/*.js'
+          p.javaModeloJs ,
+          p.srcJsC+ 'config.js'
         ],
         dest: p.temp+'jsCriticoLogin.js'
       },
       jsNormal:{
-        src:[ p.srcJsN+ '**/*.js' ],
+        src:[ 
+          p.javaModeloJs ,
+          p.srcJsN+ '**/*.js' 
+        ],
         dest: p.temp+'jsNormal.js'
       },
       html:{
@@ -118,7 +161,7 @@ module.exports = function (grunt) {
       cssNormal:{
         files:[{
           src: p.temp+'cssNormal.css' ,
-          dest: p.temp+'css.min.css'
+          dest: p.temp+'cssNormal.min.css'
         }]
       }
     },
@@ -138,7 +181,7 @@ module.exports = function (grunt) {
       jsNormal:{
         files:[{
           src: p.temp+'jsNormal.js' ,
-          dest: p.temp+'js.min.js'
+          dest: p.temp+'jsNormal.min.js'
         }]
       }
     },
@@ -146,7 +189,9 @@ module.exports = function (grunt) {
       html:{
         options:{
           removeComments: true,
-          collapseWhitespace: true
+          collapseWhitespace: true,
+          processScripts: ['text/ng-template']
+          //,maxLineLength: 140
         },
         files:[{
           src: p.temp+'htmlPaginas.html' ,
@@ -157,15 +202,23 @@ module.exports = function (grunt) {
     
     //-------------  copiando os arquivos finais
     copy:{
-      test:{
+      dist:{
         files:[{
           expand: true,
           cwd: p.temp ,
           src:[
-            'css.min.css',
-            'js.min.js'
+            'cssNormal.min.css',
+            'jsNormal.min.js'
           ],
           dest: p.dist
+        }]
+      },
+      server:{
+        files:[{
+          expand: true,
+          cwd: p.dist ,
+          src:[ '**/*' ],
+          dest: p.serverDir
         }]
       }
     },
@@ -178,22 +231,22 @@ module.exports = function (grunt) {
           patterns:[{
             match: 'htmlPaginas',
             replacement: function(){
-              return grunt.file.read(p.temp+"/htmlPaginas.html");
+              return grunt.file.read(nf.htmlPaginas);
             }
           },{
             match: 'cssCritico',
             replacement: function(){
-              return grunt.file.read(p.temp+"/cssCritico.css");
+              return grunt.file.read(nf.cssCritico);
             }
           },{
             match: 'jsCritico',
             replacement: function(){
-              return grunt.file.read(p.temp+"/jsCritico.js");
+              return grunt.file.read(nf.jsCritico);
             }
           },{
             match: 'jsCriticoLogin',
             replacement: function(){
-              return grunt.file.read(p.temp+"/jsCriticoLogin.js");
+              return grunt.file.read(nf.jsCriticoLogin);
             }
           }]
         },
@@ -209,13 +262,5 @@ module.exports = function (grunt) {
     
   });
   
-  
-  grunt.registerTask('default',['clean','concat','less',
-                            //'cssmin',
-                            //'uglify',
-                            //'htmlmin',
-                            'copy','replace'
-                            //,'clean:temp'
-                          ]);
   
 };

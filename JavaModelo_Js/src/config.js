@@ -1,20 +1,16 @@
 
 var Module = angular.module('JavaModelo',['ng','ui.router']);
 
-  // Configuração dos interceptadores desse módule
-Module.config(['$httpProvider','contextProvider',
-          //'$compileProvider','$logProvider','HostInterProvider',
-        function($httpProvider,contextProvider
-          //,$compileProvider,$logProvider,HostInterProvider
-            ){
-
-  //$httpProvider.useApplyAsync( true );
-  //$compileProvider.debugInfoEnabled( true );
-  //$logProvider.debugEnabled( true );
-
-  //HostInterProvider.url = 'http://127.0.0.1:8080';
-
+var urlContext = 'persistencia/context',
+    hiProvider = null,
+    ctxProvider = null;
+  
+Module.run([function(){
+  
+  if( hiProvider.ativo ) return;
+  
   // Pegar o context;
+  var url = urlContext;
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (xhttp.readyState === 4 && xhttp.status === 200) {
@@ -22,9 +18,28 @@ Module.config(['$httpProvider','contextProvider',
       window.contextRoot = xhttp.responseText;
     }
   };
-  xhttp.open("GET", "persistencia/context", false);
+  xhttp.open("GET", url, false);
   xhttp.send();
-  contextProvider.root( window.contextRoot );
+  ctxProvider.root( window.contextRoot );
+  
+}]);
+  
+  // Configuração dos interceptadores desse módule
+Module.config(['$httpProvider','contextProvider','HostInterProvider',
+          //'$compileProvider','$logProvider',
+        function($httpProvider,contextProvider, HostInterProvider
+          //,$compileProvider,$logProvider
+            ){
+
+  //$httpProvider.useApplyAsync( true );
+  //$compileProvider.debugInfoEnabled( true );
+  //$logProvider.debugEnabled( true );
+  
+  //HostInterProvider.ativo = true;
+  //HostInterProvider.url = 'http://127.0.0.1:8080';
+  
+  ctxProvider = contextProvider;
+  hiProvider = HostInterProvider;
   
   $httpProvider.interceptors.push( 'LoginInter' );
   $httpProvider.interceptors.push( 'HostInter' );

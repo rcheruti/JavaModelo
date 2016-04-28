@@ -68,7 +68,7 @@ module.exports = function (grunt) {
     }
   });
   
-  
-  grunt.registerTask('default',['clean','concat','uglify','copy']);
+  //'uglify'
+  grunt.registerTask('default',['clean','concat','copy']);
   
 };

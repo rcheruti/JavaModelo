@@ -1,99 +1,4 @@
-
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>JavaModelo Test: Login</title>
-    
-    <style>* {
-  border: none;
-  background: transparent;
-  margin: 0;
-  padding: 0;
-  opacity: 1;
-  box-sizing: border-box;
-}
-html,
-body {
-  width: 100%;
-  height: 100%;
-  font-size: 16px;
-  font-family: "Lucida Sans Unicode";
-}
-.loginForm {
-  margin: 4em auto;
-  width: 60%;
-  min-width: 240px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 1em;
-}
-/*  =========  Listas  =========  */
-ul li {
-  padding-left: 30px;
-}
-/*  =========  Botões  =========  */
-/*  =========  Inputs  =========  */
-.form {
-  margin: 10px 20px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  box-shadow: 0px 1px 3px #777;
-  padding: 10px 20px;
-}
-/*  =========  3D  =========  */
-.pers {
-  -webkit-perspective: preserve-3d;
-  perspective: preserve-3d;
-  -webkit-perspective-origin: center;
-  perspective-origin: center;
-}
-.pers.left {
-  -webkit-perspective-origin: left;
-  perspective-origin: left;
-}
-.pers.top {
-  -webkit-perspective-origin: top;
-  perspective-origin: top;
-}
-.pers.right {
-  -webkit-perspective-origin: right;
-  perspective-origin: right;
-}
-.pers.bottom {
-  -webkit-perspective-origin: bottom;
-  perspective-origin: bottom;
-}
-/*  =========  Transições  =========  */
-.trans {
-  -webkit-transition: all 0.2s ease-out;
-  transition: all 0.2s ease-out;
-  -webkit-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-}
-.trans.fade {
-  opacity: 0;
-}
-.trans.down {
-  -webkit-transform: translate3d(0, 15%, 0);
-  transform: translate3d(0, 15%, 0);
-}
-.trans.right {
-  -webkit-transform: translate3d(15%, 0, 0);
-  transform: translate3d(15%, 0, 0);
-}
-.trans.left {
-  -webkit-transform: translate3d(-15%, 0, 0);
-  transform: translate3d(-15%, 0, 0);
-}
-.trans.down {
-  -webkit-transform: translate3d(0, -15%, 0);
-  transform: translate3d(0, -15%, 0);
-}
-</style>
-    
-    <script>/*
+/*
  AngularJS v1.5.0-beta.2
  (c) 2010-2015 Google, Inc. http://angularjs.org
  License: MIT
@@ -1589,10 +1494,72 @@ Module.config(['contextProvider','HostInterProvider',
   contextProvider.websocket('/websocket');
   
 }]);
-</script>
-    <script>
 
-Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','$state',
+Module.controller('Carro',['$scope','Entidades','$http',
+    function($scope,Entidades, $http){
+  
+  $scope.cores = [];
+  $scope.carro = {};
+  
+  function recarregar(){
+    Entidades.query( 'Cor' ).order(['nome']).get().then(function(data){
+      console.log( 'data', data );
+      $scope.cores = data.data[0];
+    }) ; 
+    Entidades.query('Carro').join(['cores','portas','valor','portas.janelas',
+        'registroUsuario'])
+      .order(['nome']).getIn( $scope, 'coisas.carros' );
+  }
+  recarregar();
+  
+  
+  $scope.postCarro = function(){
+    Entidades.query('Carro').post( $scope.carro ).then( recarregar );
+  };
+  
+  $scope.deleteCarro = function( carro ){
+    var sim = confirm('Deletar?');
+    sim && Entidades.query('Carro').id().delete( carro ).then( recarregar );
+  };
+  
+  $scope.exportarCarros = function(){
+    var data = { 
+      entidade:'Carro', 
+      data: { nome:'Carros - Export', 
+        titulos:['ID','Nome','Valor'] ,
+        atributos:['id','nome','valor.valor'] 
+      }
+    };
+    
+    var form = document.createElement("form");
+    form.action = 'exportar';
+    form.method = 'post';
+    form.target = "_blank";
+    var input = document.createElement("textarea");
+    input.name = 'json';
+    input.value = JSON.stringify( data );
+    form.appendChild(input);
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+    
+  };
+  
+}]);
+Module.controller('Janela',['$scope','Entidades',
+    function($scope,Entidades){
+    
+  function recarregar(){
+    Entidades.query( 'Janela' ).where('porta',Entidades.nnl).getIn($scope,'janelasPortas'); 
+    Entidades.query( 'Janela' ).where('porta',Entidades.nl).getIn($scope,'janelasSemPortas'); 
+  }
+  recarregar();
+  
+  
+  
+}]);
+Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','state',
     function($scope,$http,$timeout,$window,context,state){
   $scope.msg = '';
   $scope.msgClasses = 'fade right';
@@ -1607,9 +1574,9 @@ Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','
           $scope.msg = data.msg ;
           $scope.msgClasses = '';
           timeOut = $timeout(function(){ 
-            var url = $window.location.origin + context.root ;
-            $window.location = url;
-            //state.go('index');
+            //var url = $window.location.origin + context.root ;
+            //$window.location = url;
+            state.go('index');
           }, 1000);
         }else{
           $scope.msgClasses = '';
@@ -1622,31 +1589,105 @@ Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','
       });
   };
 }]);
-    </script>
-  </head>
-  <body ng-app="Module" ng-strict-di="true">
-    
-    
-    <div class="loginForm" ng-controller="LoginForm">
-      <label>
-        <span>Login</span>
-        <input ng-model="login"/>
-      </label>
+Module.controller('Menu',['$scope','$http','$window','context',
+    function($scope,$http,$window,context){
+  
+  $scope.logoutMsg = '';
+  
+  $scope.logout = function(){
+    $http.post( context.services+ '/seguranca/logout').then(function(data){
+      if( data.data.status ){
+        var url = $window.location.origin + context.root ;
+        $window.location = url;
+      }else{
+        $scope.logoutMsg = 'Falha no logout.';
+      }
+    });
+  };
+  
+}]);
+Module.controller('Tipo',['$scope','Entidades',
+    function($scope,Entidades){
+  
+  $scope.tipo = null;
+  $scope.entidade = null;
+  $scope.override = false;
+  $scope.entidadeLista = [
+    'Carro','Porta','Usuario','Valor','Cor','RegistroUsuario'
+  ];
+  
+  $scope.mostrarTipo = function(x){
+    Entidades.query( $scope.entidade ).cache(true).clearCache( $scope.override )
+      .tipoIn( $scope, 'tipo' );
+  };
+  
+}]);
+Module.controller('TipoMany',['$scope','Entidades',
+    function($scope,Entidades){
+  
+  $scope.tipo = null;
+  $scope.entidade = null;
+  $scope.override = false;
+  $scope.entidadeLista = [
+    'Carro','Porta','Usuario','Valor','Cor'
+  ];
+  
+  var q = Entidades.queryMuitos();
+  for(var g in $scope.entidadeLista){
+    q.add( Entidades.query($scope.entidadeLista[g])
+      .in( $scope, 'tipo.'+g ).acao( Entidades.TIPO ) );
+  }
+  q.send();
+  console.log( 'Entidades::queryMuitos', q );
+  console.log( '$scope', $scope );
+  
+  $scope.mostrarTipo = function(x){
+    //Entidades.query( $scope.entidade ).tipoIn( $scope, 'tipo', $scope.override );
+  };
+  
+}]);
 
-      <br/><br/>
 
-      <label>
-        <span>Senha</span>
-        <input ng-model="senha" type="password"/>
-      </label>
 
-      <br/><br/>
 
-      <button type="button" ng-click="entrar()">Log in</button>
-      <br/><br/>
 
-      <div class="msg trans" ng-class="msgClasses">{{ msg }}</div>
-    </div>
-    
-  </body>
-</html>
+
+Module.config(['$stateProvider','$routeProvider',
+    function($stateProvider,$routeProvider){
+      
+  $routeProvider.otherwise('/#/carro');
+  
+  $stateProvider.state('index',
+    { url: '/index', views:{login:{ templateUrl:'index.html' }}}
+  ).state('login',
+    { url: '/login', views:{login:{ templateUrl:'login.html' }}}
+  ).state('carro',
+    { url: '/carro', views:{conteudo:{ templateUrl:'carro.html' }}}
+  ).state('tipo',
+    { url: '/tipo', views:{conteudo:{ templateUrl:'tipo.html' }}}
+  ).state('tipoMany',
+    { url: '/tipoMany', views:{conteudo:{ templateUrl:'tipoMany.html' }}}
+  ).state('janela',
+    { url: '/janela', views:{conteudo:{ templateUrl:'janela.html' }}}
+  );
+  
+}]);
+
+
+Module.run(['Entidades','$window','Usuario','$q',
+    function(Entidades,$window,Usuario, $q){
+  
+  $window.Carro = Entidades.entidade('Carro');
+  $window.Cor = Entidades.entidade('Cor');
+  
+  Entidades.entidade('Porta');
+  Entidades.entidade('Usuario'); 
+  Entidades.entidade('Valor');
+  Entidades.entidade('RegistroUsuario');
+  
+  Usuario.then(function(u){
+    console.log('Usuario::: ', u);
+  });
+  
+  
+}]);

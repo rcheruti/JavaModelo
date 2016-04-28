@@ -10,17 +10,6 @@
     
     <script>@@jsCriticoLogin</script>
     <script>
-window.Module = angular.module('Module',['ngAnimate','ngTouch','ngRoute','ui.router','JavaModelo']);
-Module.config(['contextProvider',
-    function(contextProvider){
-  
-  //EntidadesProvider.defaults.cacheTimeout["POST/tipo"] = 5000 ;
-  //UsuarioProvider.carregarAoIniciar = false;
-  
-  contextProvider.services('/s');
-  contextProvider.websocket('/websocket');
-  
-}]);
 
 Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','$state',
     function($scope,$http,$timeout,$window,context,state){
