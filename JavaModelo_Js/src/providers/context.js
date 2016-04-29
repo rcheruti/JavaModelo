@@ -25,7 +25,7 @@ Module.provider('context',[function(){
     };
     var _funcs = {
       root: function(/*, params _context */){
-        provider.context.root = 'x';
+        provider.context.root = 'x'; // necessário!
         provider.context.root = _context.apply(this, arguments);
         provider.context.services = corrigirUrl( provider.context.root + provider.context.path.services );
         provider.context.websocket = corrigirUrl( provider.context.root + provider.context.path.websocket );
@@ -67,60 +67,3 @@ Module.provider('context',[function(){
     }];
     
 }]);
-
-/*
-
-
-      var atual, anterior, itensAtuais, 
-          continuosRef = {
-        put: function(){
-          
-          return continuosRef;
-        },
-        in: function( url ){
-          if( !url ){
-            return continuosRef;
-          }
-          url = corrigirUrl(url);
-          if( url[0] === '/' ) url = url.substr(1);
-          url = url.split('/');
-          anterior.push( atual );
-          for(var i=0; i<url.length; i++){
-            if( !atual[url[i]] ) atual[url[i]] = {};
-            atual = atual[url];
-          }
-          return continuosRef;
-        },
-        clearIn: function(){
-          ref.clearIn();
-          return continuosRef;
-        },
-        end: function(){
-          atual = anterior.pop();
-          return continuosRef;
-        },
-        done: function(){
-          //////////
-          ref.clearIn();
-          return continuosRef;
-        }
-      };
-      
-
-
-        // Ex.: put( 'logout', '/sistema/logout', context.services );
-        // irá criar no Attr "context.logout" a URL "/s/sistema/logout"
-        put: function( nomeAttr, url , urlPrefix ){
-          if( !urlPrefix ) urlPrefix = ref.services ;
-          ref[ nomeAttr ] = corrigirUrl(urlPrefix + url);
-        },
-        in: function( url ){
-          continuosRef.in( url );
-          return continuosRef ;
-        },
-        clearIn: function(){
-          anterior = [];
-          atual = itensAtuais = {};
-        }
-
-*/

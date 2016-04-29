@@ -422,15 +422,10 @@ Module.run(['$templateCache','$rootElement',
     ctxProvider.root( window.contextRoot );
   }else{
     var scripts = $rootElement[0].querySelectorAll('script[type="text/ng-template"]');
-    console.log( scripts );
-    
-    window.$templateCache = $templateCache;
-    
     var url = hiProvider.url.replace(/\/$/,'');
     for(var i = 0; i < scripts.length; i++){
       var key = scripts[i].id ;
       var nome = url+ '/'+ key.replace(/^\//,'') ;
-      console.log( nome, key, $templateCache.get(key) );
       $templateCache.put( nome, scripts[i].textContent );
     }
   }

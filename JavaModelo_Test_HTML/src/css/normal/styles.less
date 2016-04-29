@@ -1,24 +1,33 @@
 
+/* Cores google */
+@azul: rgb(66,133,244);
+@vermelho: rgb(219,68,55);
+@amarelo: rgb(244,180,0);
+@verde: rgb(15,157,88);
+@cinza: rgb(101,101,101);
 
-/*  =========  Listas  =========  */
-ul{}
-ul li{
-    padding-left: 30px;
-}
+@branco: rgb(255,255,255);
+@branco1: #fafafa;
+@branco2: #f5f5f5;
+@branco3: #e0e0e0;
+
+@preto: rgb(0,0,0);
+@preto1: #212121;
+@preto2: #303030;
+@preto3: #424242;
+
+@texto1: #212121;
+@texto2: #727272;
+@textoTitulo: #ffffff;
+@divisor: #B6B6B6;
+
+@cor1: #3f51b5;
+@cor2: #303f9f;
+@cor3: #c5cae9;
+
+@accent: #ff4081;
 
 
-/*  =========  Botões  =========  */
-
-
-
-/*  =========  Inputs  =========  */
-.form{
-    margin: 10px 20px;
-    border: 1px solid #ccc;
-    border-radius: 3px;
-    box-shadow: 0px 1px 3px #777;
-    padding: 10px 20px;
-}
 
 
 /*  =========  3D  =========  */
@@ -45,6 +54,9 @@ ul li{
   perspective-origin: bottom;
 }
 
+
+
+
 /*  =========  Transições  =========  */
 .trans{
   -webkit-transition: all .2s ease-out;
@@ -56,7 +68,7 @@ ul li{
 .trans.fade{
   opacity: 0;
 }
-.trans.down{
+.trans.top{
   -webkit-transform: translate3d(0,15%,0);
   transform: translate3d(0,15%,0);
 }
@@ -72,3 +84,78 @@ ul li{
   -webkit-transform: translate3d(0,-15%,0);
   transform: translate3d(0,-15%,0);
 }
+
+.transform(@x,@y,@z: 0){
+  -webkit-transform: translate3d(@x,@y,@z);
+  transform: translate3d(@x,@y,@z);
+}
+.transDown(@i: 2){
+  .transform(0, unit(@i,px), 0);
+}
+.transLoop(@i: 0) when (@i > -1){
+  .transDown@{i}{
+    .transDown(@i);
+  }
+  .transLoop(@i - 1);
+}
+.transLoop(24);
+
+
+/*  =================   Circulos e arredondados   ============  */
+@borderRadius: 3px;
+.ciculo{
+  border-radius: 50%;
+}
+.borderRadius(@i: 4){
+  border-radius: @borderRadius*@i/2;
+}
+.borderRadiusLoop(@i: 0) when (@i > -1){
+  .br@{i}{
+    .borderRadius(@i);
+  }
+  .borderRadiusLoop(@i - 1);
+}
+.borderRadiusLoop(24);
+
+
+
+
+/*  ==================   Sombras   =====================  */
+@shadowColor: rgba(0,0,0,.3);
+.shadow(@i: 2){
+  box-shadow: 0px (@i*3/2px) (@i*4/2px) @shadowColor;
+}
+.shadowi(@i: 2){
+  box-shadow: 0px (@i*1/2px) (@i*4/2px) @shadowColor inset;
+}
+.shadowMix(@i,@j){
+  box-shadow: 0px (@i*3/2px) (@i*4/2px) @shadowColor, 
+              0px (@j*1/2px) (@j*4/2px) @shadowColor inset;
+}
+.shadowLoop(@i: 0) when (@i > -1){
+  .shadow@{i}{
+    .shadow(@i);
+  }
+  .shadowLoop(@i - 1);
+}
+.shadowiLoop(@i: 0) when (@i > -1){
+  .shadow@{i}i{
+    .shadowi(@i);
+  }
+  .shadowiLoop(@i - 1);
+}
+.shadowMixLoop(@i: 0, @j: 0) when (@i > -1){
+  .shadowiMixLoop(@i, @j);
+  .shadowMixLoop(@i - 1, @j);
+}
+.shadowiMixLoop(@i: 0, @j: 0) when (@j > -1){
+  .shadow@{i}.shadow@{j}i{
+    .shadowMix(@i,@j);
+  }
+  .shadowiMixLoop(@i, @j - 1);
+}
+
+.shadowLoop(24);
+.shadowiLoop(24);
+.shadowMixLoop(24, 24);
+

@@ -1,24 +1,4 @@
-.loginForm {
-  margin: 4em auto;
-  width: 60%;
-  min-width: 240px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 1em;
-}
-/*  =========  Listas  =========  */
-ul li {
-  padding-left: 30px;
-}
-/*  =========  Botões  =========  */
-/*  =========  Inputs  =========  */
-.form {
-  margin: 10px 20px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  box-shadow: 0px 1px 3px #777;
-  padding: 10px 20px;
-}
+/* Cores google */
 /*  =========  3D  =========  */
 .pers {
   -webkit-perspective: preserve-3d;
@@ -52,7 +32,7 @@ ul li {
 .trans.fade {
   opacity: 0;
 }
-.trans.down {
+.trans.top {
   -webkit-transform: translate3d(0, 15%, 0);
   transform: translate3d(0, 15%, 0);
 }
@@ -67,4 +47,2246 @@ ul li {
 .trans.down {
   -webkit-transform: translate3d(0, -15%, 0);
   transform: translate3d(0, -15%, 0);
+}
+.transDown24 {
+  -webkit-transform: translate3d(0, 24px, 0);
+  transform: translate3d(0, 24px, 0);
+}
+.transDown23 {
+  -webkit-transform: translate3d(0, 23px, 0);
+  transform: translate3d(0, 23px, 0);
+}
+.transDown22 {
+  -webkit-transform: translate3d(0, 22px, 0);
+  transform: translate3d(0, 22px, 0);
+}
+.transDown21 {
+  -webkit-transform: translate3d(0, 21px, 0);
+  transform: translate3d(0, 21px, 0);
+}
+.transDown20 {
+  -webkit-transform: translate3d(0, 20px, 0);
+  transform: translate3d(0, 20px, 0);
+}
+.transDown19 {
+  -webkit-transform: translate3d(0, 19px, 0);
+  transform: translate3d(0, 19px, 0);
+}
+.transDown18 {
+  -webkit-transform: translate3d(0, 18px, 0);
+  transform: translate3d(0, 18px, 0);
+}
+.transDown17 {
+  -webkit-transform: translate3d(0, 17px, 0);
+  transform: translate3d(0, 17px, 0);
+}
+.transDown16 {
+  -webkit-transform: translate3d(0, 16px, 0);
+  transform: translate3d(0, 16px, 0);
+}
+.transDown15 {
+  -webkit-transform: translate3d(0, 15px, 0);
+  transform: translate3d(0, 15px, 0);
+}
+.transDown14 {
+  -webkit-transform: translate3d(0, 14px, 0);
+  transform: translate3d(0, 14px, 0);
+}
+.transDown13 {
+  -webkit-transform: translate3d(0, 13px, 0);
+  transform: translate3d(0, 13px, 0);
+}
+.transDown12 {
+  -webkit-transform: translate3d(0, 12px, 0);
+  transform: translate3d(0, 12px, 0);
+}
+.transDown11 {
+  -webkit-transform: translate3d(0, 11px, 0);
+  transform: translate3d(0, 11px, 0);
+}
+.transDown10 {
+  -webkit-transform: translate3d(0, 10px, 0);
+  transform: translate3d(0, 10px, 0);
+}
+.transDown9 {
+  -webkit-transform: translate3d(0, 9px, 0);
+  transform: translate3d(0, 9px, 0);
+}
+.transDown8 {
+  -webkit-transform: translate3d(0, 8px, 0);
+  transform: translate3d(0, 8px, 0);
+}
+.transDown7 {
+  -webkit-transform: translate3d(0, 7px, 0);
+  transform: translate3d(0, 7px, 0);
+}
+.transDown6 {
+  -webkit-transform: translate3d(0, 6px, 0);
+  transform: translate3d(0, 6px, 0);
+}
+.transDown5 {
+  -webkit-transform: translate3d(0, 5px, 0);
+  transform: translate3d(0, 5px, 0);
+}
+.transDown4 {
+  -webkit-transform: translate3d(0, 4px, 0);
+  transform: translate3d(0, 4px, 0);
+}
+.transDown3 {
+  -webkit-transform: translate3d(0, 3px, 0);
+  transform: translate3d(0, 3px, 0);
+}
+.transDown2 {
+  -webkit-transform: translate3d(0, 2px, 0);
+  transform: translate3d(0, 2px, 0);
+}
+.transDown1 {
+  -webkit-transform: translate3d(0, 1px, 0);
+  transform: translate3d(0, 1px, 0);
+}
+.transDown0 {
+  -webkit-transform: translate3d(0, 0px, 0);
+  transform: translate3d(0, 0px, 0);
+}
+/*  =================   Circulos e arredondados   ============  */
+.ciculo {
+  border-radius: 50%;
+}
+.br24 {
+  border-radius: 36px;
+}
+.br23 {
+  border-radius: 34.5px;
+}
+.br22 {
+  border-radius: 33px;
+}
+.br21 {
+  border-radius: 31.5px;
+}
+.br20 {
+  border-radius: 30px;
+}
+.br19 {
+  border-radius: 28.5px;
+}
+.br18 {
+  border-radius: 27px;
+}
+.br17 {
+  border-radius: 25.5px;
+}
+.br16 {
+  border-radius: 24px;
+}
+.br15 {
+  border-radius: 22.5px;
+}
+.br14 {
+  border-radius: 21px;
+}
+.br13 {
+  border-radius: 19.5px;
+}
+.br12 {
+  border-radius: 18px;
+}
+.br11 {
+  border-radius: 16.5px;
+}
+.br10 {
+  border-radius: 15px;
+}
+.br9 {
+  border-radius: 13.5px;
+}
+.br8 {
+  border-radius: 12px;
+}
+.br7 {
+  border-radius: 10.5px;
+}
+.br6 {
+  border-radius: 9px;
+}
+.br5 {
+  border-radius: 7.5px;
+}
+.br4 {
+  border-radius: 6px;
+}
+.br3 {
+  border-radius: 4.5px;
+}
+.br2 {
+  border-radius: 3px;
+}
+.br1 {
+  border-radius: 1.5px;
+}
+.br0 {
+  border-radius: 0px;
+}
+/*  ==================   Sombras   =====================  */
+.shadow24 {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3);
+}
+.shadow23 {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3);
+}
+.shadow22 {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3);
+}
+.shadow21 {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3);
+}
+.shadow20 {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3);
+}
+.shadow19 {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3);
+}
+.shadow18 {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3);
+}
+.shadow17 {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3);
+}
+.shadow16 {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3);
+}
+.shadow15 {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3);
+}
+.shadow14 {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3);
+}
+.shadow13 {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3);
+}
+.shadow12 {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3);
+}
+.shadow11 {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3);
+}
+.shadow10 {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3);
+}
+.shadow9 {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3);
+}
+.shadow8 {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3);
+}
+.shadow7 {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3);
+}
+.shadow6 {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3);
+}
+.shadow5 {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3);
+}
+.shadow4 {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3);
+}
+.shadow3 {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3);
+}
+.shadow2 {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3);
+}
+.shadow1 {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3);
+}
+.shadow0 {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3);
+}
+.shadow24i {
+  box-shadow: 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23i {
+  box-shadow: 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22i {
+  box-shadow: 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21i {
+  box-shadow: 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20i {
+  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19i {
+  box-shadow: 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18i {
+  box-shadow: 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17i {
+  box-shadow: 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16i {
+  box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15i {
+  box-shadow: 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14i {
+  box-shadow: 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13i {
+  box-shadow: 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12i {
+  box-shadow: 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11i {
+  box-shadow: 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10i {
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9i {
+  box-shadow: 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8i {
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7i {
+  box-shadow: 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6i {
+  box-shadow: 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5i {
+  box-shadow: 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4i {
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3i {
+  box-shadow: 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2i {
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1i {
+  box-shadow: 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow24i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow23i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow22i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow21i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow20i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow19i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow18i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow17i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow16i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow15i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow14i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow13i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow12i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow11i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow10i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow9i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow8i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow7i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow6i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow5i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow4i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow3i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow2i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow1i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow24.shadow0i {
+  box-shadow: 0px 36px 48px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow24i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow23i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow22i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow21i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow20i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow19i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow18i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow17i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow16i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow15i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow14i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow13i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow12i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow11i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow10i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow9i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow8i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow7i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow6i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow5i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow4i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow3i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow2i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow1i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow23.shadow0i {
+  box-shadow: 0px 34.5px 46px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow24i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow23i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow22i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow21i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow20i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow19i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow18i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow17i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow16i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow15i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow14i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow13i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow12i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow11i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow10i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow9i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow8i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow7i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow6i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow5i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow4i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow3i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow2i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow1i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow22.shadow0i {
+  box-shadow: 0px 33px 44px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow24i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow23i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow22i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow21i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow20i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow19i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow18i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow17i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow16i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow15i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow14i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow13i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow12i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow11i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow10i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow9i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow8i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow7i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow6i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow5i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow4i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow3i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow2i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow1i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow21.shadow0i {
+  box-shadow: 0px 31.5px 42px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow24i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow23i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow22i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow21i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow20i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow19i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow18i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow17i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow16i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow15i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow14i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow13i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow12i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow11i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow10i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow9i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow8i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow7i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow6i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow5i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow4i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow3i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow2i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow1i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow20.shadow0i {
+  box-shadow: 0px 30px 40px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow24i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow23i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow22i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow21i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow20i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow19i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow18i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow17i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow16i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow15i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow14i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow13i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow12i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow11i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow10i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow9i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow8i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow7i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow6i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow5i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow4i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow3i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow2i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow1i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow19.shadow0i {
+  box-shadow: 0px 28.5px 38px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow24i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow23i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow22i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow21i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow20i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow19i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow18i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow17i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow16i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow15i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow14i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow13i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow12i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow11i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow10i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow9i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow8i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow7i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow6i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow5i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow4i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow3i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow2i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow1i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow18.shadow0i {
+  box-shadow: 0px 27px 36px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow24i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow23i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow22i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow21i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow20i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow19i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow18i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow17i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow16i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow15i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow14i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow13i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow12i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow11i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow10i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow9i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow8i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow7i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow6i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow5i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow4i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow3i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow2i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow1i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow17.shadow0i {
+  box-shadow: 0px 25.5px 34px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow24i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow23i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow22i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow21i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow20i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow19i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow18i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow17i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow16i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow15i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow14i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow13i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow12i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow11i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow10i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow9i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow8i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow7i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow6i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow5i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow4i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow3i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow2i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow1i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow16.shadow0i {
+  box-shadow: 0px 24px 32px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow24i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow23i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow22i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow21i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow20i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow19i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow18i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow17i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow16i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow15i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow14i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow13i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow12i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow11i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow10i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow9i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow8i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow7i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow6i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow5i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow4i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow3i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow2i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow1i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow15.shadow0i {
+  box-shadow: 0px 22.5px 30px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow24i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow23i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow22i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow21i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow20i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow19i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow18i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow17i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow16i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow15i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow14i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow13i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow12i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow11i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow10i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow9i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow8i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow7i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow6i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow5i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow4i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow3i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow2i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow1i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow14.shadow0i {
+  box-shadow: 0px 21px 28px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow24i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow23i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow22i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow21i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow20i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow19i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow18i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow17i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow16i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow15i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow14i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow13i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow12i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow11i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow10i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow9i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow8i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow7i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow6i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow5i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow4i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow3i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow2i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow1i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow13.shadow0i {
+  box-shadow: 0px 19.5px 26px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow24i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow23i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow22i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow21i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow20i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow19i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow18i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow17i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow16i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow15i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow14i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow13i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow12i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow11i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow10i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow9i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow8i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow7i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow6i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow5i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow4i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow3i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow2i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow1i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow12.shadow0i {
+  box-shadow: 0px 18px 24px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow24i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow23i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow22i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow21i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow20i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow19i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow18i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow17i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow16i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow15i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow14i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow13i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow12i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow11i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow10i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow9i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow8i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow7i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow6i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow5i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow4i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow3i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow2i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow1i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow11.shadow0i {
+  box-shadow: 0px 16.5px 22px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow24i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow23i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow22i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow21i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow20i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow19i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow18i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow17i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow16i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow15i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow14i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow13i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow12i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow11i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow10i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow9i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow8i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow7i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow6i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow5i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow4i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow3i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow2i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow1i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow10.shadow0i {
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow24i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow23i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow22i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow21i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow20i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow19i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow18i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow17i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow16i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow15i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow14i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow13i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow12i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow11i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow10i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow9i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow8i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow7i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow6i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow5i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow4i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow3i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow2i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow1i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow9.shadow0i {
+  box-shadow: 0px 13.5px 18px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow24i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow23i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow22i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow21i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow20i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow19i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow18i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow17i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow16i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow15i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow14i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow13i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow12i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow11i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow10i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow9i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow8i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow7i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow6i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow5i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow4i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow3i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow2i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow1i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow8.shadow0i {
+  box-shadow: 0px 12px 16px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow24i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow23i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow22i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow21i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow20i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow19i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow18i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow17i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow16i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow15i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow14i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow13i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow12i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow11i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow10i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow9i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow8i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow7i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow6i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow5i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow4i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow3i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow2i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow1i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow7.shadow0i {
+  box-shadow: 0px 10.5px 14px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow24i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow23i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow22i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow21i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow20i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow19i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow18i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow17i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow16i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow15i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow14i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow13i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow12i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow11i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow10i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow9i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow8i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow7i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow6i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow5i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow4i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow3i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow2i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow1i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow6.shadow0i {
+  box-shadow: 0px 9px 12px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow24i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow23i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow22i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow21i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow20i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow19i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow18i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow17i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow16i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow15i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow14i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow13i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow12i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow11i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow10i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow9i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow8i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow7i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow6i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow5i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow4i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow3i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow2i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow1i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow5.shadow0i {
+  box-shadow: 0px 7.5px 10px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow24i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow23i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow22i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow21i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow20i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow19i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow18i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow17i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow16i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow15i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow14i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow13i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow12i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow11i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow10i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow9i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow8i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow7i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow6i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow5i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow4i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow3i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow2i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow1i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow4.shadow0i {
+  box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow24i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow23i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow22i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow21i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow20i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow19i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow18i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow17i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow16i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow15i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow14i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow13i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow12i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow11i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow10i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow9i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow8i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow7i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow6i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow5i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow4i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow3i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow2i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow1i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow3.shadow0i {
+  box-shadow: 0px 4.5px 6px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow24i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow23i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow22i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow21i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow20i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow19i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow18i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow17i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow16i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow15i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow14i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow13i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow12i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow11i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow10i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow9i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow8i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow7i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow6i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow5i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow4i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow3i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow2i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow1i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow2.shadow0i {
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow24i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow23i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow22i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow21i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow20i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow19i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow18i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow17i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow16i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow15i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow14i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow13i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow12i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow11i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow10i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow9i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow8i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow7i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow6i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow5i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow4i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow3i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow2i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow1i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow1.shadow0i {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow24i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 12px 48px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow23i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 11.5px 46px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow22i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 11px 44px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow21i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 10.5px 42px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow20i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 10px 40px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow19i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 9.5px 38px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow18i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 9px 36px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow17i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 8.5px 34px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow16i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 8px 32px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow15i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 7.5px 30px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow14i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 7px 28px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow13i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 6.5px 26px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow12i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 6px 24px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow11i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 5.5px 22px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow10i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 5px 20px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow9i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 4.5px 18px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow8i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 4px 16px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow7i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 3.5px 14px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow6i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 3px 12px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow5i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 2.5px 10px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow4i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 2px 8px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow3i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 1.5px 6px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow2i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 1px 4px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow1i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 0.5px 2px rgba(0, 0, 0, 0.3) inset;
+}
+.shadow0.shadow0i {
+  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.3), 0px 0px 0px rgba(0, 0, 0, 0.3) inset;
+}
+/*  =========  Listas  =========  */
+ul li {
+  padding-left: 30px;
+}
+/*  =========  Botões  =========  */
+button {
+  border-radius: 6px;
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3);
+  -webkit-transition: all 0.2s ease-out;
+  transition: all 0.2s ease-out;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  border: 1px solid #ccc;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+button:active {
+  box-shadow: 0px 1.5px 2px rgba(0, 0, 0, 0.3);
+  -webkit-transform: translate3d(0, 1px, 0);
+  transform: translate3d(0, 1px, 0);
+}
+/*  =========  Inputs  =========  */
+.form {
+  margin: 10px 20px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-shadow: 0px 3px 4px rgba(0, 0, 0, 0.3);
+  padding: 10px 20px;
+}
+.loginForm {
+  margin: 4em auto;
+  width: 60%;
+  min-width: 240px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 1em;
 }

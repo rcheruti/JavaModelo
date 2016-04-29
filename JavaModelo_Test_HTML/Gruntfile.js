@@ -98,11 +98,21 @@ module.exports = function (grunt) {
     // ----------------  juntando os arquivos
     concat:{
       cssCritico:{
-        src:[ p.srcCssC+ 'index.less', p.srcCssC+ '**/*.less' ],
+        src:[ 
+          p.srcCssC+ 'index.less', 
+          p.srcCssC+ 'styles.less', 
+          p.srcCssC+ 'stylesDefaults.less', 
+          p.srcCssC+ '**/*.less' 
+        ],
         dest: p.temp+'cssCritico.less'
       },
       cssNormal:{
-        src:[ p.srcCssN+ '**/*.less' ],
+        src:[ 
+          p.srcCssN+ 'index.less', 
+          p.srcCssN+ 'styles.less', 
+          p.srcCssN+ 'stylesDefaults.less', 
+          p.srcCssN+ '**/*.less' 
+        ],
         dest: p.temp+'cssNormal.less'
       },
       jsCritico:{

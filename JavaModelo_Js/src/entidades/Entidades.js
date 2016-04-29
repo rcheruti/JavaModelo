@@ -1,10 +1,4 @@
 (function(){
-  /*
-  var injector = angular.injector(['ng'],true),
-      $http = injector.get('$http'),
-      $q = injector.get('$q')
-      ;
-      /* */
   var $http = null, $q = null, Entidades = null;
   
   function _getObjByPath( obj, path ){
