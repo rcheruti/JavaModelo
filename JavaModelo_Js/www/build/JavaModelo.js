@@ -8,8 +8,11 @@ var urlContext = 'persistencia/context',
     hiProvider = null,
     ctxProvider = null;
   
-Module.run(['$templateCache','$rootElement',
-    function($templateCache,$rootElement){
+Module.run(['$templateCache','$rootElement',  'path',
+    function($templateCache,$rootElement,  path){
+  
+  console.log( 'Testando path', path );
+  console.log( "path('servico','persistencia')", path('servico','persistencia') );
   
   if( !hiProvider.ativo ){
     // Pegar o context;
@@ -40,18 +43,21 @@ Module.run(['$templateCache','$rootElement',
 }]);
   
   // Configuração dos interceptadores desse módule
-Module.config(['$httpProvider','contextProvider','HostInterProvider',
+Module.config(['$httpProvider','contextProvider','HostInterProvider', 'pathProvider',
           //'$compileProvider','$logProvider',
-        function($httpProvider,contextProvider, HostInterProvider
+        function($httpProvider,contextProvider, HostInterProvider , pathProvider
           //,$compileProvider,$logProvider
             ){
-
+            
   //$httpProvider.useApplyAsync( true );
   //$compileProvider.debugInfoEnabled( true );
   //$logProvider.debugEnabled( true );
   
   //HostInterProvider.ativo = true;
   //HostInterProvider.url = 'http://127.0.0.1:8080';
+  
+  pathProvider.host = 'https://www.aqui.com.br:9090/Depois';
+  pathProvider.servico = '/servicos';
   
   ctxProvider = contextProvider;
   hiProvider = HostInterProvider;
@@ -136,12 +142,6 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
 
   }]);
 (function(){
-  /*
-  var injector = angular.injector(['ng'],true),
-      $http = injector.get('$http'),
-      $q = injector.get('$q')
-      ;
-      /* */
   var $http = null, $q = null, Entidades = null;
   
   function _getObjByPath( obj, path ){
@@ -599,6 +599,26 @@ Module.provider('Entidades',[function(){
 
 })();
 
+(function(){
+  
+  var $http = null, $q = null ;
+  
+  
+  
+//============================================================================
+  Module.provider('Entidades',[function(){
+    
+    var that = this;
+    
+    this.$get = ['$http','$q',function(inj$http,inj$q){
+      
+      $http = inj$http;
+      $q = inj$q;
+    }];
+    
+  }]);
+  
+})();
 Module.filter('',['Usuario',function(Usuario){
   
   var grupos = {};
@@ -668,7 +688,6 @@ Module.provider('HostInter',[function(){
 
     var ref = {
       request:function( request ){
-        console.log( request );
         if( provider.ativo && !request.noHostInter ){
           request.url = (provider.url + request.url).replace(/\/+/g,'/')
             .replace(/(\w):\/+/g,'$1://') ;
@@ -799,7 +818,7 @@ Module.provider('context',[function(){
     };
     var _funcs = {
       root: function(/*, params _context */){
-        provider.context.root = 'x';
+        provider.context.root = 'x'; // necessário!
         provider.context.root = _context.apply(this, arguments);
         provider.context.services = corrigirUrl( provider.context.root + provider.context.path.services );
         provider.context.websocket = corrigirUrl( provider.context.root + provider.context.path.websocket );
@@ -842,62 +861,70 @@ Module.provider('context',[function(){
     
 }]);
 
-/*
-
-
-      var atual, anterior, itensAtuais, 
-          continuosRef = {
-        put: function(){
-          
-          return continuosRef;
-        },
-        in: function( url ){
-          if( !url ){
-            return continuosRef;
-          }
-          url = corrigirUrl(url);
-          if( url[0] === '/' ) url = url.substr(1);
-          url = url.split('/');
-          anterior.push( atual );
-          for(var i=0; i<url.length; i++){
-            if( !atual[url[i]] ) atual[url[i]] = {};
-            atual = atual[url];
-          }
-          return continuosRef;
-        },
-        clearIn: function(){
-          ref.clearIn();
-          return continuosRef;
-        },
-        end: function(){
-          atual = anterior.pop();
-          return continuosRef;
-        },
-        done: function(){
-          //////////
-          ref.clearIn();
-          return continuosRef;
+(function(){
+  
+  Module.provider('path',[function(){
+    var that = this;
+    
+    that.protocol = '';
+    that.host = '';
+    that.port = '';
+    that.context = '';
+    
+    that.hasHost = false;
+    
+    that.root = '';
+    that.servico = '';
+    that.websocket = '';
+    
+    
+    this.$get = ['$window',function($window){
+      // tratamentos do HOST:
+      var wl = $window.location;
+      var host = that.host;
+      var hostParsed = null;
+      if( that.host ){
+        hostParsed = /(\w+:\/+)?([^\/:]+)(:\d+)?(\/.*)?/i.exec( host );
+        that.hasHost = true;
+      }else{
+        hostParsed = [
+          wl+'',
+          wl.protocol+'//',
+          wl.host.replace(/:.*/,''),
+          wl.port,
+          wl.pathname
+        ];
+      }
+      
+      if(!that.protocol) that.protocol = hostParsed[1] || 'http://';
+      if(that.hasHost || !that.host) that.host = hostParsed[2];
+      
+      if(!that.port) that.port = parseInt(hostParsed[3].replace(':','')) || 80;
+      else that.port = parseInt(that.port);
+      
+      if(!that.context) that.context = hostParsed[4];
+      
+      console.log( 'path:this,pathProvider:this', this, that );
+      
+      
+      var pathFunc = function( pathName, path ){
+        var str = that.context+that[pathName] + path ;
+        if( that.hasHost ){
+          str = that.protocol + (that.host+':'+that.port+str).replace(/\/+/g,'/');
         }
+        return str;
       };
       
-
-
-        // Ex.: put( 'logout', '/sistema/logout', context.services );
-        // irá criar no Attr "context.logout" a URL "/s/sistema/logout"
-        put: function( nomeAttr, url , urlPrefix ){
-          if( !urlPrefix ) urlPrefix = ref.services ;
-          ref[ nomeAttr ] = corrigirUrl(urlPrefix + url);
-        },
-        in: function( url ){
-          continuosRef.in( url );
-          return continuosRef ;
-        },
-        clearIn: function(){
-          anterior = [];
-          atual = itensAtuais = {};
-        }
-
-*/
-
+      pathFunc.host = function(){};
+      pathFunc.root = function(){};
+      pathFunc.servico = function(){};
+      pathFunc.websocket = function(){};
+      
+      return pathFunc;
+    }];
+    
+  }]);
+  
+})();
 
 })(window);

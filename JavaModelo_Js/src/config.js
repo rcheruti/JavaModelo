@@ -5,8 +5,11 @@ var urlContext = 'persistencia/context',
     hiProvider = null,
     ctxProvider = null;
   
-Module.run(['$templateCache','$rootElement',
-    function($templateCache,$rootElement){
+Module.run(['$templateCache','$rootElement',  'path',
+    function($templateCache,$rootElement,  path){
+  
+  console.log( 'Testando path', path );
+  console.log( "path('servico','persistencia')", path('servico','persistencia') );
   
   if( !hiProvider.ativo ){
     // Pegar o context;
@@ -37,18 +40,21 @@ Module.run(['$templateCache','$rootElement',
 }]);
   
   // Configuração dos interceptadores desse módule
-Module.config(['$httpProvider','contextProvider','HostInterProvider',
+Module.config(['$httpProvider','contextProvider','HostInterProvider', 'pathProvider',
           //'$compileProvider','$logProvider',
-        function($httpProvider,contextProvider, HostInterProvider
+        function($httpProvider,contextProvider, HostInterProvider , pathProvider
           //,$compileProvider,$logProvider
             ){
-
+            
   //$httpProvider.useApplyAsync( true );
   //$compileProvider.debugInfoEnabled( true );
   //$logProvider.debugEnabled( true );
   
   //HostInterProvider.ativo = true;
   //HostInterProvider.url = 'http://127.0.0.1:8080';
+  
+  pathProvider.host = 'https://www.aqui.com.br:9090/Depois';
+  pathProvider.servico = '/servicos';
   
   ctxProvider = contextProvider;
   hiProvider = HostInterProvider;

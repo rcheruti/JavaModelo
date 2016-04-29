@@ -103,7 +103,7 @@
 
 /*  =================   Circulos e arredondados   ============  */
 @borderRadius: 3px;
-.ciculo{
+.circulo{
   border-radius: 50%;
 }
 .borderRadius(@i: 4){
@@ -177,10 +177,15 @@ button{
   border: 1px solid #ccc;
   padding: 2px 6px;
   cursor: pointer;
+  vertical-align: middle;
   
   &:active{
     .shadow1;
     .transDown1;
+  }
+  
+  &.fab{
+    .circulo;
   }
 }
 
@@ -195,7 +200,7 @@ button{
   padding: 10px 20px;
 }
 input{
-  
+  border-bottom: 1px solid #ccc;
 }
 input[type="radio"], input[type="checkbox"]{
   
