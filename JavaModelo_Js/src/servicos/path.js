@@ -41,10 +41,16 @@
       
       if(!that.context) that.context = hostParsed[4];
       
+      // tratamentos dos nomes padrão:
+      that.r = that.root;
+      that.s = that.servico;
+      that.ws = that.websocket;
+      
       console.log( 'path:this,pathProvider:this', this, that );
       
       
       var pathFunc = function( pathName, path ){
+        if( !pathName ) pathName = 'r';
         var str = that.context+that[pathName] + path ;
         if( that.hasHost ){
           str = that.protocol + (that.host+':'+that.port+str).replace(/\/+/g,'/');
@@ -52,10 +58,12 @@
         return str;
       };
       
-      pathFunc.host = function(){};
-      pathFunc.root = function(){};
-      pathFunc.servico = function(){};
-      pathFunc.websocket = function(){};
+      pathFunc.get = function( pathName ){
+        return that[pathName];
+      };
+      pathFunc.hasHost = function(  ){
+        return that.hasHost;
+      };
       
       return pathFunc;
     }];

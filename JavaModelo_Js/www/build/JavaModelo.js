@@ -2,6 +2,24 @@
 (function(window){
 
 
+/*
+ * Funções usadas por todo o código
+ */
+
+function __construirSetter( pro, nomeFunc, nomeAttr, defaultVal ){
+  if( typeof defaultVal !== 'undefined' ) 
+    pro[nomeFunc] = function( val ){
+      if( typeof val === 'undefined' ) val = defaultVal;
+      this[nomeAttr] = val;
+      return this;
+    };
+  else pro[nomeFunc] = function( val ){
+    this[nomeAttr] = val;
+    return this;
+  };
+}
+
+
 var Module = angular.module('JavaModelo',['ng','ui.router']);
 
 var urlContext = 'persistencia/context',
@@ -370,18 +388,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
       return this.in( obj, key )[methodFunc]( _data );
     };
   }
-  function __construirSetter( pro, nomeFunc, nomeAttr, defaultVal ){
-    if( typeof defaultVal !== 'undefined' ) 
-      pro[nomeFunc] = function( val ){
-        if( typeof val === 'undefined' ) val = defaultVal;
-        this[nomeAttr] = val;
-        return this;
-      };
-    else pro[nomeFunc] = function( val ){
-      this[nomeAttr] = val;
-      return this;
-    };
-  }
+  
   
   
 //============================================================================
@@ -601,19 +608,94 @@ Module.provider('Entidades',[function(){
 
 (function(){
   
-  var $http = null, $q = null ;
+  var $http = null, $q = null, path = null, $rootElement = null ;
   
+  
+  function Exportar(  ){
+    this._data = null; // deve ser no formato de "Busca";
+    this._tipo = 'xlsx';
+    this._nome = '';
+    this._titulos = [];
+    this._atributos = [];
+    this._entidade = ''; // nome da entidade
+    
+    this._target = '_blank';
+    this._build = false;
+  }
+
+  var proto = Exportar.prototype;
+  
+  __construirSetter( proto, 'nome', '_nome' );
+  __construirSetter( proto, 'tipo', '_tipo' );
+  __construirSetter( proto, 'entidade', '_entidade' );
+  __construirSetter( proto, 'target', '_target' );
+  proto.titulos = function( vals ){
+    if(!(vals instanceof Array)) vals = [ vals ];
+    this._titulos = vals;
+    return this;
+  };
+  proto.dados = function( vals ){
+    if(!(vals instanceof Array)) vals = [ vals ];
+    this._atributos = vals;
+    return this;
+  };
+  
+  
+  proto.clearBuild = function(){
+    this._build = false;
+    return this;
+  };
+  proto.build = function(){
+    if( this._build ) return this;
+    
+    this._data = {
+      entidade: this._entidade,
+      data: {
+        nome: this._nome,
+        titulos: this._titulos,
+        atributos: this._atributos
+      }
+    };
+    
+    return this;
+  };
+  proto.send = function(){
+    this.build();
+    
+      // fazer a requisição:
+    var form = document.createElement("form");
+    form.action = 'exportar';
+    form.method = 'post';
+    form.target = this._target;
+    var input = document.createElement("textarea");
+    input.name = 'json';
+    input.value = JSON.stringify( this._data );
+    form.appendChild(input);
+    form.style.display = 'none';
+    $rootElement[0].appendChild(form);
+    form.submit();
+    $rootElement[0].removeChild(form);
+  };
   
   
 //============================================================================
-  Module.provider('Entidades',[function(){
+  Module.provider('Exportar',[function(){
     
     var that = this;
     
-    this.$get = ['$http','$q',function(inj$http,inj$q){
+    this.$get = ['$http','$q','path','$rootElement',
+        function(inj$http,inj$q, injpath, inj$rootElement){
       
       $http = inj$http;
       $q = inj$q;
+      path = injpath;
+      $rootElement = inj$rootElement;
+      
+      return {
+        query: function( entidadeNome ){
+          return new Exportar().entidade( entidadeNome );
+        }
+      };
     }];
     
   }]);
@@ -904,10 +986,16 @@ Module.provider('context',[function(){
       
       if(!that.context) that.context = hostParsed[4];
       
+      // tratamentos dos nomes padrão:
+      that.r = that.root;
+      that.s = that.servico;
+      that.ws = that.websocket;
+      
       console.log( 'path:this,pathProvider:this', this, that );
       
       
       var pathFunc = function( pathName, path ){
+        if( !pathName ) pathName = 'r';
         var str = that.context+that[pathName] + path ;
         if( that.hasHost ){
           str = that.protocol + (that.host+':'+that.port+str).replace(/\/+/g,'/');
@@ -915,10 +1003,12 @@ Module.provider('context',[function(){
         return str;
       };
       
-      pathFunc.host = function(){};
-      pathFunc.root = function(){};
-      pathFunc.servico = function(){};
-      pathFunc.websocket = function(){};
+      pathFunc.get = function( pathName ){
+        return that[pathName];
+      };
+      pathFunc.hasHost = function(  ){
+        return that.hasHost;
+      };
       
       return pathFunc;
     }];

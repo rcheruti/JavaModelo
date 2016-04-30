@@ -397,6 +397,24 @@ d.target.blur&&d.target.blur())}}}function l(d){d=d.touches&&d.touches.length?d.
 (function(window){
 
 
+/*
+ * Funções usadas por todo o código
+ */
+
+function __construirSetter( pro, nomeFunc, nomeAttr, defaultVal ){
+  if( typeof defaultVal !== 'undefined' ) 
+    pro[nomeFunc] = function( val ){
+      if( typeof val === 'undefined' ) val = defaultVal;
+      this[nomeAttr] = val;
+      return this;
+    };
+  else pro[nomeFunc] = function( val ){
+    this[nomeAttr] = val;
+    return this;
+  };
+}
+
+
 var Module = angular.module('JavaModelo',['ng','ui.router']);
 
 var urlContext = 'persistencia/context',
@@ -765,18 +783,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
       return this.in( obj, key )[methodFunc]( _data );
     };
   }
-  function __construirSetter( pro, nomeFunc, nomeAttr, defaultVal ){
-    if( typeof defaultVal !== 'undefined' ) 
-      pro[nomeFunc] = function( val ){
-        if( typeof val === 'undefined' ) val = defaultVal;
-        this[nomeAttr] = val;
-        return this;
-      };
-    else pro[nomeFunc] = function( val ){
-      this[nomeAttr] = val;
-      return this;
-    };
-  }
+  
   
   
 //============================================================================
@@ -996,19 +1003,94 @@ Module.provider('Entidades',[function(){
 
 (function(){
   
-  var $http = null, $q = null ;
+  var $http = null, $q = null, path = null, $rootElement = null ;
   
+  
+  function Exportar(  ){
+    this._data = null; // deve ser no formato de "Busca";
+    this._tipo = 'xlsx';
+    this._nome = '';
+    this._titulos = [];
+    this._atributos = [];
+    this._entidade = ''; // nome da entidade
+    
+    this._target = '_blank';
+    this._build = false;
+  }
+
+  var proto = Exportar.prototype;
+  
+  __construirSetter( proto, 'nome', '_nome' );
+  __construirSetter( proto, 'tipo', '_tipo' );
+  __construirSetter( proto, 'entidade', '_entidade' );
+  __construirSetter( proto, 'target', '_target' );
+  proto.titulos = function( vals ){
+    if(!(vals instanceof Array)) vals = [ vals ];
+    this._titulos = vals;
+    return this;
+  };
+  proto.dados = function( vals ){
+    if(!(vals instanceof Array)) vals = [ vals ];
+    this._atributos = vals;
+    return this;
+  };
+  
+  
+  proto.clearBuild = function(){
+    this._build = false;
+    return this;
+  };
+  proto.build = function(){
+    if( this._build ) return this;
+    
+    this._data = {
+      entidade: this._entidade,
+      data: {
+        nome: this._nome,
+        titulos: this._titulos,
+        atributos: this._atributos
+      }
+    };
+    
+    return this;
+  };
+  proto.send = function(){
+    this.build();
+    
+      // fazer a requisição:
+    var form = document.createElement("form");
+    form.action = 'exportar';
+    form.method = 'post';
+    form.target = this._target;
+    var input = document.createElement("textarea");
+    input.name = 'json';
+    input.value = JSON.stringify( this._data );
+    form.appendChild(input);
+    form.style.display = 'none';
+    $rootElement[0].appendChild(form);
+    form.submit();
+    $rootElement[0].removeChild(form);
+  };
   
   
 //============================================================================
-  Module.provider('Entidades',[function(){
+  Module.provider('Exportar',[function(){
     
     var that = this;
     
-    this.$get = ['$http','$q',function(inj$http,inj$q){
+    this.$get = ['$http','$q','path','$rootElement',
+        function(inj$http,inj$q, injpath, inj$rootElement){
       
       $http = inj$http;
       $q = inj$q;
+      path = injpath;
+      $rootElement = inj$rootElement;
+      
+      return {
+        query: function( entidadeNome ){
+          return new Exportar().entidade( entidadeNome );
+        }
+      };
     }];
     
   }]);
@@ -1299,10 +1381,16 @@ Module.provider('context',[function(){
       
       if(!that.context) that.context = hostParsed[4];
       
+      // tratamentos dos nomes padrão:
+      that.r = that.root;
+      that.s = that.servico;
+      that.ws = that.websocket;
+      
       console.log( 'path:this,pathProvider:this', this, that );
       
       
       var pathFunc = function( pathName, path ){
+        if( !pathName ) pathName = 'r';
         var str = that.context+that[pathName] + path ;
         if( that.hasHost ){
           str = that.protocol + (that.host+':'+that.port+str).replace(/\/+/g,'/');
@@ -1310,10 +1398,12 @@ Module.provider('context',[function(){
         return str;
       };
       
-      pathFunc.host = function(){};
-      pathFunc.root = function(){};
-      pathFunc.servico = function(){};
-      pathFunc.websocket = function(){};
+      pathFunc.get = function( pathName ){
+        return that[pathName];
+      };
+      pathFunc.hasHost = function(  ){
+        return that.hasHost;
+      };
       
       return pathFunc;
     }];
@@ -1341,8 +1431,8 @@ Module.config(['contextProvider','HostInterProvider',
   
 }]);
 
-Module.controller('Carro',['$scope','Entidades','$http',
-    function($scope,Entidades, $http){
+Module.controller('Carro',['$scope','Entidades','Exportar',
+    function($scope,Entidades, Exportar){
   
   $scope.cores = [];
   $scope.carro = {};
@@ -1369,27 +1459,10 @@ Module.controller('Carro',['$scope','Entidades','$http',
   };
   
   $scope.exportarCarros = function(){
-    var data = { 
-      entidade:'Carro', 
-      data: { nome:'Carros - Export', 
-        titulos:['ID','Nome','Valor'] ,
-        atributos:['id','nome','valor.valor'] 
-      }
-    };
-    
-    var form = document.createElement("form");
-    form.action = 'exportar';
-    form.method = 'post';
-    form.target = "_blank";
-    var input = document.createElement("textarea");
-    input.name = 'json';
-    input.value = JSON.stringify( data );
-    form.appendChild(input);
-    form.style.display = 'none';
-    document.body.appendChild(form);
-    form.submit();
-    document.body.removeChild(form);
-    
+    Exportar.query('Carro').nome('Carros - Export')
+      .titulos(['ID','Nome','Valor'])
+      .dados(['id','nome','valor.valor'])
+      .send();
   };
   
 }]);
@@ -1405,14 +1478,15 @@ Module.controller('Janela',['$scope','Entidades',
   
   
 }]);
-Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','state',
-    function($scope,$http,$timeout,$window,context,state){
+Module.controller('LoginForm',['$scope','$http','$timeout','$window','path','state',
+    function($scope,$http,$timeout,$window,path,state){
   $scope.msg = '';
   $scope.msgClasses = 'fade right';
   var timeOut = null;
   $scope.entrar = function(){
     $http
-      .post( context.services+ '/seguranca/login', { login: $scope.login, senha: $scope.senha } )
+      //.post( context.services+ '/seguranca/login', { login: $scope.login, senha: $scope.senha } )
+      .post( path('s','/seguranca/login'), { login: $scope.login, senha: $scope.senha } )
       .then(function(data){
         $timeout.cancel( timeOut );
         data = data.data;
@@ -1435,16 +1509,18 @@ Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','
       });
   };
 }]);
-Module.controller('Menu',['$scope','$http','$window','context',
-    function($scope,$http,$window,context){
+Module.controller('Menu',['$scope','$http','$window','path',
+    function($scope,$http,$window,path){
   
   $scope.logoutMsg = '';
   
   $scope.logout = function(){
-    $http.post( context.services+ '/seguranca/logout').then(function(data){
+    //$http.post( context.services+ '/seguranca/logout').then(function(data){
+    $http.post( path('s', '/seguranca/logout') ).then(function(data){
       if( data.data.status ){
-        var url = $window.location.origin + context.root ;
-        $window.location = url;
+        //var url = $window.location.origin + context.root ;
+        //$window.location = url;
+        $window.location = path();
       }else{
         $scope.logoutMsg = 'Falha no logout.';
       }
