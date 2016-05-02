@@ -36,8 +36,7 @@ import java.util.function.Supplier;
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-@InterceptorBinding
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Repeatable(Segurancas.class)
 public @interface Seguranca {
 
@@ -105,14 +104,8 @@ public @interface Seguranca {
    * podendo testar a permissão de acesso de acordo com um dado desse tipo (ao
    * invés de fazer o teste em relação ao tipo/modelo).
    *
-   * @return {@link Class<? extends Supplier<Predicate>>} O predicado que será
-   * usado para testar o acesso
+   * @return O filtros que devem ser executados para testar
    */
-  @Nonbinding
-  @Deprecated
-  Class<? extends Supplier<? extends Predicate>> predicado() default NullSupplier.class;
-  
-  
   @Nonbinding
   Class<? extends SegurancaPersistenciaInterceptador>[] filters() default { } ;
   

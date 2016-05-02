@@ -8,13 +8,13 @@ import javax.enterprise.inject.spi.CDI;
 
 public class CdiUtils {
   
-  public Object getBean(Class<?> klass){
+  public static <T> T getBean(Class<T> klass){
     BeanManager bm = CDI.current().getBeanManager();
-    Bean<?> bean = (Bean<?>) bm.getBeans( klass ).iterator().next();
-    CreationalContext<?> ctx = bm.createCreationalContext(bean);
+    Bean<T> bean = (Bean<T>) bm.getBeans( klass ).iterator().next();
+    CreationalContext<T> ctx = bm.createCreationalContext(bean);
     Object objBean = bm.getReference(bean, klass, ctx);
     
-    return objBean;
+    return (T) objBean;
   }
   
 }

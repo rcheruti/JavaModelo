@@ -1,9 +1,14 @@
 package br.eng.rcc.framework.jaxrs;
 
+import br.eng.rcc.framework.seguranca.filtros.JacksonAnnIntrospector;
+import br.eng.rcc.framework.seguranca.filtros.JacksonFilter;
+import br.eng.rcc.framework.utils.CdiUtils;
+import br.eng.rcc.framework.utils.ClassCache;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
@@ -42,7 +47,21 @@ public class JacksonObjectMapperContextResolver implements ContextResolver<Objec
     mapper.configure(JsonParser.Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
     mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
     mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-
+    
+    
+      // pegando da CDI:
+    JacksonFilter filter = CdiUtils.getBean(JacksonFilter.class);
+    if( filter != null ){
+      mapper.setFilters( new SimpleFilterProvider()
+              .addFilter("seguranca", filter) 
+      );
+    }
+    ClassCache cache = CdiUtils.getBean(ClassCache.class);
+    if( cache != null ){
+      mapper.setAnnotationIntrospector( new JacksonAnnIntrospector(cache) );
+    }
+    
+    
     //mapper.enableDefaultTyping(  );
     return mapper;
   }

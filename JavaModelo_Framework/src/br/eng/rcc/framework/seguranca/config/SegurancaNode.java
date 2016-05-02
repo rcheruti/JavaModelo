@@ -75,11 +75,6 @@ public class SegurancaNode implements Seguranca, Serializable{
   public Class<? extends SegurancaPersistenciaInterceptador>[] filters() {
     return filters;
   }
-
-  @Override
-  public Class<? extends Supplier<? extends Predicate>> predicado() {
-    return predicado;
-  }
   
   @Override
   public Class<? extends Annotation> annotationType() {

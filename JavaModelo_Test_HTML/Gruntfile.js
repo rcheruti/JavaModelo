@@ -70,7 +70,7 @@ module.exports = function (grunt) {
         nf:{
           cssCritico:       p.temp+"cssCritico.min.css",
           cssNormal:        p.temp+"cssNormal.min.css",
-          jsNormal:         p.temp+"jsCritico.min.js",
+          jsNormal:         p.temp+"jsNormal.min.js",
           jsCritico:        p.temp+"jsCritico.min.js",
           jsCriticoLogin:   p.temp+"jsCriticoLogin.min.js",
           jsNormalLogin:    p.temp+"jsNormalLogin.min.js",

@@ -2,13 +2,13 @@
 package br.eng.rcc.framework.seguranca.interceptadores;
 
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
-import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
+import br.eng.rcc.framework.seguranca.anotacoes.SegurancaMetodo;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
-@Seguranca
+@SegurancaMetodo
 @Interceptor
 public class SegurancaInterceptador {
     
@@ -17,8 +17,9 @@ public class SegurancaInterceptador {
     
     @AroundInvoke
     public Object seguranca(InvocationContext ctx) throws Exception{
-        check.check( ctx.getMethod() );
-        return ctx.proceed();
+      SegurancaMetodo segAnn = ctx.getMethod().getAnnotation(SegurancaMetodo.class);
+      check.check( segAnn.value(), segAnn.grupo() );
+      return ctx.proceed();
     }
     
 }

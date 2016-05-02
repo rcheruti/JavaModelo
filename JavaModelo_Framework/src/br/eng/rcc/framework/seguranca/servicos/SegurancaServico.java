@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import javax.enterprise.context.RequestScoped;
 
@@ -106,6 +105,20 @@ public class SegurancaServico {
             | Seguranca.UPDATE 
             | Seguranca.DELETE);
   }
+  public void check(Seguranca s){
+    this.check(s, 
+            Seguranca.SELECT 
+            | Seguranca.INSERT
+            | Seguranca.UPDATE 
+            | Seguranca.DELETE);
+  }
+  public void check(Seguranca[] lista){
+    this.check(lista, 
+            Seguranca.SELECT 
+            | Seguranca.INSERT
+            | Seguranca.UPDATE 
+            | Seguranca.DELETE);
+  }
 
   /**
    * Este método irá procurar na classe informada a anotação
@@ -121,18 +134,12 @@ public class SegurancaServico {
   public void check(AnnotatedElement annotated, int mode) {
     Seguranca[] lista = getSegurancas(annotated);
     if( lista == null ) return;
-    
+    check(lista, mode);
+  }
+  public void check(Seguranca[] lista, int mode){
     for (Seguranca s : lista) {
       try {
-        if(
-          ( (mode & Seguranca.SELECT) != 0 && s.select() ) ||
-          ( (mode & Seguranca.INSERT) != 0 && s.insert() ) ||
-          ( (mode & Seguranca.UPDATE) != 0 && s.update() ) ||
-          ( (mode & Seguranca.DELETE) != 0 && s.delete() )
-            ){
-          this.check( s.value(), s.grupo() );
-          return;
-        }
+        check(s, mode);
       } catch (MsgException ex) {
         if (ex.getCodigo() == JsonResponse.ERROR_DESLOGADO) {
           throw ex;
@@ -142,54 +149,15 @@ public class SegurancaServico {
 
     throw new MsgException(JsonResponse.ERROR_PERMISSAO, null, "O usuário não tem permissão para acessar este recurso");
   }
-  
-  
-  
-  
-  
-  public void check(AnnotatedElement annotated, Object obj){
-    Object[] objs = { obj };
-    check( annotated, objs );
-  }
-  public void check(AnnotatedElement annotated, Object[] objs){
-    check( annotated );
-    checkPredicado( annotated, objs );
-  }
-  public void checkPredicado(AnnotatedElement annotated, Object obj){
-    Object[] objs = { obj };
-    checkPredicado( annotated, objs );
-  }
-  /**
-   * Esse método irá usar os {@link Predicate Predicate} configurados nas anotações
-   * de segurança para testar se o usuário atual tem permissão de acesso aos dados,
-   * quando a anotação for usada em uma entidade do banco.
-   * 
-   * @param annotated Elemento com as anotações de segurança
-   * @param objs Dados que serão testados
-   */
-  public void checkPredicado(AnnotatedElement annotated, Object[] objs) {
-    Seguranca[] lista = getSegurancas(annotated);
-    if( lista == null ) return;
-    
-    for (Seguranca s : lista) {
-      Class supClass = s.predicado();
-      if( supClass == null ) continue;
-      Supplier<Predicate> sup = suppliers.get( supClass );
-      if( sup == null ){
-        try{
-          sup = (Supplier) supClass.newInstance();
-          suppliers.put(supClass, sup);
-        }catch(InstantiationException | IllegalAccessException ex){
-          throw new MsgException( JsonResponse.ERROR_DESCONHECIDO, null, ex.getMessage(), ex );
-        }
-      }
-      Predicate pred = sup.get();
-      if( pred == null ) continue;
-      for(Object obj : objs){
-        if( !pred.test(obj) ) throw new MsgException(JsonResponse.ERROR_PERMISSAO, null, "O usuário não tem permissão para acessar este recurso");
-      }
+  public void check(Seguranca s, int mode){
+    if(
+      ( (mode & Seguranca.SELECT) != 0 && s.select() ) ||
+      ( (mode & Seguranca.INSERT) != 0 && s.insert() ) ||
+      ( (mode & Seguranca.UPDATE) != 0 && s.update() ) ||
+      ( (mode & Seguranca.DELETE) != 0 && s.delete() )
+        ){
+      this.check( s.value(), s.grupo() );
     }
-    
   }
   
   
