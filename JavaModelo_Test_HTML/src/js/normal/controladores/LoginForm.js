@@ -1,11 +1,12 @@
-Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','state',
-    function($scope,$http,$timeout,$window,context,state){
+Module.controller('LoginForm',['$scope','$http','$timeout','$window','path','state',
+    function($scope,$http,$timeout,$window,path,state){
   $scope.msg = '';
   $scope.msgClasses = 'fade right';
   var timeOut = null;
   $scope.entrar = function(){
     $http
-      .post( context.services+ '/seguranca/login', { login: $scope.login, senha: $scope.senha } )
+      //.post( context.services+ '/seguranca/login', { login: $scope.login, senha: $scope.senha } )
+      .post( path('s','/seguranca/login'), { login: $scope.login, senha: $scope.senha } )
       .then(function(data){
         $timeout.cancel( timeOut );
         data = data.data;
