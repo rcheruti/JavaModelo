@@ -5,7 +5,7 @@ import br.eng.rcc.framework.utils.BuscaInfo;
 import java.util.List;
 
 /**
- * Essa interface é usada por ... para permitir que o programador
+ * Essa interface é usada para permitir que o programador
  * tenha uma chance de adicionar restrições as buscas do banco.
  * 
  * Esses métodos serão executados após ... fazer as configurações

@@ -1,16 +1,15 @@
 
 window.Module = angular.module('Module',['ngAnimate','ngTouch','ngRoute','ui.router','JavaModelo']);
 
-Module.config(['contextProvider','HostInterProvider',
-    function(contextProvider, HostInterProvider ){
+Module.config(['pathProvider','HostInterProvider',
+    function(pathProvider, HostInterProvider ){
   
-  //EntidadesProvider.defaults.cacheTimeout["POST/tipo"] = 5000 ;
   //UsuarioProvider.carregarAoIniciar = false;
   
-  HostInterProvider.ativo = !!'@@hostInter'; // trocado por "grunt:replace"
   HostInterProvider.url = '@@hostInter'; // trocado por "grunt:replace"
+  HostInterProvider.ativo = HostInterProvider.url? true : false;
   
-  contextProvider.services('/s');
-  contextProvider.websocket('/websocket');
+  pathProvider.servico = '/s';
+  pathProvider.websocket = '/websocket';
   
 }]);

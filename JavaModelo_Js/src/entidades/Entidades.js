@@ -385,12 +385,12 @@ Module.provider('Entidades',[function(){
   this.defaults = defaults;
   var that = this;
   
-  this.$get = ['context','$http','$q',function(context,inj$http, inj$q){
+  this.$get = ['path','$http','$q',function(path,inj$http, inj$q){
     
     $http = inj$http;
     $q = inj$q;
 
-    that.defaults.url = context.root+ that.defaults.url;
+    that.defaults.url = path('root','') + that.defaults.url;
     var ref = {
       query: function( ent ){
         if( typeof ent === 'string' ) ent = ref.entidade(ent);

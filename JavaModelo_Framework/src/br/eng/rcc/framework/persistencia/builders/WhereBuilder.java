@@ -6,6 +6,7 @@ import java.sql.Time;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Path;
@@ -33,9 +34,10 @@ public class WhereBuilder {
   }
 
 
-  public static Predicate[] build(CriteriaBuilder cb, Root root, String[][] arr) {
+  public static Predicate[] build(CriteriaBuilder cb, Root root, List<String[]> arr) {
+    if( arr == null || arr.isEmpty() ) return new Predicate[0];
     int len = 0;
-    Predicate[] preds = new Predicate[arr.length];
+    Predicate[] preds = new Predicate[arr.size()];
     for (String[] vet : arr) {
       if (vet == null
               || vet[0] == null

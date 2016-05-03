@@ -34,9 +34,6 @@ import br.eng.rcc.framework.interfaces.IUsuario;
 @RequestScoped
 public class LoginService {
   
-  // 
-  private String cookieName = "";
-  
   @Inject 
   private EntityManager em;
   @Inject
@@ -102,7 +99,11 @@ public class LoginService {
 
       Credencial c = credenciais.get(0);
       SegUsuario u = c.getUsuario();
-
+      
+      if( c.getBloqueado() ){
+        throw new MsgException("O seu usuário está bloqueado!");
+      }
+      
       HttpSession session = req.getSession();
       session.setAttribute(IUsuario.USUARIO_KEY, u.clone() ); 
       

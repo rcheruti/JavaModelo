@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import br.eng.rcc.framework.interfaces.IUsuario;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.seguranca.entidades.ChaveAcesso;
+import br.eng.rcc.framework.seguranca.entidades.SegUsuario;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -96,6 +97,26 @@ public class UsuarioServicoImpl extends UsuarioServico{
   @Override
   public boolean checkLogin(){
     return checkLogin(false);
+  }
+  
+  
+  @Override
+  public SegUsuario getUsuario(){
+    SegUsuario u = (SegUsuario)super.getUsuario();
+    if( u == null ){
+      if( this.req.getCookies() != null ) for( Cookie cookie : this.req.getCookies() ){
+        if( !cookie.getName().equals( Configuracoes.loginCookieName ) )continue;
+        List<ChaveAcesso> oo = em.createQuery("SELECT x FROM ChaveAcesso x WHERE x.chave = :chave")
+                .setParameter("chave", cookie.getValue())
+                .setMaxResults(1)
+                .getResultList();
+        if( oo.size() > 0 ){
+          u = oo.get(0).getCredencial().getUsuario().clone();
+          this.req.getSession().setAttribute( IUsuario.USUARIO_KEY , u );
+        }
+      }
+    }
+    return u;
   }
   
 }

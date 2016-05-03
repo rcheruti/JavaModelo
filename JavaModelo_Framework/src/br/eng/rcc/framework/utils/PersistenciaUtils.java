@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -154,21 +155,19 @@ public class PersistenciaUtils {
       if( node.has("id") ) busca.id = node.get("id").booleanValue();
       if( node.has("acao") ) busca.acao = (byte)node.get("acao").intValue();
       if( node.has("join") && node.get("join").isArray() ){
-        List<String> arr = new ArrayList<>();
-        for( JsonNode nodeStr : node.get("join") ) arr.add( nodeStr.asText() );
-        busca.join = arr.toArray(new String[0]);
+        busca.join = new ArrayList<>();
+        for( JsonNode nodeStr : node.get("join") ) busca.join.add( nodeStr.asText() );
       }
       if( node.has("order") && node.get("order").isArray() ){
-        List<String> arr = new ArrayList<>();
-        for( JsonNode nodeStr : node.get("order") ) arr.add( nodeStr.asText() );
-        busca.order = arr.toArray(new String[0]);
+        busca.order = new ArrayList<>();
+        for( JsonNode nodeStr : node.get("order") ) busca.order.add( nodeStr.asText() );
       }
       
       if( node.has("where") ) busca.where = PersistenciaUtils.parseQueryString( node.get("where").asText() );
       
-      if( busca.join == null ) busca.join = new String[0];
-      if( busca.order == null ) busca.order = new String[0];
-      if( busca.where == null ) busca.where = new String[0][];
+      if( busca.join == null ) busca.join = new ArrayList<>();
+      if( busca.order == null ) busca.order = new ArrayList<>();
+      if( busca.where == null ) busca.where = new ArrayList<>();
       
       buscas.add(busca);
     }
@@ -183,10 +182,9 @@ public class PersistenciaUtils {
    * @param uriQuery
    * @return
    */
-  public static String[][] parseQueryString(String uriQuery) {
+  public static List<String[]> parseQueryString(String uriQuery) {
     // Interpretando "Query String" (parâmetros de busca no banco [WHERE])
-    int qI = 0, qLimit = 30;
-    String[][] querysPs = new String[qLimit][];
+    List<String[]> querysPs = new ArrayList<>(  );
     if (uriQuery != null) {
       Matcher m = queryStringPattern.matcher(uriQuery);
       while (m.find()) {
@@ -204,12 +202,10 @@ public class PersistenciaUtils {
         }
 
         String[] params = {attr, comp, valor, opComp, isValor ? "" : null};
-        querysPs[qI++] = params;
+        querysPs.add( params );
       }
     }
-    String[][] resQueryPs = new String[qI][];
-    System.arraycopy(querysPs, 0, resQueryPs, 0, qI);
-    return resQueryPs;
+    return querysPs;
   }
   
   

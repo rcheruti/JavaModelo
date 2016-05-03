@@ -253,9 +253,9 @@ public class EntidadesService {
     
     // O resultado
     List<Object> res = q.getResultList();
-    PersistenciaUtils.resolverLazy(cache, res.toArray(), false, info.join );
+    PersistenciaUtils.resolverLazy(cache, res.toArray(), false, info.join.toArray(new String[0]) );
     this.em.clear();
-    PersistenciaUtils.resolverLazy(cache, res.toArray(), true, info.join );
+    PersistenciaUtils.resolverLazy(cache, res.toArray(), true, info.join.toArray(new String[0]) );
 
     return res;
   }
@@ -308,9 +308,9 @@ public class EntidadesService {
       em.persist(obj);
     }
     this.em.flush();
-    PersistenciaUtils.resolverLazy(cache, objs.toArray(), false, info.join );
+    PersistenciaUtils.resolverLazy(cache, objs.toArray(), false, info.join.toArray(new String[0]) );
     this.em.clear();
-    PersistenciaUtils.resolverLazy(cache, objs.toArray(), true, info.join );
+    PersistenciaUtils.resolverLazy(cache, objs.toArray(), true, info.join.toArray(new String[0]) );
     
     return objs;
   }
@@ -469,8 +469,8 @@ public class EntidadesService {
   
   //============================================================================
   
-  public void addOrderBy(CriteriaBuilder cb, CriteriaQuery query, String[] orders) {
-    if (orders.length < 1) {
+  public void addOrderBy(CriteriaBuilder cb, CriteriaQuery query, List<String> orders) {
+    if (orders.size() < 1) {
       return;
     }
     Root root = (Root) query.getRoots().iterator().next();
@@ -495,6 +495,15 @@ public class EntidadesService {
   
   private Optional chamarBusca( BuscaInfo busca, IChamadaBusca metodo ){
     Object ooo = null;
+    
+    checker.check( busca.classe, 
+              busca.acao == BuscaInfo.ACAO_BUSCAR ? Seguranca.SELECT
+              : busca.acao == BuscaInfo.ACAO_CRIAR ? Seguranca.INSERT
+              : busca.acao == BuscaInfo.ACAO_EDITAR ? Seguranca.UPDATE
+              : busca.acao == BuscaInfo.ACAO_DELETAR ? Seguranca.DELETE
+                      : 0
+            );
+    
     if( busca.id ){
       List lista = new ArrayList<>(); // para resposta em lista ;
       int resp = 0; // para respostas em número
@@ -508,14 +517,13 @@ public class EntidadesService {
       ArrayNode dataArray = busca.data;
       for( JsonNode node : dataArray ){
         if( node == null || !node.isObject() ) continue;
-        busca.where = new String[ ids.size() ][];
-        int i = 0;
+        busca.where = new ArrayList<>( ids.size() + 1 );
         for( String idAttr : ids ){
           String[] idS = idAttr.split("\\.");
           JsonNode prop = node;
           for( String s : idS ) prop = prop.get(s);
           if( prop == null ) continue;
-          busca.where[i++] = new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" };
+          busca.where.add( new String[]{ idAttr, prop.isNull()?"isnull":"=", prop.asText(), "&" } );
         }
         
         ArrayNode arr = new ArrayNode(JsonNodeFactory.instance);

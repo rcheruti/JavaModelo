@@ -11,7 +11,7 @@ Module.provider('HostInter',[function(){
   provider.ativo = false;
   provider.url = '';
 
-  provider.$get = ['context',function(context){
+  provider.$get = [function(){
 
     var ref = {
       request:function( request ){

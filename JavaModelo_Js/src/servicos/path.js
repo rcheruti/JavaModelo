@@ -10,9 +10,10 @@
     
     that.hasHost = false;
     
-    that.root = '';
-    that.servico = '';
-    that.websocket = '';
+    that.root = '/';
+    that.servico = '/';
+    that.websocket = '/';
+    that.persistencia = '/persistencia';
     
     
     this.$get = ['$window',function($window){
@@ -45,14 +46,16 @@
       that.r = that.root;
       that.s = that.servico;
       that.ws = that.websocket;
+      that.p = that.persistencia;
       
-      console.log( 'path:this,pathProvider:this', this, that );
+      //console.log( 'path:this,pathProvider:this', this, that );
       
       
-      var pathFunc = function( pathName, path ){
+      var pathFunc = function( pathName, path, fullPath ){
         if( !pathName ) pathName = 'r';
-        var str = that.context+that[pathName] + path ;
-        if( that.hasHost ){
+        if( !path ) path = '';
+        var str = (that.context+that[pathName] + path).replace(/\/+/g,'/') ;
+        if( that.hasHost || fullPath ){
           str = that.protocol + (that.host+':'+that.port+str).replace(/\/+/g,'/');
         }
         return str;

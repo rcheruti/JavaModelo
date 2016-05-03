@@ -132,8 +132,8 @@ public class UtilsDownloadExcel {
       }
     }
     if( joins.size() > 0 ){
-      joins.addAll( Arrays.asList(clone.join) );
-      clone.join = joins.toArray(new String[0]);
+      joins.addAll( clone.join );
+      clone.join = joins;
     }
     List<Object> lista = (List<Object>)entServ.processar(clone);
     

@@ -22,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 public class SegurancaFiltro implements Filter{
   
   private Pattern pattern;
-  private String redirectPage;
   
   @Inject
   private UsuarioServico usuarioService;
@@ -33,7 +32,6 @@ public class SegurancaFiltro implements Filter{
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
     pattern = Pattern.compile( Configuracoes.segurancaRegExp );
-    redirectPage = Configuracoes.loginPath;
     mapper = new JacksonObjectMapperContextResolver().getContext(null);
   }
 
@@ -67,7 +65,8 @@ public class SegurancaFiltro implements Filter{
         mapper.writeValue(resp.getOutputStream(), res);
         return;
       }
-      resp.sendRedirect( req.getContextPath()+redirectPage );
+      req.getRequestDispatcher( Configuracoes.loginPath ).forward(request, response);
+      //resp.sendRedirect( req.getContextPath() + Configuracoes.loginPath );
       return; 
     }
     

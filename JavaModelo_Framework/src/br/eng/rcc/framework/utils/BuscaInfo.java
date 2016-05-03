@@ -2,7 +2,9 @@ package br.eng.rcc.framework.utils;
 
 import br.eng.rcc.framework.config.Configuracoes;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Esta classe é usada para guadar as informações de uma requisição
@@ -39,14 +41,14 @@ public class BuscaInfo implements Cloneable{
    * A lista dos atributos que devem ser carregados para a resposta, que
    * provavelmente são <b>"Lazy"</b>.
    */
-  public String[] join;
+  public List<String> join;
   /**
    * A lista de Strings que serão usadas para fazer a ordenação.
    * <br><br>
    * Pode estar nos formatos: <b>"attr"</b>, <b>"attr ASC"</b> ou <b>"attr
    * DESC"</b>
    */
-  public String[] order;
+  public List<String> order;
   /**
    * Query String dessa busca, já interpretada.
    * <br><br>
@@ -61,7 +63,7 @@ public class BuscaInfo implements Cloneable{
    * ]
    * </pre>
    */
-  public String[][] where;
+  public List<String[]> where;
   /**
    * Nome simples da classe dessa entidade, como a JPA mapeia as entidades.
    */
@@ -128,11 +130,11 @@ public class BuscaInfo implements Cloneable{
     x.page = this.page;
     x.entidade = this.entidade;
     x.id = this.id;
-    x.join = Arrays.copyOf(this.join, this.join.length);
-    x.order = Arrays.copyOf(this.order, this.order.length);
-    x.where = new String[ this.where.length ][];
-    for( int i = 0; i < this.where.length; i++ )
-      x.where[i] = Arrays.copyOf( this.where[i] , this.where[i].length );
+    x.join = new ArrayList<>(this.join);
+    x.order = new ArrayList<>(this.order);
+    x.where = new ArrayList<>( this.where.size()+1 );
+    for( int i = 0; i < this.where.size(); i++ )
+      x.where.add( Arrays.copyOf( this.where.get(i) , this.where.get(i).length ) );
     x.data = this.data.deepCopy();
     return x;
   }

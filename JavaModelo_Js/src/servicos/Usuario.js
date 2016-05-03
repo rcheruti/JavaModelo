@@ -26,12 +26,12 @@
   });
   
   //=========================================================================
-  Module.run(['context','$http',function(context,$http){
+  Module.run(['path','$http',function(path,$http){
     promise.recarregar = function(){
       if( promise._recarregar ) return promise;
       promise.$$state.status = 0;
       promise._recarregar = true;
-      $http.get(context.services +'/seguranca/usuario').then(function(data){
+      $http.get( path('servico','/seguranca/usuario') ).then(function(data){
         if( data.data.codigo === 200 && data.data.data ) resolve( data.data.data );
         else reject( {} );
       },function(err){

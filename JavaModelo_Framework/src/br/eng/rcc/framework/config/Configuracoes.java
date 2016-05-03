@@ -40,7 +40,7 @@ public class Configuracoes {
    * o usuário para a página configurada em {@link indexPath}.
    */
   public static String rewriteRegExp = 
-      "(?i:^/?(s/|css/|js/|img/|index.html|login.html|index.jsp|login.jsp|persistencia/context|exportar|.*\\.js$|.*\\.css$))" ;
+      "(?i:^/?(s/|css/|js/|img/|persistencia/context|exportar|utils|.*\\.js$|.*\\.css$|$))" ;
   
   /**
    * Expressão Regular que será usada por {@link SegurancaFiltro} proteger o sistema de tentativas
@@ -50,7 +50,7 @@ public class Configuracoes {
    * {@link loginPath}.
    */
   public static String segurancaRegExp = 
-      "(?i:^/?(?:img|css|js|s/seguranca/login|login.html|login.jsp|persistencia/context|.*\\.js$|.*\\.css$))" ;
+      "(?i:^/?(?:img/|css/|js/|s/seguranca/login|persistencia/context|utils|.*\\.js$|.*\\.css$))" ;
   
   
   /**
@@ -63,7 +63,7 @@ public class Configuracoes {
    * Endereço da página inicial do sistema, após o login ser efetuado.
    * (Atenção: não incluir o Contexto do sistema nesse valor)
    */
-  public static String indexPath = "/index.html";
+  public static String indexPath = "/";
   
   /**
    * Nome do script de criptografia que será passado para o "Apache Codec Commons" para fazer a 
@@ -100,7 +100,7 @@ public class Configuracoes {
    * Informa se é necessário fazer a criptografia das senhas dos usuários.
    * (Atenção: apenas configure esta opção durante testes!)
    */
-  public static boolean criptografiaAtivo = false;
+  public static boolean criptografiaAtivo = true;
   
   
   

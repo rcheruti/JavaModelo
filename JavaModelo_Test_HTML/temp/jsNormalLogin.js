@@ -417,30 +417,26 @@ function __construirSetter( pro, nomeFunc, nomeAttr, defaultVal ){
 
 var Module = angular.module('JavaModelo',['ng','ui.router']);
 
-var urlContext = 'persistencia/context',
-    hiProvider = null,
-    ctxProvider = null;
+var urlContext = '/context',
+    pProvider = null,
+    hiProvider = null;
   
 Module.run(['$templateCache','$rootElement',  'path',
     function($templateCache,$rootElement,  path){
   
-  console.log( 'Testando path', path );
-  console.log( "path('servico','persistencia')", path('servico','persistencia') );
-  
+  console.log( 'HostInterProvider em .run', hiProvider );
   if( !hiProvider.ativo ){
     // Pegar o context;
-    var url = urlContext;
+    var url = path('p', urlContext );
     var xhttp = new XMLHttpRequest();
-    xhttp.withCredentials = true;
+    //xhttp.withCredentials = true;
     xhttp.onreadystatechange = function() {
       if (xhttp.readyState === 4 && xhttp.status === 200) {
-        //console.log( 'novo context', xhttp.responseText );
-        window.contextRoot = xhttp.responseText;
+        pProvider.context = xhttp.responseText;
       }
     };
     xhttp.open("GET", url, false);
     xhttp.send();
-    ctxProvider.root( window.contextRoot );
   }else{
     var scripts = $rootElement[0].querySelectorAll('script[type="text/ng-template"]');
     var url = hiProvider.url.replace(/\/$/,'');
@@ -451,14 +447,17 @@ Module.run(['$templateCache','$rootElement',  'path',
     }
   }
   
+  console.log( 'Testando path', path );
+  console.log( "path('servico','persistencia')", path('servico','/persistencia') );
+  console.log( "path('persistencia','context')", path('persistencia','/context') );
   
   
 }]);
   
   // Configuração dos interceptadores desse módule
-Module.config(['$httpProvider','contextProvider','HostInterProvider', 'pathProvider',
+Module.config(['$httpProvider','HostInterProvider', 'pathProvider',
           //'$compileProvider','$logProvider',
-        function($httpProvider,contextProvider, HostInterProvider , pathProvider
+        function($httpProvider,HostInterProvider , pathProvider
           //,$compileProvider,$logProvider
             ){
             
@@ -466,13 +465,7 @@ Module.config(['$httpProvider','contextProvider','HostInterProvider', 'pathProvi
   //$compileProvider.debugInfoEnabled( true );
   //$logProvider.debugEnabled( true );
   
-  //HostInterProvider.ativo = true;
-  //HostInterProvider.url = 'http://127.0.0.1:8080';
-  
-  pathProvider.host = 'https://www.aqui.com.br:9090/Depois';
-  pathProvider.servico = '/servicos';
-  
-  ctxProvider = contextProvider;
+  pProvider = pathProvider;
   hiProvider = HostInterProvider;
   
   $httpProvider.interceptors.push( 'LoginInter' );
@@ -941,12 +934,12 @@ Module.provider('Entidades',[function(){
   this.defaults = defaults;
   var that = this;
   
-  this.$get = ['context','$http','$q',function(context,inj$http, inj$q){
+  this.$get = ['path','$http','$q',function(path,inj$http, inj$q){
     
     $http = inj$http;
     $q = inj$q;
 
-    that.defaults.url = context.root+ that.defaults.url;
+    that.defaults.url = path('root','') + that.defaults.url;
     var ref = {
       query: function( ent ){
         if( typeof ent === 'string' ) ent = ref.entidade(ent);
@@ -1096,58 +1089,6 @@ Module.provider('Entidades',[function(){
   }]);
   
 })();
-Module.filter('',['Usuario',function(Usuario){
-  
-  var grupos = {};
-  Usuario.then(function( u ){
-    if (!u) return;
-
-    if (u.credencial) {
-      if (u.credencial.grupos) {
-        for (var gK in u.credencial.grupos) {
-          var g = u.credencial.grupos[gK];
-          var gNome = g.chave.trim();
-          if (!grupos[gNome]) grupos[gNome] = g;
-        }
-      }
-    }
-  });
-  
-  return function( str ){
-    return !!grupos[ str ];
-  };
-}]);
-Module.filter('hasPermissao',['Usuario',function(Usuario){
-  
-  var permissoes = {};
-  Usuario.then(function(u){
-    if (!u) return;
-
-    if (u.credencial) {
-      if (u.credencial.grupos) {
-        for (var gK in u.credencial.grupos) {
-          var g = u.credencial.grupos[gK];
-          if (!g.permissoes) continue;
-          for (var pK in g.permissoes) {
-            var p = g.permissoes[pK];
-            var pNome = p.nome.trim();
-            if (!permissoes[pNome]) permissoes[pNome] = p;
-          }
-        }
-        for (var pK in u.credencial.permissoes) {
-          var p = u.credencial.permissoes[pK];
-          var pNome = p.nome.trim();
-          if (!permissoes[pNome])
-            permissoes[pNome] = p;
-        }
-      }
-    }
-  });
-  
-  return function( str ){
-    return !!permissoes[ str ];
-  };
-}]);
 Module.provider('HostInter',[function(){
       /**
        * Interceptador para resirecionar as requisições para outro
@@ -1161,7 +1102,7 @@ Module.provider('HostInter',[function(){
   provider.ativo = false;
   provider.url = '';
 
-  provider.$get = ['context',function(context){
+  provider.$get = [function(){
 
     var ref = {
       request:function( request ){
@@ -1187,7 +1128,7 @@ Module.provider('LoginInter',[function(state){ // '$state'
   provider.ativo = true;
   provider.ERRORCODE_LOGIN = 401 ;
 
-  provider.$get = ['context','$window',function(context,$window){
+  provider.$get = ['path','$window',function(path,$window){
     /**
      * Esse interceptador redireciona o usuário para a página de login
      * caso o servidor informe o código de erro de usuário não logado.
@@ -1206,7 +1147,7 @@ Module.provider('LoginInter',[function(state){ // '$state'
               //state.go( provider.state );
             }else{
               var origin = $window.location.origin ;
-              $window.location = origin + context.root + provider.url ;
+              $window.location = origin + path('root','') + provider.url ;
             }
           }
         }
@@ -1246,12 +1187,12 @@ Module.provider('LoginInter',[function(state){ // '$state'
   });
   
   //=========================================================================
-  Module.run(['context','$http',function(context,$http){
+  Module.run(['path','$http',function(path,$http){
     promise.recarregar = function(){
       if( promise._recarregar ) return promise;
       promise.$$state.status = 0;
       promise._recarregar = true;
-      $http.get(context.services +'/seguranca/usuario').then(function(data){
+      $http.get( path('servico','/seguranca/usuario') ).then(function(data){
         if( data.data.codigo === 200 && data.data.data ) resolve( data.data.data );
         else reject( {} );
       },function(err){
@@ -1268,76 +1209,6 @@ Module.provider('LoginInter',[function(state){ // '$state'
 
 
 
-Module.provider('context',[function(){
-    
-    var provider = this;
-    
-    /**
-     * 
-     * @param {string} url The context url string, defaults to '' (empty string)
-     * @param {boolean} prefixItRoot If that url needs to start with '/' char, defaults to TRUE
-     * @param {boolean} sufixIt If that url needs to end with '/' char, defaults to FALSE
-     * @returns {string} The actual context url string
-     */
-    function _context(url, prefixItRoot, sufixIt){
-        if( !url ) return '';
-        if( !(typeof url === 'string') ) throw 'To configure the context url string you must pass a string as the first parameter value.';
-        if( typeof prefixItRoot === 'undefined' ) prefixItRoot = true; // Defaults to true
-        url = url.trim();
-        
-        if( prefixItRoot ){ if( url.indexOf('/') !== 0 ) url = '/'+url; }
-        else{ if( url.indexOf('/') === 0 ) url = url.substring(1,url.length); }
-        
-        if( sufixIt ){ if( url.lastIndexOf('/') !== url.length-1 ) url = url+'/'; }
-        else{ if( url.lastIndexOf('/') === url.length-1 ) url = url.substring(0,url.length-1); }
-        
-        return corrigirUrl(url);
-    };
-    var _funcs = {
-      root: function(/*, params _context */){
-        provider.context.root = 'x'; // necessário!
-        provider.context.root = _context.apply(this, arguments);
-        provider.context.services = corrigirUrl( provider.context.root + provider.context.path.services );
-        provider.context.websocket = corrigirUrl( provider.context.root + provider.context.path.websocket );
-        return provider ;
-      } ,
-      services: function(/*, params _context */){
-        provider.context.services = corrigirUrl( 
-          provider.context.root + 
-          (provider.context.path.services = _context.apply(this, arguments) )
-          );
-        return provider ;
-      } ,
-      websocket: function(/*, params _context */){
-        provider.context.websocket = corrigirUrl( 
-          provider.context.root + 
-          (provider.context.path.websocket = _context.apply(this, arguments) )
-          );
-        return provider ;
-      } ,
-      put: function(nome /*, params _context */){
-        provider.context[nome] = _context.call(this, arguments[1], arguments[2], arguments[3]);
-        return provider ;
-      },
-      context: { root: '', path: {} }
-    };
-    angular.extend( this, _funcs );
-    
-    function corrigirUrl(str){
-      str = str.trim().replace(/\/\/+/g,'/');
-      if( !provider.context.root ){
-        str = str.replace(/^\s*\//,'');
-      }
-      return str;
-    }
-    
-    this.$get = [function(){
-      
-      return provider.context;
-    }];
-    
-}]);
-
 (function(){
   
   Module.provider('path',[function(){
@@ -1350,9 +1221,10 @@ Module.provider('context',[function(){
     
     that.hasHost = false;
     
-    that.root = '';
-    that.servico = '';
-    that.websocket = '';
+    that.root = '/';
+    that.servico = '/';
+    that.websocket = '/';
+    that.persistencia = '/persistencia';
     
     
     this.$get = ['$window',function($window){
@@ -1385,14 +1257,16 @@ Module.provider('context',[function(){
       that.r = that.root;
       that.s = that.servico;
       that.ws = that.websocket;
+      that.p = that.persistencia;
       
-      console.log( 'path:this,pathProvider:this', this, that );
+      //console.log( 'path:this,pathProvider:this', this, that );
       
       
-      var pathFunc = function( pathName, path ){
+      var pathFunc = function( pathName, path, fullPath ){
         if( !pathName ) pathName = 'r';
-        var str = that.context+that[pathName] + path ;
-        if( that.hasHost ){
+        if( !path ) path = '';
+        var str = (that.context+that[pathName] + path).replace(/\/+/g,'/') ;
+        if( that.hasHost || fullPath ){
           str = that.protocol + (that.host+':'+that.port+str).replace(/\/+/g,'/');
         }
         return str;
@@ -1417,49 +1291,37 @@ Module.provider('context',[function(){
 
 window.Module = angular.module('Module',['ngAnimate','ngTouch','ngRoute','ui.router','JavaModelo']);
 
-Module.config(['contextProvider','HostInterProvider',
-    function(contextProvider, HostInterProvider ){
+Module.config(['pathProvider','HostInterProvider',
+    function(pathProvider, HostInterProvider ){
   
-  //EntidadesProvider.defaults.cacheTimeout["POST/tipo"] = 5000 ;
   //UsuarioProvider.carregarAoIniciar = false;
   
-  HostInterProvider.ativo = !!'@@hostInter'; // trocado por "grunt:replace"
   HostInterProvider.url = '@@hostInter'; // trocado por "grunt:replace"
+  HostInterProvider.ativo = HostInterProvider.url? true : false;
   
-  contextProvider.services('/s');
-  contextProvider.websocket('/websocket');
+  pathProvider.servico = '/s';
+  pathProvider.websocket = '/websocket';
   
 }]);
 
 
-
-Module.controller('LoginForm',['$scope','$http','$timeout','$window','context','$state',
-    function($scope,$http,$timeout,$window,context,state){
+Module.controller('LoginForm',['$scope','$http','$timeout','path','$window',
+    function($scope,$http,$timeout,path,$window){
   $scope.msg = '';
   $scope.msgClasses = 'fade right';
   var timeOut = null;
-  
-  
-  $scope.cancelar = function(){
-    $scope.login = '';
-    $scope.senha = '';
-  };
-  $scope.keydown = function( ev ){
-    if( ev.which === 13 )$scope.entrar();
-  };
   $scope.entrar = function(){
     $http
-      .post( context.services+ '/seguranca/login', { login: $scope.login, senha: $scope.senha } )
+      //.post( context.services+ '/seguranca/login', { login: $scope.login, senha: $scope.senha } )
+      .post( path('s','/seguranca/login'), { login: $scope.login, senha: $scope.senha } )
       .then(function(data){
         $timeout.cancel( timeOut );
         data = data.data;
         if(data.status){
           $scope.msg = data.msg ;
           $scope.msgClasses = '';
-          timeOut = $timeout(function(){ 
-            var url = $window.location.origin + context.root ;
-            $window.location = url;
-            //state.go('index');
+          timeOut = $timeout(function(){
+            $window.location = path();
           }, 1000);
         }else{
           $scope.msgClasses = '';

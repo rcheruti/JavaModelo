@@ -1,7 +1,6 @@
 package br.eng.rcc.framework.seguranca.anotacoes;
 
 import br.eng.rcc.framework.interfaces.SegurancaPersistenciaInterceptador;
-import br.eng.rcc.framework.seguranca.predicados.NullSupplier;
 import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -9,9 +8,6 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import javax.enterprise.util.Nonbinding;
-import javax.interceptor.InterceptorBinding;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Esta é a anotação de segurança.

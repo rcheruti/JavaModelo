@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import br.eng.rcc.framework.interfaces.IUsuario;
 import br.eng.rcc.framework.interfaces.SegurancaPersistenciaInterceptador;
 import br.eng.rcc.framework.utils.BuscaInfo;
+import br.eng.rcc.framework.utils.CdiUtils;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -59,13 +60,6 @@ public class SegurancaServico {
    * @param grupoK Nome do grupo que será checado.
    */
   public void check(String valor, String grupoK) {
-    if (  (valor == null || Seguranca.emptyString.equals(valor)) && 
-          (grupoK == null || Seguranca.emptyString.equals(grupoK))
-        ){
-      return;
-      //throw new MsgException(JsonResponse.ERROR_PERMISSAO, null, "Uma chave de segurança não pode ser nula!");
-    }
-
     try {
       IUsuario usuario = uServico.getUsuario();
       if (usuario == null) {
@@ -140,6 +134,7 @@ public class SegurancaServico {
     for (Seguranca s : lista) {
       try {
         check(s, mode);
+        return;
       } catch (MsgException ex) {
         if (ex.getCodigo() == JsonResponse.ERROR_DESLOGADO) {
           throw ex;
@@ -156,6 +151,7 @@ public class SegurancaServico {
       ( (mode & Seguranca.UPDATE) != 0 && s.update() ) ||
       ( (mode & Seguranca.DELETE) != 0 && s.delete() )
         ){
+      System.out.printf("---  Segurança: %s, Grupo: %s \n",  s.value(), s.grupo()  );
       this.check( s.value(), s.grupo() );
     }
   }
@@ -185,7 +181,9 @@ public class SegurancaServico {
         for( Seguranca s : lista ){
           for( Class<? extends SegurancaPersistenciaInterceptador> spiX : s.filters() ){
             try{
-              spi.add( spiX.newInstance() );
+              SegurancaPersistenciaInterceptador inter = CdiUtils.getBean(spiX);
+              if( inter == null ) inter = spiX.newInstance();
+              spi.add( inter );
             }catch(InstantiationException | IllegalAccessException ex){
               throw new MsgException(JsonResponse.ERROR_DESCONHECIDO, ex.getMessage(), ex);
             }
