@@ -1,0 +1,173 @@
+<script type="text/ng-template" id="carro.html">
+
+<div class="carro" ng-controller="Carro">
+  
+  <button ng-click="exportarCarros()">
+    Exportar carros (excel)
+  </button>
+  
+  <div class="form">
+    <input ng-model="carro.nome" placeholder="Nome">
+    
+    <br>
+    <input ng-model="carro.portas.cor" placeholder="Cor da porta">
+    
+    <br>
+    <br>
+    <select ng-options="c.nome for c in cores" ng-model="carro.cores">
+      <option value="">--------------</option>
+    </select>
+    
+    <br>
+    <br>
+    <input ng-model="carro.valor.valor" placeholder="Valor">
+    
+    <br>
+    <br>
+    <button ng-click="postCarro()">Gravar</button>
+  </div>
+  
+  
+  <div>
+    <div class="titulo">Cores</div>
+    <ul>
+      <li ng-repeat="x in cores">{{ x.nome}} ({{ x.rgb}}) [{{ x.hex}}]</li>
+    </ul>
+  </div>
+  
+  <div >
+    <div class="titulo">Carros:</div>
+    <ul>
+      <li ng-repeat="c in coisas.carros">
+        <button ng-click="deleteCarro(c)">Deletar</button>
+        <span>{{ c.nome}} [ID: {{ c.id }}]</span>
+        <span> (criado em: "{{ c.registroUsuario.atualizacao }}")</span>
+        
+        <br/>
+        <span>- Valor: {{ c.valor.valor }}</span>
+        
+        <br/>
+        <span>- Cores:</span>
+        <ul>
+          <li ng-repeat="x in c.cores">{{ x.nome}} ({{ x.rgb}}) [{{ x.hex}}]</li>
+        </ul>
+        
+        <span>- Portas:</span>
+        <ul>
+          <li ng-repeat="x in c.portas">
+            <span>Cor: {{ x.cor }}</span>
+            <br/>
+            <span>- Janelas:</span>
+            <ul>
+              <li ng-repeat="j in x.janelas">{{ j.id }}, janela elétrica: {{ j.eletrica }}</li>
+            </ul>
+          </li>
+        </ul>
+        
+      <br/><br/>
+      </li>
+    </ul>
+      
+  </div>
+  
+</div></script>
+<script type="text/ng-template" id="index.html">
+<div class="homePage">
+  <div class="menu" ng-controller="Menu">
+    <button ng-click="logout()">Logout</button>
+    <span>{{ logoutMsg }}</span>
+    <a ui-sref="carro">Carros</a>
+    <a ui-sref="tipo">Tipos</a>
+    <a ui-sref="tipoMany">Tipos Many</a>
+  </div>
+
+  <h1>Hello World!</h1>
+
+  <div ui-view="conteudo"></div>
+</div>
+</script>
+<script type="text/ng-template" id="janela.html">
+
+<div class="carro" ng-controller="Janela">
+  
+  <div class="form">
+    
+    <div>Janelas com portas:</div>
+    <div ng-repeat="x in janelasPortas">ID: {{ x.id }}</div>
+    
+    <br/><br/>
+    <div>Janelas sem portas:</div>
+    <div ng-repeat="x in janelasSemPortas">ID: {{ x.id }}</div>
+    
+  </div>
+  
+  
+  
+</div></script>
+<script type="text/ng-template" id="login.html">
+<div class="loginForm" ng-controller="LoginForm">
+  <label>
+    <span>Login</span>
+    <input ng-model="login"/>
+  </label>
+
+  <br/><br/>
+
+  <label>
+    <span>Senha</span>
+    <input ng-model="senha" type="password"/>
+  </label>
+
+  <br/><br/>
+
+  <button type="button" ng-click="entrar()">Log in</button>
+  <br/><br/>
+
+  <div class="msg trans" ng-class="msgClasses">{{ msg }}</div>
+</div></script>
+<script type="text/ng-template" id="tipo.html"><div class="tipo" ng-controller="Tipo">
+  
+  <form class="form">
+    <label>
+      <input type="checkbox" ng-model="override" />
+      Override
+    </label>
+    
+    <br/><br/>
+    <div ng-repeat="x in entidadeLista | orderBy:x">
+      <label>
+        <input type="radio" name="ent" ng-model="$parent.entidade" ng-value="x" 
+               ng-change="mostrarTipo(x)"/>
+        {{ x }}
+      </label>
+    </div>
+  </form>
+  
+  <div>Override: "{{ override }}"</div>
+  <div>Tipo da entidade: "{{ entidade }}"</div>
+  <pre>{{ tipo | json }}</pre>
+  
+</div></script>
+<script type="text/ng-template" id="tipoMany.html"><div class="tipoMany" ng-controller="TipoMany">
+  
+  <form class="form">
+    <label>
+      <input type="checkbox" ng-model="override" />
+      Override
+    </label>
+    
+    <br/><br/>
+    <div ng-repeat="x in entidadeLista | orderBy:x">
+      <label>
+        <input type="checkbox" ng-model="entidade"  
+               ng-change="mostrarTipo($index)"/>
+        {{ x }}
+      </label>
+    </div>
+  </form>
+  
+  <div>Override: "{{ override }}"</div>
+  <div>Tipo da entidade: "{{ entidade }}"</div>
+  <pre>{{ tipo | json }}</pre>
+  
+</div></script>

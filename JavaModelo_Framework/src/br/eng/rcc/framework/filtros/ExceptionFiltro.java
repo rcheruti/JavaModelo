@@ -1,30 +1,27 @@
 package br.eng.rcc.framework.filtros;
 
+import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
-import br.eng.rcc.framework.jaxrs.JsonResponseWriter;
 import br.eng.rcc.framework.jaxrs.MsgException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.ws.rs.core.MediaType;
 
 public class ExceptionFiltro implements Filter {
-
-  @Inject
-  private JsonResponseWriter writer;
+  
+  private ObjectMapper mapper;
 
   //======================================================
   @Override
   public void init(FilterConfig fc) throws ServletException {
-
+    mapper = new JacksonObjectMapperContextResolver().getContext(null);
   }
 
   @Override
@@ -34,15 +31,11 @@ public class ExceptionFiltro implements Filter {
       fc.doFilter(sr, sr1);
     } catch (MsgException ex) {
       JsonResponse res = new JsonResponse(false, ex.getCodigo(), ex.getData(), ex.getMessage());
-      writer.writeTo(res, res.getClass(), null,
-              new Annotation[0], MediaType.APPLICATION_JSON_TYPE, null,
-              sr1.getOutputStream());
+      mapper.writeValue(sr1.getOutputStream(), res);
     } catch (Exception ex) {
       Logger.getLogger("ExcecaoInexperada").log(Level.SEVERE, ex.getMessage(), ex);
       JsonResponse res = new JsonResponse(false, JsonResponse.ERROR_DESCONHECIDO, null, ex.getMessage());
-      writer.writeTo(res, res.getClass(), null,
-              new Annotation[0], MediaType.APPLICATION_JSON_TYPE, null,
-              sr1.getOutputStream());
+      mapper.writeValue(sr1.getOutputStream(), res);
     }
   }
 

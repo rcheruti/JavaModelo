@@ -10,28 +10,33 @@
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <web-module-libraries>
                 <library dirs="200">
-                    <file>${libs.Lombok_1.16.6.classpath}</file>
+                    <file>${libs.javaee-web-api-7.0.classpath}</file>
                 </library>
                 <library dirs="200">
-                    <file>${reference.JavaModelo_Framework.jar}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
+                    <file>${libs.Lombok_1.16.6.classpath}</file>
                 </library>
                 <library dirs="200">
                     <file>${libs.Jackson_2.5.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${reference.JavaModelo_Entities.jar}</file>
+                    <file>${libs.Apache_POI_3.13.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${libs.javaee-api-7.0.classpath}</file>
+                    <file>${libs.JavaMail_1.5.5.classpath}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${libs.javaee-endorsed-api-7.0.classpath}</file>
+                    <file>${reference.JavaModelo_Framework.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
-                    <file>${libs.Apache_Commons_Codec_1.0.classpath}</file>
+                    <file>${reference.JavaModelo_Export.jar}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library dirs="200">
+                    <file>${reference.JavaModelo_Entities.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
             </web-module-libraries>
@@ -39,10 +44,7 @@
             <source-roots>
                 <root id="src.dir"/>
             </source-roots>
-            <test-roots>
-                <root id="test.src_web.dir"/>
-                <root id="test.src.dir"/>
-            </test-roots>
+            <test-roots/>
         </data>
         <libraries xmlns="http://www.netbeans.org/ns/ant-project-libraries/1">
             <definitions>../libs\nblibraries.properties</definitions>
@@ -50,6 +52,14 @@
         <references xmlns="http://www.netbeans.org/ns/ant-project-references/1">
             <reference>
                 <foreign-project>JavaModelo_Entities</foreign-project>
+                <artifact-type>jar</artifact-type>
+                <script>build.xml</script>
+                <target>jar</target>
+                <clean-target>clean</clean-target>
+                <id>jar</id>
+            </reference>
+            <reference>
+                <foreign-project>JavaModelo_Export</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>

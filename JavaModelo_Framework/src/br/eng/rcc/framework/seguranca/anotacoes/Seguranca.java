@@ -1,8 +1,6 @@
 package br.eng.rcc.framework.seguranca.anotacoes;
 
 import br.eng.rcc.framework.interfaces.SegurancaPersistenciaInterceptador;
-import br.eng.rcc.framework.seguranca.predicados.NullPersistenciaInterceptador;
-import br.eng.rcc.framework.seguranca.predicados.NullSupplier;
 import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -10,9 +8,6 @@ import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import javax.enterprise.util.Nonbinding;
-import javax.interceptor.InterceptorBinding;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * Esta é a anotação de segurança.
@@ -34,12 +29,10 @@ import java.util.function.Supplier;
  * </ul>
  *
  *
- * @author rcheruti
  */
 @Inherited
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-@InterceptorBinding
+@Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD})
 @Repeatable(Segurancas.class)
 public @interface Seguranca {
 
@@ -107,27 +100,9 @@ public @interface Seguranca {
    * podendo testar a permissão de acesso de acordo com um dado desse tipo (ao
    * invés de fazer o teste em relação ao tipo/modelo).
    *
-   * @return {@link Class<? extends Supplier<Predicate>>} O predicado que será
-   * usado para testar o acesso
+   * @return O filtros que devem ser executados para testar
    */
   @Nonbinding
-  Class<? extends Supplier<? extends Predicate>> predicado() default NullSupplier.class;
-  
-  
-  
-  @Nonbinding
-  Class<? extends SegurancaPersistenciaInterceptador> persistenciaInsert() default NullPersistenciaInterceptador.class;
-
-  @Nonbinding
-  Class<? extends SegurancaPersistenciaInterceptador> persistenciaUpdate() default NullPersistenciaInterceptador.class;
-
-  @Nonbinding
-  Class<? extends SegurancaPersistenciaInterceptador> persistenciaDelete() default NullPersistenciaInterceptador.class;
-
-  @Nonbinding
-  Class<? extends SegurancaPersistenciaInterceptador> persistenciaSelect() default NullPersistenciaInterceptador.class;
-  
-  
-  
+  Class<? extends SegurancaPersistenciaInterceptador>[] filters() default { } ;
   
 }

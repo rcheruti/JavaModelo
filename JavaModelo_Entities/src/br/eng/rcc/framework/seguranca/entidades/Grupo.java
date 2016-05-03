@@ -54,7 +54,7 @@ public class Grupo implements Serializable{
             for( Permissao p : permissoesC ){
                 perms.add( p.clone() );
             }
-            this.permissoes = perms;
+            copia.permissoes = perms;
         }
         
         return copia;
@@ -79,8 +79,8 @@ public class Grupo implements Serializable{
     
     public boolean hasPermissao(String perm){
         if( perm == null ) return false;
-        if( permissoes != null ){
-            for( Permissao p : permissoes ){
+        if( getPermissoes() != null ){
+            for( Permissao p : getPermissoes() ){
                 if( perm.equals( p.getNome() ) ) return true;
             }
         }

@@ -7,12 +7,19 @@
     
     <target name="-pre-compile">
       <delete file="web/js/libs/JavaModelo.js" />
+      <delete dir="web/" />
+      
+      <copy todir="web/" >
+        <fileset dir="../JavaModelo_Test_HTML/dist/" />
+      </copy>
+      <!--
       <copy file="../JavaModelo_Js/dist/JavaModelo.js" 
-            tofile="src_web/js/critico/libs/JavaModelo.js" />
+            tofile="web/js/critico/libs/JavaModelo.js" />
       <exec executable="cmd">
         <arg value="/C" />
         <arg value="grunt" />
       </exec>
+      -->
     </target>
     
     <target name="-post-dist">

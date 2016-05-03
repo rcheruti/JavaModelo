@@ -4,11 +4,11 @@ Module.provider('LoginInter',[function(state){ // '$state'
   
   provider.handler = null;
   provider.state = ''; // login
-  provider.url = '/login.jsp';
+  provider.url = '/login.html';
   provider.ativo = true;
   provider.ERRORCODE_LOGIN = 401 ;
 
-  provider.$get = ['context','$window',function(context,$window){
+  provider.$get = ['path','$window',function(path,$window){
     /**
      * Esse interceptador redireciona o usuário para a página de login
      * caso o servidor informe o código de erro de usuário não logado.
@@ -27,7 +27,7 @@ Module.provider('LoginInter',[function(state){ // '$state'
               //state.go( provider.state );
             }else{
               var origin = $window.location.origin ;
-              $window.location = origin + context.root + provider.url ;
+              $window.location = origin + path('root','') + provider.url ;
             }
           }
         }

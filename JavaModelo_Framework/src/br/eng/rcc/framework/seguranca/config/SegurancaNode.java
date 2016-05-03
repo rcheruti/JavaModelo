@@ -17,10 +17,7 @@ public class SegurancaNode implements Seguranca, Serializable{
   private boolean update = true;
   private boolean delete = true;
   private Class<? extends Supplier<? extends Predicate>> predicado;
-  private Class<? extends SegurancaPersistenciaInterceptador> persistenciaInsert;
-  private Class<? extends SegurancaPersistenciaInterceptador> persistenciaUpdate;
-  private Class<? extends SegurancaPersistenciaInterceptador> persistenciaSelect;
-  private Class<? extends SegurancaPersistenciaInterceptador> persistenciaDelete;
+  private Class<? extends SegurancaPersistenciaInterceptador>[] filters;
   
   
   public void setPermissao(String x){ this.permissao = x; }
@@ -40,6 +37,9 @@ public class SegurancaNode implements Seguranca, Serializable{
   
   public void setDelete(boolean x){ this.delete = x; }
   public boolean getDelete(){ return this.delete; }
+  
+  public void setFilters(Class<? extends SegurancaPersistenciaInterceptador>[] x){ this.filters = x; }
+  public Class<? extends SegurancaPersistenciaInterceptador>[] getFilters(){ return this.filters; }
   
   @Override
   public String value() {
@@ -70,32 +70,12 @@ public class SegurancaNode implements Seguranca, Serializable{
   public boolean delete() {
     return delete;
   }
-
+  
   @Override
-  public Class<? extends Supplier<? extends Predicate>> predicado() {
-    return predicado;
+  public Class<? extends SegurancaPersistenciaInterceptador>[] filters() {
+    return filters;
   }
-
-  @Override
-  public Class<? extends SegurancaPersistenciaInterceptador> persistenciaInsert() {
-    return persistenciaInsert;
-  }
-
-  @Override
-  public Class<? extends SegurancaPersistenciaInterceptador> persistenciaUpdate() {
-    return persistenciaUpdate;
-  }
-
-  @Override
-  public Class<? extends SegurancaPersistenciaInterceptador> persistenciaDelete() {
-    return persistenciaDelete;
-  }
-
-  @Override
-  public Class<? extends SegurancaPersistenciaInterceptador> persistenciaSelect() {
-    return persistenciaSelect;
-  }
-
+  
   @Override
   public Class<? extends Annotation> annotationType() {
     return Seguranca.class;

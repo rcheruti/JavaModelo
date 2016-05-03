@@ -1,9 +1,5 @@
 (function(){
-  
-  var injector = angular.injector(['ng'],true),
-      $http = injector.get('$http'),
-      $q = injector.get('$q')
-      ;
+  var $http = null, $q = null, Entidades = null;
   
   function _getObjByPath( obj, path ){
     if( !path ) return obj;
@@ -22,16 +18,17 @@
   
   var defaults = {
         contentType: 'application/json',
-        dataPath: 'data.data',
+        dataPath: 'data.0',
         size: 20,
         page: 0,
-        url: '/persistencia',
+        url: '',
+          // o cache usa no indece o número da AÇÃO:
         cacheTimeout: {
-          "POST/tipo": -1 , // -1 para nunca expirar
-          "POST/buscar": 180000 , // 3min timeout
-          "POST": 180000 ,
-          "PUT": 180000 ,
-          "DELETE": 180000 
+          "5": -1 , // -1 para nunca expirar
+          "1": 180000 , // 3min timeout
+          "2": 180000 ,
+          "3": 180000 ,
+          "4": 180000 
         } // ms
       },
       headers = {
@@ -59,27 +56,29 @@
     this.entidade = ent || {};
     this._size = this.entidade.size;
     this._page = this.entidade.page;
-    this._param = [];
+    this._where = []; // query
     this._join = [];
     this._order = [];
     this._data = null;
+    this._id = false;
+    this._acao = 1;
+    
     this._url = this.entidade.url;
-    this._method = '';
     this.$scope = null;
-    this._build = false;
-    this._path = '';
+    this._build = null;
     this._cache = false;
     this._clearCache = false;
-    
-    this._buscarUm = true;
-    this._buscarMuitos = false;
-    this._buscarId = false;
+    this._inObj = null;
+    this._inPath = this.entidade.nome;
   }
   
   var proto = Query.prototype;
     
   __construirSetter( proto, 'page', '_page' );
   __construirSetter( proto, 'size', '_size' );
+  __construirSetter( proto, 'id', '_id', true );
+  __construirSetter( proto, 'data', '_data' );
+  __construirSetter( proto, 'acao', '_acao' );
   proto.order = function (vals) {
     if (vals instanceof Array) {
       for (var g in vals) {
@@ -104,7 +103,7 @@
     }
     return this;
   };
-  proto.param = function (nome, comp, val, logicOp, quoteVal) {
+  proto.where = function (nome, comp, val, logicOp, quoteVal) {
     if (!nome || !comp)
       return this;
     comp = comp.toLowerCase();
@@ -125,145 +124,121 @@
     } else if (quoteVal) {
       val = '"' + val + '"';
     }
-    this._param.push(nome + ' ' + comp + ' ' + val + logicOp);
+    this._where.push(nome + ' ' + comp + ' ' + val + logicOp);
     return this;
   };
   
+  proto.in = function( obj, path ){
+    this._inObj = obj;
+    this._inPath = path;
+    return this;
+  };
   proto.build = function( force ){
     if( this._build && !force ) return this;
     // Montar Query String:
     var queryStr = '';
-    for (var g in this._param) {
-      queryStr += this._param[g];
+    for (var g in this._where) {
+      queryStr += this._where[g];
     }
     queryStr = queryStr.replace(/[&\|\s]+$/, '');
-    if (queryStr) queryStr = '?' + queryStr;
-
-    // Montar Matrix Params:
-    var matrix = [
-      'size=' + this._size,
-      'page=' + this._page
-    ];
-    if (this._join.length > 0)
-      matrix.push('join=' + this._join.join(','));
-    if (this._order.length > 0)
-      matrix.push('order=' + this._order.join(','));
-    matrix = matrix.join(';');
-    if (matrix)
-      matrix = ';' + matrix;
+    //if (queryStr) queryStr = '?' + queryStr;
     
-    // Montar url:
-    if( !this._path ) this._path = '';
-    var url = '' +(this._buscarUm?'/um':this._buscarMuitos?'/muitos':'') + 
-            (this._buscarId?'/id':'') ;
-    url = this._url +url + (this._buscarMuitos?'':'/'+this.entidade.nome) 
-            +this._path ;
-    this._url = url + matrix + queryStr ;
-    this._build = true;
+    this._build = {
+      entidade: this.entidade.nome,
+      page: this._page,
+      size: this._size,
+      where: queryStr,
+      join: this._join,
+      order: this._order,
+      data: this._data,
+      id: this._id,
+      acao: this._acao
+    };
     return this;
   };
   proto.send = function(){
+    var cached = this.getCache();
+    if( cached ) return $q.resolve( _send.call(that, cached) );
+    
+    var that = this; 
+    return $http({
+      method: 'POST',
+      url: this._url,
+      headers: headers,
+      data: this._build
+    }).then(function(data){ return _send.call(that, data.data); });
+  };
+  function _send(data){
+    if( this._cache ){
+      this.entidade.ultimoCache[ this._acao ] = Date.now();
+      this.entidade.cache[ this._acao ] = data;
+    }
+    if( this._inObj ){
+      var key = this._inPath.split('.');
+      var objToBind = _getObjByPath( this._inObj, key.slice(0,key.length-1) );
+      key = key[key.length-1];
+      objToBind[key] = _getObjByPath( data, this.entidade.dataPath );
+      _apply( this, this._inObj );
+    }
+    return data; 
+  }
+  
+  proto.getCache = function(){
     var entidade = this.entidade;
     var cache = entidade.cache;
-    var cacheKey = this._method + this._path;
+    var cacheKey = this._acao;
     if( this._clearCache 
       || (entidade.ultimoCache[cacheKey] 
         && entidade.cacheTimeout[cacheKey] > 0
         && (Date.now() - entidade.ultimoCache[cacheKey]) > entidade.cacheTimeout[cacheKey]
-      ) ) cache[cacheKey] = null;
-    else if( cache[cacheKey] ) return $q.resolve( cache[cacheKey] );
-    
-    var that = this; 
-    return $http({
-      method: this._method,
-      url: this._url,
-      headers: headers,
-      data: this._data || {}
-    }).then(function(data){
-      var dataObj = _getObjByPath( data, entidade.dataPath );
-      if( that._cache ){
-        entidade.ultimoCache[cacheKey] = Date.now();
-        cache[cacheKey] = dataObj;
-      }
-      return data.data; // passando o "data" do "angular $http"
-    });
+      ) ) return cache[cacheKey] = null;
+    else if( cache[cacheKey] ) return cache[cacheKey];
   };
-  
   proto.clearBuild = function(){
     this._build = false;
     return this;
   };
   __construirSetter( proto, 'cache', '_cache', true );
   __construirSetter( proto, 'clearCache', '_clearCache', true );
-  __construirSetter( proto, 'path', '_path' );
-  __construirSetter( proto, 'method', '_method' );
-  __construirSetter( proto, 'data', '_data' );
   __construirSetter( proto, 'apply', '_apply' );
-  __construirSetter( proto, 'id', '_buscarId', true );
   
   
-  __construirRequisicao( proto, 'tipo','POST', '/tipo' );
-  __construirRequisicao( proto, 'get','POST', '/buscar' );
-  __construirRequisicao( proto, 'post','POST' );
-  __construirRequisicao( proto, 'put','PUT' );
-  __construirRequisicao( proto, 'delete','DELETE' );
+  __construirRequisicao( proto, 'tipo',5 );
+  __construirRequisicao( proto, 'get',1 );
+  __construirRequisicao( proto, 'post',2 );
+  __construirRequisicao( proto, 'put',3 );
+  __construirRequisicao( proto, 'delete',4 );
+  __construirRequisicao( proto, 'paginacao',10 );
   
   __construirRequisicaoIn( proto, 'tipoIn','tipo' );
   __construirRequisicaoIn( proto, 'getIn','get' );
   __construirRequisicaoIn( proto, 'postIn','post' );
   __construirRequisicaoIn( proto, 'putIn','put' );
   __construirRequisicaoIn( proto, 'deleteIn','delete' );
+  __construirRequisicaoIn( proto, 'paginacaoIn','paginacao' );
   
-  function __construirRequisicao( pro, nomeFunc, method, path ){
+  function __construirRequisicao( pro, nomeFunc, acao ){
     pro[nomeFunc] = function( _data ){
-      return this.path( path ).data( _data || this._data ).method( method ).build().send();
+      return this.data( _data || this._data ).acao( acao ).build().send();
     };
   }
   function __construirRequisicaoIn( pro, nomeFunc, methodFunc ){
     pro[nomeFunc] = function( obj, key, _data ){
-      if( !key ) key = this.entidade.nome;
-      key = key.split('.');
-      var objToBind = _getObjByPath( obj, key.slice(0,key.length-1) );
-      key = key[key.length-1];
-      var that = this;
-      return this[methodFunc]( _data ).then(function(data){
-        objToBind[key] = data.data; //  <<-----  por enquanto fica HardCode!
-        _apply( that, obj );
-        return data;
-      });
+      return this.in( obj, key )[methodFunc]( _data );
     };
   }
-  function __construirSetter( pro, nomeFunc, nomeAttr, defaultVal ){
-    if( typeof defaultVal !== 'undefined' ) 
-      pro[nomeFunc] = function( val ){
-        if( typeof val === 'undefined' ) val = defaultVal;
-        this[nomeAttr] = val;
-        return this;
-      };
-    else pro[nomeFunc] = function( val ){
-      this[nomeAttr] = val;
-      return this;
-    };
-  }
+  
   
   
 //============================================================================
   
-  function MuitosQuery(){
-    this._querys = [];
-    this._method = '';
-    this.$scope = null;
-    this._build = false;
-    this._path = '';
-    this._buscarId = false;
+  function MuitosQuery( listaQuerys ){
+    var arr = listaQuerys || [];
+    if( !(arr instanceof Array) ) arr = [ arr ];
+    this._querys = arr;
   }
   
   var muitosProto = MuitosQuery.prototype;
-  muitosProto.clearBuild = proto.clearBuild;
-  muitosProto.apply = proto.apply ;
-  muitosProto.id = proto.id ;
-  muitosProto.path = proto.path ;
-  muitosProto.method = proto.method ;
   
   muitosProto.add = function( query ){
     this._querys.push( query );
@@ -279,55 +254,170 @@
     return this;
   };
   
-  muitosProto.build = function(){
+  muitosProto.send = function(){
+    if( !this._querys.length ) return $q(function(res,rej){});
+    var _build = [], _cacheds = [];
     for( var i = 0; i < this._querys.length; i++ ){
-      this._querys[i].build();
+      var q = this._querys[i];
+      q.build();
+      var cached = q.getCache();
+      if( cached ) _cacheds[i] = cached ;
+      else _build.push( q._build );
     }
-    this._build = true;
-    return this;
-  } ;
-  muitosProto.send = function(){} ;
-  
-  
-  __construirRequisicao( muitosProto, 'get','POST', '/buscar' );
-  __construirRequisicao( muitosProto, 'put','PUT' );
-  __construirRequisicao( muitosProto, 'post','POST' );
-  __construirRequisicao( muitosProto, 'delete','DELETE' );
-  
-  __construirRequisicaoIn( muitosProto, 'tipoIn','tipo' );
-  __construirRequisicaoIn( muitosProto, 'getIn','get' );
-  __construirRequisicaoIn( muitosProto, 'putIn','put' );
-  __construirRequisicaoIn( muitosProto, 'postIn','post' );
-  __construirRequisicaoIn( muitosProto, 'deleteIn','delete' );
+    if( !_build.length ) return;
+    
+    var that = this;
+    return $http({
+      method: 'POST',
+      url: defaults.url,
+      headers: headers,
+      data: _build
+    }).then(function(data){ 
+      data = data.data ;
+      var arr = data.data ;
+      // restaurar o vetor completo da requisição JS:
+      for(var g in _cacheds){
+        arr.splice( g, 0, _cacheds[g].data );
+      }
+      // copia da resposta JsonResponse:
+      for(var g in arr){
+        var copia = _cacheds[g];
+        if( !copia ){
+          var copia = {};
+          for(var k in data){
+            copia[k] = data[k];
+          }
+          copia.data = [ arr[g] ]; // novo array, para garantir index 0
+          copia.size = that._querys[g]._size;
+          copia.page = that._querys[g]._page;
+        }
+        _send.call( that._querys[g], copia );
+      }
+      
+      return data;
+    });
+  };
   
   
 //============================================================================
-Module.provider('Entidades',[function(){
+    // Auxiliares:
+  
+  function _copiarCom( objArr, arrParam ){
+    var retornarVetor = true;
+    if( !(objArr instanceof Array) ){
+      objArr = [ objArr ];
+      retornarVetor = false;
+    }
+      // montar estrutura de busca
+    var arr = [];
+    for( var g = 0; g < arrParam.length; g++ ){
+      var val = arrParam[g] ;
+      if( typeof val === 'number' ) arr.push( [val] );
+      else arr.push( val.split('.') );
+    }
+      // iniciar busca e copiar
+    var arrCopia = [],copia, obj, tempObj, tempCopia, vet, k;
+    for( var ok = 0; ok < objArr.length; ok++ ){
+      obj = objArr[ok];
+      copia = {};
+      arrCopia.push( copia );
+      for(var g = 0; g < arr.length; g++ ){
+        vet = arr[g];
+        tempObj = obj;
+        tempCopia = copia;
+        for( k = 0; k < vet.length -1; k++ ){
+          tempObj = tempObj[ vet[k] ];
+          if( !tempCopia[ vet[k] ] ) tempCopia[ vet[k] ] = {};
+          tempCopia = tempCopia[ vet[k] ];
+        }
+        tempCopia[ vet[k] ] = tempObj[ vet[k] ];
+      }
+    }
     
+    if( retornarVetor ) return arrCopia;
+    return copia;
+  }
+  
+  function _copiarSem( objArr, arrParam ){
+    var retornarVetor = true;
+    if( !(objArr instanceof Array) ){
+      objArr = [ objArr ];
+      retornarVetor = false;
+    }
+      // montar estrutura de busca
+    var arr = [];
+    for( var g = 0; g < arrParam.length; g++ ){
+      var val = arrParam[g] ;
+      if( typeof val === 'number' ) arr.push( [val] );
+      else arr.push( val.split('.') );
+    }
+    var excluir = {}, tempExc;
+    for( var g = 0; g < arr.length; g++ ){
+      var vet = arr[g];
+      tempExc = excluir;
+      for( k = 0; k < vet.length -1; k++ ){
+        tempExc = tempExc[ vet[k] ];
+      }
+      tempExc[ vet[k] ] = true; // para ser verdadeiro na comparação
+    }
+      // iniciar busca e copiar
+    var resp = [];
+    for( var ok = 0; ok < objArr.length; ok++ ){
+      resp.push( _copiaSem_Deep( {}, objArr[ok], excluir ) );
+    }
+    
+    if( retornarVetor ) return resp;
+    return resp[0];
+  }
+  function _copiaSem_Deep( para, de, comp ){
+    for( var g in de ){
+      if( !comp[g] ){
+        para[g] = de[g];
+        continue;
+      }
+      // CONTINUAR AQUI
+    }
+  }
+  
+//============================================================================
+Module.provider('Entidades',[function(){
+  
   this.defaults = defaults;
-  this.$get = ['context',function(context){
-    var that = this;
+  var that = this;
+  
+  this.$get = ['path','$http','$q',function(path,inj$http, inj$q){
+    
+    $http = inj$http;
+    $q = inj$q;
+
+    that.defaults.url = path('p', that.defaults.url) ;
     var ref = {
       query: function( ent ){
         if( typeof ent === 'string' ) ent = ref.entidade(ent);
         return new Query( ent );
       },
-      muitosQuery: function( arrQ ){
-        if( !arrQ ) return new MuitosQuery(  );
+      queryMuitos: function( arrQ ){
+        return new MuitosQuery( arrQ );
       },
       entidade: function( nome, config, override ){
         var ent = entidadesCache[nome];
         if( ent && !override ) return ent;
         if( !config ) config = {};
-        if( !config.url ) config.url = context.services+ defaults.url ;
+        if( !config.url ) config.url = defaults.url ;
         ent = new Entidade( nome, config );
         that[nome] = entidadesCache[nome] = ent;
         return ent;
       },
       get: function( nome ){
         return entidadesCache[nome] ;
-      }
+      },
+      
+        // Shallow copy
+      copiarCom: _copiarCom,
+        // Shallow copy
+      copiarSem: _copiarSem
     };
+    
     ref.eq = ref.equal = '=';
     ref.ne = ref.notEqual = '!=';
     ref.le = ref.lowerThanOrEqualTo = '<=';
@@ -338,7 +428,17 @@ Module.provider('Entidades',[function(){
     ref.lk = ref.like = 'like';
     ref.nl = ref.isNull = 'isnull';
     ref.nnl = ref.isNotNull = 'isnotnull';
-    return ref;
+    
+    ref.BUSCAR =      1;
+    ref.CRIAR =       2;
+    ref.EDITAR =      3;
+    ref.DELETAR =     4;
+    ref.TIPO =        5;
+    ref.ADICIONAR =   6;
+    ref.REMOVER =     7;
+    ref.PAGINACAO =   10;
+    
+    return Entidades = ref;
   }];
 
 }]);

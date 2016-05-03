@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>JavaModelo Test: Login</title>
+    
+    <style>@@cssCritico</style>
+    
+  </head>
+  <body ng-app="Module" ng-strict-di="true">
+    
+    
+    <div class="loginForm" ng-controller="LoginForm">
+      <label>
+        <span>Login</span>
+        <input name="email" ng-model="login" ng-keydown="keydown($event)"/>
+      </label>
+
+      <br/><br/>
+
+      <label>
+        <span>Senha</span>
+        <input name="senha" ng-model="senha" type="password" ng-keydown="keydown($event)"/>
+      </label>
+
+      <br/><br/>
+
+      <button type="button" ng-click="entrar()">Log in</button>
+      <br/><br/>
+
+      <div class="msg trans" ng-class="msgClasses">{{ msg }}</div>
+    </div>
+    
+    
+    
+    
+    
+    
+    
+    <script>@@jsCriticoLogin</script>
+    
+    <link href="@@cssNormal" rel="stylesheet" type="text/css"/>
+    <script src="@@jsNormalLogin"></script>
+    
+  </body>
+</html>

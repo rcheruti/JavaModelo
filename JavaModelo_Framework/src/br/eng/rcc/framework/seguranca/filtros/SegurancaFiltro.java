@@ -2,20 +2,11 @@
 package br.eng.rcc.framework.seguranca.filtros;
 
 import br.eng.rcc.framework.config.Configuracoes;
-import br.eng.rcc.framework.config.SegurancaConfig;
+import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
-import br.eng.rcc.framework.jaxrs.JsonResponseWriter;
-import br.eng.rcc.framework.jaxrs.MsgException;
-import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
-import br.eng.rcc.framework.seguranca.config.SegurancaNode;
-import br.eng.rcc.framework.seguranca.config.SegurancaRootNode;
-import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.inject.Inject;
@@ -27,31 +18,21 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
 
 public class SegurancaFiltro implements Filter{
   
-  
   private Pattern pattern;
-  private String redirectPage;
-  private Map<String,UrlSeguranca> urlCache = new HashMap<>( 20 );
-  private Map<String,Boolean> urlCacheBoolean = new HashMap<>( 60 );
   
   @Inject
   private UsuarioServico usuarioService;
   
-  @Inject
-  private SegurancaServico segurancaServico;
-  
-
-  @Inject
-  private JsonResponseWriter writer;
+  private ObjectMapper mapper;
 
   
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
     pattern = Pattern.compile( Configuracoes.segurancaRegExp );
-    redirectPage = Configuracoes.loginPath;
+    mapper = new JacksonObjectMapperContextResolver().getContext(null);
   }
 
   @Override
@@ -66,14 +47,12 @@ public class SegurancaFiltro implements Filter{
     Matcher matcher = pattern.matcher(uri);
     
     // Checar se essa é uma URL pública
-      //System.out.printf("---  URL : %s \n", uri);
-    if( matcher.find() ){
-      //System.out.printf("---  URL publica?: %s \n", uri);
+    if( "OPTIONS".equals( req.getMethod().toUpperCase() ) 
+        || matcher.find() ){
       chain.doFilter(request, response);
       return;
     }
     
-    //System.out.printf("---  Logado?: %b \n", usuarioService.checkLogin(true) );
     if( !usuarioService.checkLogin(true) ){
       HttpServletResponse resp = (HttpServletResponse) response;
       resp.addHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -83,36 +62,12 @@ public class SegurancaFiltro implements Filter{
       String header = req.getHeader("X-Requested-With");
       if( "XMLHttpRequest".equals(header) ){
         JsonResponse res = new JsonResponse(false, JsonResponse.ERROR_DESLOGADO, null, "Você está deslogado");
-        writer.writeTo(res, res.getClass(), null,
-                new Annotation[0], MediaType.APPLICATION_JSON_TYPE, null,
-                response.getOutputStream());
+        mapper.writeValue(resp.getOutputStream(), res);
         return;
       }
-      //resp.sendRedirect( req.getContextPath()+redirectPage );
-      req.getRequestDispatcher( redirectPage ).forward(request, response);
-      return; // Sair, pois nao podemos deixar processar a requisição
-    }
-    //System.out.printf("Prox------------ \n");
-    Boolean bool = urlCacheBoolean.get(uri);
-    if( bool == null ){
-      SegurancaRootNode node = SegurancaConfig.getSegurancas();
-      Map<String,List<SegurancaNode>> map = node.getEnderecos();
-      UrlSeguranca seg = new UrlSeguranca();
-      for( String regex : map.keySet() ){
-        Pattern patternSeg = Pattern.compile( regex );
-        Matcher matcherSeg = patternSeg.matcher( uri );
-        if( matcherSeg.find() ){
-          bool = true;
-          for( Seguranca s : map.get(regex) ) seg.getList().add(s);
-        }
-      }
-      if( bool == null ) bool = false;
-      if( bool ) urlCache.put( uri, seg);
-      urlCacheBoolean.put(uri, bool);
-    }
-
-    if( bool ){
-      segurancaServico.check( urlCache.get(uri) );
+      req.getRequestDispatcher( Configuracoes.loginPath ).forward(request, response);
+      //resp.sendRedirect( req.getContextPath() + Configuracoes.loginPath );
+      return; 
     }
     
     // Tudo ok aqui

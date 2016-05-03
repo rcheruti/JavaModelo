@@ -2,28 +2,43 @@
 package br.eng.rcc.framework.filtros;
 
 import java.io.IOException;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-/*
-  Este filtro deverá ser configurado como um filtro Servlet.
-  A impl ainda está pendente.
-*/
-//@Provider
-//@ApplicationScoped
-@Deprecated
-public class CORSFiltro implements ContainerResponseFilter{
+public class CORSFiltro implements Filter{
 
-    @Override
-    public void filter(ContainerRequestContext crc, 
-            ContainerResponseContext crc1) throws IOException {
-        crc1.getHeaders().add("Access-Control-Allow-Origin", "*");
-        crc1.getHeaders().add("Access-Control-Allow-Headers", "origin, content-type, accept, authorization, X-Requested-With");
-        crc1.getHeaders().add("Access-Control-Allow-Credentials", "true");
-        crc1.getHeaders().add("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
-        crc1.getHeaders().add("Access-Control-Max-Age", "12000");
-        crc1.getHeaders().add("Cache-Control", "no-cache");
+  @Override
+  public void init(FilterConfig filterConfig) throws ServletException {
+    
+  }
+
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response, 
+          FilterChain chain) throws IOException, ServletException {
+    HttpServletResponse resp = (HttpServletResponse) response;
+    HttpServletRequest req = (HttpServletRequest) request;
+    
+    resp.setHeader("Access-Control-Allow-Origin", "*");
+    if( req.getHeader("Origin") != null ){
+      resp.setHeader("Access-Control-Allow-Origin", req.getHeader("Origin"));
     }
+    resp.setHeader("Access-Control-Allow-Headers", "origin,content-type,accept,authorization,authorization,x-requested-with,cookies,*");
+    resp.setHeader("Access-Control-Allow-Credentials", "true");
+    resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, HEAD");
+    resp.setHeader("Access-Control-Max-Age", "12000");
+    resp.setHeader("Cache-Control", "no-cache");
+    chain.doFilter(request, response);
+  }
+
+  @Override
+  public void destroy(){
+    
+  }
     
 }

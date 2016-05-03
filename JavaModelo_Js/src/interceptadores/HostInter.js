@@ -11,12 +11,13 @@ Module.provider('HostInter',[function(){
   provider.ativo = false;
   provider.url = '';
 
-  provider.$get = ['context',function(context){
+  provider.$get = [function(){
 
     var ref = {
       request:function( request ){
-        if( provider.ativo ){
-          request.url = provider.url + context.services + request.url ;
+        if( provider.ativo && !request.noHostInter ){
+          request.url = (provider.url + request.url).replace(/\/+/g,'/')
+            .replace(/(\w):\/+/g,'$1://') ;
         }
         return request;
       }

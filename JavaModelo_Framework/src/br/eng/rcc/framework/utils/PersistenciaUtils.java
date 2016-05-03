@@ -1,13 +1,13 @@
 package br.eng.rcc.framework.utils;
 
-import br.eng.rcc.framework.config.Configuracoes;
-import br.eng.rcc.framework.jaxrs.JsonResponse;
-import br.eng.rcc.framework.jaxrs.MsgException;
-import br.eng.rcc.framework.jaxrs.persistencia.ClassCache;
+import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -29,10 +29,8 @@ public class PersistenciaUtils {
        .compile("([\\w.]++)\\s*+(=|!=|<|>|<=|>=|(?:not)?like|is(?:not)?null)\\s*+((['\"]).*?\\4|[\\w\\.]++)\\s*+([&\\|]?)", Pattern.CASE_INSENSITIVE);
   private static final Pattern valorPattern = Pattern
        .compile("^(['\"]).*\\1$", Pattern.CASE_INSENSITIVE);
-  private static final Pattern matrixPattern = Pattern
-       .compile(";\\s*([^=\\s]+)=([^;]+)");
-  private static final Pattern entidadePattern = Pattern
-       .compile("/persistencia/(?:um/(id/)?)?([\\w\\d]+)", Pattern.CASE_INSENSITIVE);
+  
+  private static ObjectMapper mapper;
   
   
   
@@ -47,13 +45,13 @@ public class PersistenciaUtils {
       }
     }
     if( klass == null ) return;
-    Map<String, ClassCache.BeanUtil> map = cache.getInfo( klass.getSimpleName() );
-    List<ClassCache.BeanUtil> fieldsEncontrados = new ArrayList<>();
-    List<ClassCache.BeanUtil> fieldsToNull = new ArrayList<>();
+    Map<String, ClasseAtributoUtil> map = cache.getInfo( klass.getSimpleName() );
+    List<ClasseAtributoUtil> fieldsEncontrados = new ArrayList<>();
+    List<ClasseAtributoUtil> fieldsToNull = new ArrayList<>();
       
     try{
       String[] nParams = getArrayLevel(-1, null, params );
-      for( ClassCache.BeanUtil bu : map.values() ){
+      for( ClasseAtributoUtil bu : map.values() ){
         if( bu.isAssociacao() || bu.isEmbutido() ){
           if( constainsInArray(nParams, bu.getNome()) ){
             fieldsEncontrados.add(bu);
@@ -63,14 +61,14 @@ public class PersistenciaUtils {
         }
       }
       
-      for( ClassCache.BeanUtil bu : fieldsToNull ){
+      for( ClasseAtributoUtil bu : fieldsToNull ){
         for( Object obj : lista ){
           if( obj == null ) continue;
           bu.set(obj, null);
         }
       }
       //String[] novoParams = copyWithoutNulls(params);
-      for( ClassCache.BeanUtil bu : fieldsEncontrados ){
+      for( ClasseAtributoUtil bu : fieldsEncontrados ){
         String[] novoParams = getArrayLevel(1, bu.getNome(), params );
         for( Object obj : lista ){
           if( obj == null ) continue;
@@ -129,67 +127,47 @@ public class PersistenciaUtils {
   }
   
   
-  public static BuscaInfo parseBusca(String uriQuery){
-    return parseBusca(uriQuery, null);
-  }
-  public static BuscaInfo parseBusca(String uriQuery, ClassCache cache){
-    if( uriQuery == null ) return null;
-    String[] uriSplit = uriQuery.split("\\?");
-    String[][] query = uriSplit.length > 1? parseQueryString( uriSplit[1] ) : new String[0][0];
-    String[][] matrix = uriSplit.length > 0? parseMatrixString( uriSplit[0] ) : new String[0][0];
-    
-    BuscaInfo bi = new BuscaInfo();
-    try{
-      if( matrix[0] != null && matrix[0][0] != null ) bi.size = Integer.parseInt(matrix[0][0]);
-      if( matrix[1] != null && matrix[1][0] != null ) bi.page = Integer.parseInt(matrix[1][0]);
-    }catch( NumberFormatException ex ){
-      throw new MsgException(JsonResponse.ERROR_EXCECAO, "Os parâmetros 'size' e 'page' devem ser números inteiros!", ex);
-    }
-    bi.join = matrix[2] != null ? matrix[2] : new String[0];
-    bi.order = matrix[3] != null ? matrix[3] : new String[0];
-    bi.query = query;
-    
-    Matcher matcher = entidadePattern.matcher(uriQuery);
-    if( matcher.find() ){
-      bi.modeloId = matcher.group(1) != null;
-      String entidade = matcher.group(2);
-      Class klass = null;
-      if( cache != null ){
-        klass = cache.get(entidade);
-      }
-      bi.entidade = entidade;
-      bi.classe = klass;
-    }
-    
-    return bi;
-  }
-  
   public static List<BuscaInfo> parseBusca(JsonNode json, ClassCache cache){
     List<BuscaInfo> buscas = new ArrayList<>();
-    for( JsonNode node : json ){
+    Iterable<JsonNode> its;
+    if( json.isArray() ) its = json;
+    else{
+      List<JsonNode> itsArr = new ArrayList<>(1);
+      itsArr.add(json);
+      its = itsArr;
+    }
+    for( JsonNode node : its ){
       BuscaInfo busca = new BuscaInfo();
       busca.entidade = node.get("entidade").asText();
       busca.classe = cache.get(busca.entidade);
-      if( node.has("size") ) busca.size = node.get("size").intValue();
-      if( node.has("page") ) busca.page = node.get("page").intValue();
-      if( node.has("data") ) busca.data = node.get("data");
-      if( node.has("join") && node.get("join").isArray() ){
-        List<String> arr = new ArrayList<>();
-        for( JsonNode nodeStr : node.get("join") ) arr.add( nodeStr.asText() );
-        busca.join = arr.toArray(new String[0]);
-      }
-      if( node.has("order") && node.get("order").isArray() ){
-        List<String> arr = new ArrayList<>();
-        for( JsonNode nodeStr : node.get("order") ) arr.add( nodeStr.asText() );
-        busca.order = arr.toArray(new String[0]);
-      }
-      if( node.has("query") && node.get("query").isTextual() ){
-        busca.query = PersistenciaUtils.parseQueryString( node.get("query").asText() );
+      if( !node.path("data").isArray() ){
+        if( mapper == null ){
+          mapper = new JacksonObjectMapperContextResolver().getContext(null);
+        }
+        busca.data = mapper.createArrayNode();
+        busca.data.add( node.path("data") );
+      }else{
+        busca.data = (ArrayNode)node.get("data");
       }
       
-      if( busca.join == null ) busca.join = new String[0];
-      if( busca.order == null ) busca.order = new String[0];
-      if( busca.query == null ) busca.query = new String[0][];
+      if( node.has("size") ) busca.size = node.get("size").intValue();
+      if( node.has("page") ) busca.page = node.get("page").intValue();
+      if( node.has("id") ) busca.id = node.get("id").booleanValue();
+      if( node.has("acao") ) busca.acao = (byte)node.get("acao").intValue();
+      if( node.has("join") && node.get("join").isArray() ){
+        busca.join = new ArrayList<>();
+        for( JsonNode nodeStr : node.get("join") ) busca.join.add( nodeStr.asText() );
+      }
+      if( node.has("order") && node.get("order").isArray() ){
+        busca.order = new ArrayList<>();
+        for( JsonNode nodeStr : node.get("order") ) busca.order.add( nodeStr.asText() );
+      }
+      
+      if( node.has("where") ) busca.where = PersistenciaUtils.parseQueryString( node.get("where").asText() );
+      
+      if( busca.join == null ) busca.join = new ArrayList<>();
+      if( busca.order == null ) busca.order = new ArrayList<>();
+      if( busca.where == null ) busca.where = new ArrayList<>();
       
       buscas.add(busca);
     }
@@ -204,10 +182,9 @@ public class PersistenciaUtils {
    * @param uriQuery
    * @return
    */
-  public static String[][] parseQueryString(String uriQuery) {
+  public static List<String[]> parseQueryString(String uriQuery) {
     // Interpretando "Query String" (parâmetros de busca no banco [WHERE])
-    int qI = 0, qLimit = 30;
-    String[][] querysPs = new String[qLimit][];
+    List<String[]> querysPs = new ArrayList<>(  );
     if (uriQuery != null) {
       Matcher m = queryStringPattern.matcher(uriQuery);
       while (m.find()) {
@@ -225,48 +202,10 @@ public class PersistenciaUtils {
         }
 
         String[] params = {attr, comp, valor, opComp, isValor ? "" : null};
-        querysPs[qI++] = params;
+        querysPs.add( params );
       }
     }
-    String[][] resQueryPs = new String[qI][];
-    System.arraycopy(querysPs, 0, resQueryPs, 0, qI);
-    return resQueryPs;
-  }
-  
-  public static String[][] parseMatrixString(String uriQuery){
-    String[][] resp = new String[4][];
-    if( uriQuery == null ) return resp;
-    
-    Matcher matcher = matrixPattern.matcher(uriQuery);
-    String[] split;
-    while( matcher.find() ){
-      String nome = matcher.group(1).trim().toLowerCase();
-      String valor = matcher.group(2).trim();
-      switch(nome){
-        case "size":
-          resp[0] = new String[]{ valor };
-          break;
-        case "page":
-          resp[1] = new String[]{ valor };
-          break;
-        case "join":
-          split = valor.split(",");
-          for( int i = 0; i < split.length; i++ ){
-            split[i] = split[i].trim();
-          }
-          resp[2] = split;
-          break;
-        case "order":
-          split = valor.split(",");
-          for( int i = 0; i < split.length; i++ ){
-            split[i] = split[i].trim();
-          }
-          resp[3] = split;
-          break;
-      }
-    }
-    
-    return resp;
+    return querysPs;
   }
   
   

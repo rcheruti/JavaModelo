@@ -1,10 +1,8 @@
 package br.eng.rcc.framework.filtros;
 
 import br.eng.rcc.framework.config.Configuracoes;
-import br.eng.rcc.framework.jaxrs.JsonResponseWriter;
 import java.io.IOException;
 import java.util.regex.Pattern;
-import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -17,8 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 public class RewriteFiltro implements Filter {
 
   private Pattern regexp;
-  @Inject
-  private JsonResponseWriter writer;
 
   @Override
   public void init(FilterConfig fc) throws ServletException {
@@ -39,11 +35,14 @@ public class RewriteFiltro implements Filter {
     resp.addHeader("cache-control", "no-cache");
 
     String header = req.getHeader("X-Requested-With");
-    if ("XMLHttpRequest".equals(header)
-            || regexp.matcher(uri).find()) {
+    if (
+          "OPTIONS".equals( req.getMethod().toUpperCase() ) 
+          || "XMLHttpRequest".equals(header)
+          || regexp.matcher(uri).find()) {
       fc.doFilter(sr, sr1);
     } else {
-      req.getRequestDispatcher(Configuracoes.indexPath).forward(sr, sr1);
+      //req.getRequestDispatcher(Configuracoes.indexPath).forward(sr, sr1);
+      resp.sendRedirect( req.getContextPath()+Configuracoes.indexPath );
     }
   }
 

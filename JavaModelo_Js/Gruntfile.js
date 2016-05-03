@@ -41,8 +41,8 @@ module.exports = function (grunt) {
           footer: lf+lf+'})(window);'+lf
         },
         src:[
+          p.src+ 'funcoes.js',
           p.src+ 'config.js',
-          //p.src+ '**',
           p.src+ '**/*.js'
         ],
         dest: c.jsBuild
@@ -68,7 +68,7 @@ module.exports = function (grunt) {
     }
   });
   
-  
-  grunt.registerTask('default',['clean','concat','uglify','copy']);
+  //'uglify'
+  grunt.registerTask('default',['clean','concat','copy']);
   
 };

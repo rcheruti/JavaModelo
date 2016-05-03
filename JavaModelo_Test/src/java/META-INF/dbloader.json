@@ -1,0 +1,24 @@
+{
+  "dev":{
+    "Usuario":[
+      { "email": "rafael@someone.com", "nome":"Rafael" },
+      { "email": "alguem@someone.com", "nome":"Alguém" },
+      { "email": "rosana@someone.com", "nome":"Rosana" },
+      { "email": "joao.bloqueado@someone.com", "nome":"João Bloqueado" }
+    ],
+    "Credencial":[
+      { "login":"rafael", "senha":"ok", "usuario":{ "id":1 } },
+      { "login":"alguem", "senha":"ok", "usuario":{ "id":2 } },
+      { "login":"rosana", "senha":"ok", "usuario":{ "id":3 } },
+      { "login":"joao",   "senha":"ok", "usuario":{ "id":4 }, "bloqueado":true }
+    ],
+    "Grupo":[
+      { "chave":"admin", "nome":"Admin" },
+      { "chave":"usuario1", "nome":"Usuários 1" }
+    ],
+    "Permissao":[
+      { "nome":"url_tipo" },
+      { "nome":"registro_usuario" }
+    ]
+  }
+}

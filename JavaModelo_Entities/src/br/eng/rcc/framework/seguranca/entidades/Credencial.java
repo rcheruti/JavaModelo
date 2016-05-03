@@ -22,6 +22,7 @@ public class Credencial implements Serializable {
     protected String login;
     
     @Column(nullable = false, length = 1024 )
+    @Seguranca("$$__NuncaPublicarSenhas!")
     protected byte[] senha;
     
     @Column(nullable = false)
@@ -104,20 +105,20 @@ public class Credencial implements Serializable {
     
     public boolean hasGrupo(String nome){
         if( nome == null ) return false;
-        for( Grupo g : grupos ){
+        for( Grupo g : getGrupos() ){
             if( nome.equals( g.getChave() ) ) return true;
         }
         return false;
     }
     public boolean hasPermissao(String perm){
         if( perm == null ) return false;
-        if( permissoes != null ){
-            for( Permissao p : permissoes ){
+        if( getPermissoes() != null ){
+            for( Permissao p : getPermissoes() ){
                 if( perm.equals( p.getNome() ) ) return true;
             }
         }
-        if( grupos != null ){
-            for( Grupo g : grupos ){
+        if( getGrupos() != null ){
+            for( Grupo g : getGrupos() ){
                 if( g.hasPermissao(perm) ) return true;
             }
         }
