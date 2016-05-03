@@ -24,6 +24,10 @@
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
+                    <file>${libs.JavaMail_1.5.5.classpath}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library dirs="200">
                     <file>${reference.JavaModelo_Framework.jar}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
