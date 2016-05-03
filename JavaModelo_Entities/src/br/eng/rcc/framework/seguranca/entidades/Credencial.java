@@ -22,6 +22,7 @@ public class Credencial implements Serializable {
     protected String login;
     
     @Column(nullable = false, length = 1024 )
+    @Seguranca("$$__NuncaPublicarSenhas!")
     protected byte[] senha;
     
     @Column(nullable = false)

@@ -54,7 +54,7 @@ public class Grupo implements Serializable{
             for( Permissao p : permissoesC ){
                 perms.add( p.clone() );
             }
-            this.permissoes = perms;
+            copia.permissoes = perms;
         }
         
         return copia;

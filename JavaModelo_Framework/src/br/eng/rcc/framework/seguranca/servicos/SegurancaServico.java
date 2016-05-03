@@ -151,7 +151,6 @@ public class SegurancaServico {
       ( (mode & Seguranca.UPDATE) != 0 && s.update() ) ||
       ( (mode & Seguranca.DELETE) != 0 && s.delete() )
         ){
-      System.out.printf("---  Segurança: %s, Grupo: %s \n",  s.value(), s.grupo()  );
       this.check( s.value(), s.grupo() );
     }
   }

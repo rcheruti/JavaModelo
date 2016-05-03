@@ -54,11 +54,11 @@
       var pathFunc = function( pathName, path, fullPath ){
         if( !pathName ) pathName = 'r';
         if( !path ) path = '';
-        var str = (that.context+that[pathName] + path).replace(/\/+/g,'/') ;
+        var str = (that.context+that[pathName] + path) ;
         if( that.hasHost || fullPath ){
-          str = that.protocol + (that.host+':'+that.port+str).replace(/\/+/g,'/');
+          str = that.protocol + (that.host+':'+that.port+str);
         }
-        return str;
+        return str.replace(/\/+/g,'/');
       };
       
       pathFunc.get = function( pathName ){

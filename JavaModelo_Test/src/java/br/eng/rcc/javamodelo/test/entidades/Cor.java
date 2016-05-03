@@ -1,5 +1,5 @@
 
-package br.eng.rcc.javamodelo.entidades;
+package br.eng.rcc.javamodelo.test.entidades;
 
 import java.io.Serializable;
 import java.util.List;

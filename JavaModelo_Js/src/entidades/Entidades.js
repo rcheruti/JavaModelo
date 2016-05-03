@@ -21,7 +21,7 @@
         dataPath: 'data.0',
         size: 20,
         page: 0,
-        url: '/persistencia',
+        url: '',
           // o cache usa no indece o número da AÇÃO:
         cacheTimeout: {
           "5": -1 , // -1 para nunca expirar
@@ -390,7 +390,7 @@ Module.provider('Entidades',[function(){
     $http = inj$http;
     $q = inj$q;
 
-    that.defaults.url = path('root','') + that.defaults.url;
+    that.defaults.url = path('p', that.defaults.url) ;
     var ref = {
       query: function( ent ){
         if( typeof ent === 'string' ) ent = ref.entidade(ent);

@@ -5,6 +5,7 @@ import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.anotacoes.Segurancas;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
+import br.eng.rcc.framework.utils.ClassCache;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -20,11 +21,13 @@ public class JacksonFilter implements PropertyFilter{
   
   @Inject
   private SegurancaServico checker;
+  @Inject
+  private ClassCache cache;
   
   @Override
   public void serializeAsField(Object o, JsonGenerator jg, SerializerProvider sp, 
           PropertyWriter writer) throws Exception {
-    System.out.printf("---  JacksonFilter:serializeAsField: %s \n", writer.getName() );
+    //System.out.printf("---  JacksonFilter:serializeAsField: %s \n", writer.getName() );
     
     Seguranca[] segsAnn = null;
     Segurancas annSegs = writer.getAnnotation( Segurancas.class );
@@ -38,15 +41,16 @@ public class JacksonFilter implements PropertyFilter{
     }
     
     if( segsAnn == null || segsAnn.length == 0 ){
-      System.out.printf("---  ---  Escrevendo! \n");
       writer.serializeAsField(o, jg, sp);
     }else{
       try{
-        checker.check( segsAnn );
-        System.out.printf("---  ---  Escrevendo! \n");
+        checker.check( segsAnn , Seguranca.SELECT );
+        Class<?> klass = cache.getUtil( o.getClass().getSimpleName() )
+                .path( writer.getName() ).getJavaType();
+        if( klass != null ) checker.check(klass, Seguranca.SELECT);
         writer.serializeAsField(o, jg, sp);
       }catch(MsgException ex){
-        System.out.printf("---  ---  Bloqueando!: %s \n", ex.getMensagem() );
+        //System.out.printf("---  ---  Bloqueando!: %s \n", ex.getMensagem() );
       }
     }
     
@@ -55,7 +59,7 @@ public class JacksonFilter implements PropertyFilter{
   @Override
   public void serializeAsElement(Object o, JsonGenerator jg, SerializerProvider sp, 
           PropertyWriter writer) throws Exception {
-    System.out.printf("---  JacksonFilter:serializeAsElement: %s \n", writer.getName() );
+    //System.out.printf("---  JacksonFilter:serializeAsElement: %s \n", writer.getName() );
     
     
     Seguranca[] segsAnn = null;
@@ -74,6 +78,9 @@ public class JacksonFilter implements PropertyFilter{
     }else{
       try{
         checker.check( segsAnn );
+        Class<?> klass = cache.getUtil( o.getClass().getSimpleName() )
+                .path( writer.getName() ).getJavaType();
+        if( klass != null ) checker.check(klass);
         writer.serializeAsElement(o, jg, sp);
       }catch(MsgException ex){
 

@@ -8,6 +8,9 @@ import javax.persistence.EntityManager;
 import br.eng.rcc.framework.interfaces.IUsuario;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.seguranca.entidades.ChaveAcesso;
+import br.eng.rcc.framework.seguranca.entidades.Credencial;
+import br.eng.rcc.framework.seguranca.entidades.Grupo;
+import br.eng.rcc.framework.seguranca.entidades.Permissao;
 import br.eng.rcc.framework.seguranca.entidades.SegUsuario;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -111,7 +114,12 @@ public class UsuarioServicoImpl extends UsuarioServico{
                 .setMaxResults(1)
                 .getResultList();
         if( oo.size() > 0 ){
-          u = oo.get(0).getCredencial().getUsuario().clone();
+          Credencial c = oo.get(0).getCredencial();
+          // temos que carregar os atrasados!:
+          c.getPermissoes().size();
+          if( c.getGrupos() != null ) for(Grupo g : c.getGrupos()) g.getPermissoes().size();
+          
+          u = c.getUsuario().clone();
           this.req.getSession().setAttribute( IUsuario.USUARIO_KEY , u );
         }
       }

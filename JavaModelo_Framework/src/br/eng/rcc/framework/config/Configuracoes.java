@@ -87,7 +87,7 @@ public class Configuracoes {
    * <br><br>
    * Ex.: "PBKDF2WithHmacSHA1"
    */
-  public static int criptografiaIteration = 5;
+  public static int criptografiaIteration = 100;
   
   /**
    * Tamanho da chave quando uma chave de "SecretKey" for usavada.
@@ -141,5 +141,22 @@ public class Configuracoes {
    * essa unidade.
    */
   public static String persistenceUnit = "";
+  
+  
+  /**
+   * Informa se o carregador do banco de dados deve buscar os arquivos de configurações
+   * para inserir informações no banco.
+   * <br><br>
+   * Normalmente será usado durante o desenvolvimento para inserir informações de teste 
+   * no banco.
+   * <br><br>
+   * Pode ser usado também para inserir as informações iniciais do sistema, quando 
+   * usuários padrão devem exeistir, categorias em tabelas devem ser constantes, e outros casos.
+   * <br><br>
+   * Os nomes infrmados aqui serão os nomes das chaves do arquivo de configuração (um JSON)
+   * que serão usados para carregador o banco de dados.
+   * 
+   */
+  public static String[] carregarDB = {  };
   
 }

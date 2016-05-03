@@ -23,6 +23,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import org.apache.commons.codec.digest.DigestUtils;
 import br.eng.rcc.framework.interfaces.IUsuario;
+import br.eng.rcc.framework.seguranca.entidades.Grupo;
 
 /**
  * Objetos desta classe são usados para "logar" e "deslogar" usuários no sistema.
@@ -104,6 +105,10 @@ public class LoginService {
         throw new MsgException("O seu usuário está bloqueado!");
       }
       
+      // temos que carregar os atrasados!:
+      c.getPermissoes().size();
+      if( c.getGrupos() != null ) for(Grupo g : c.getGrupos()) g.getPermissoes().size();
+      
       HttpSession session = req.getSession();
       session.setAttribute(IUsuario.USUARIO_KEY, u.clone() ); 
       
@@ -171,47 +176,5 @@ public class LoginService {
     }
     return criarCom ;
   }
-  
-  
-  /*
-  public Usuario loginCookie( Cookie[] cookies ){
-    if( cookies != null ) for( Cookie cookie : cookies ){
-      Usuario u = this.loginCookie(cookie);
-      if( u != null ) return u;
-    }
-    return null;
-  }
-  public Usuario loginCookie( Cookie cookie ){
-    if( cookie == null ) return null;
-    if( !cookie.getName().equals( Configuracoes.loginCookieName ) ) return null;
-    ChaveAcesso ca = em.find( ChaveAcesso.class, cookie.getValue() );
-    if( ca == null ) return null;
-    return ca.getUsuario() ;
-  }
-  */
-  /*
-    Essa função é temporária, uma interface precisa ser criada (e organizada) para isso
-    ir para o UserService no jar Core.
-    O problema esta na compilação do jar com referência a classe ChaveAcesso
-  */
-  /*
-  @Deprecated
-  public void checkLogin(){
-    HttpSession session = req.getSession(false);
-    if( session != null ){
-      Object usuario = session.getAttribute(IUsuario.USUARIO_KEY);
-      if( usuario != null ){
-        return;
-      }
-    }
-    
-    if( req.getCookies() != null ) for( Cookie cookie : req.getCookies() ){
-      if( !cookie.getName().equals( Configuracoes.loginCookieName ) ) continue;
-      ChaveAcesso x = em.find( ChaveAcesso.class, cookie.getValue() );
-      if( x != null ) return;
-    }
-    throw new MsgException("O usuário não está logado");
-  }
-  */
   
 }

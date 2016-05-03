@@ -1,4 +1,4 @@
-package br.eng.rcc.javamodelo.entidades;
+package br.eng.rcc.javamodelo.test.entidades;
 
 import br.eng.rcc.framework.seguranca.entidades.Credencial;
 import br.eng.rcc.framework.seguranca.entidades.SegUsuario;

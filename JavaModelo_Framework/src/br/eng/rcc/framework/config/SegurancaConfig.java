@@ -28,15 +28,13 @@ public class SegurancaConfig {
   public static SegurancaRootNode getSegurancas(){ return segurancas; }
   
   public static void init() throws IOException{
-    System.out.printf("------  Iniciando leitura de configurações: \n");
-
+    System.out.printf("---  Carregando configurações do arquivo 'persistencia.json'. \n");
+    
     URL url = SegurancaConfig.class.getClassLoader().getResource("META-INF/persistencia.json");
     if( url == null ) url = SegurancaConfig.class.getClassLoader().getResource("persistencia.json");
-    System.out.printf("------  Arquivo de configuração de Persistencia: %s \n", url );
 
     if( url != null ){
       ObjectMapper mapper = new JacksonObjectMapperContextResolver().getContext(null);
-      //segurancas = mapper.readValue(url, SegurancaRootNode.class);
       JsonNode json = mapper.readValue(url, JsonNode.class);
       
       segurancas = new SegurancaRootNode();
@@ -83,6 +81,7 @@ public class SegurancaConfig {
       
     }
 
+    System.out.printf("---  Configurações de 'persistencia.json' finalizado. \n");
   }
   
   

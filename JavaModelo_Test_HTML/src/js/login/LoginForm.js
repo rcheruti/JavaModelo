@@ -3,6 +3,18 @@ Module.controller('LoginForm',['$scope','$http','$timeout','path','$window',
   $scope.msg = '';
   $scope.msgClasses = 'fade right';
   var timeOut = null;
+  
+  
+  $scope.cancelar = function(){		 
+    $scope.login = '';		
+    $scope.senha = '';		 
+  };
+  $scope.keydown = function( ev ){		 
+    if( ev.which === 13 )$scope.entrar();		
+  };
+  
+  
+  
   $scope.entrar = function(){
     $http
       .post( path('s','/seguranca/login'), { login: $scope.login, senha: $scope.senha } )
@@ -25,4 +37,7 @@ Module.controller('LoginForm',['$scope','$http','$timeout','path','$window',
         }
       });
   };
+  
+  
+  
 }]);

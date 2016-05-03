@@ -7,16 +7,10 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.ref.SoftReference;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.Embedded;
@@ -24,7 +18,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.ManagedType;
 import javax.persistence.metamodel.Metamodel;
 import javax.persistence.metamodel.PluralAttribute;
@@ -105,7 +98,6 @@ public class ClassCache {
           klassUtil.nome = nome;
           klassUtil.mapaAtributos = new HashMap<>(12);
           
-          System.out.printf("---  ClasseUtil para: %s \n", klassUtil.nome );
           mapInfo.put( klassUtil.nome, klassUtil );
           
           ManagedType type = meta.managedType(klass);

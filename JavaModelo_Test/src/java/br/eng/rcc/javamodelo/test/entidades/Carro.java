@@ -1,9 +1,9 @@
 
-package br.eng.rcc.javamodelo.entidades;
+package br.eng.rcc.javamodelo.test.entidades;
 
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
-import br.eng.rcc.javamodelo.entidades.embutidos.RegistroUsuario;
-import br.eng.rcc.javamodelo.seguranca.SegInter;
+import br.eng.rcc.javamodelo.test.entidades.embutidos.RegistroUsuario;
+import br.eng.rcc.javamodelo.test.seguranca.SegInter;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.CascadeType;

@@ -175,7 +175,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
         dataPath: 'data.0',
         size: 20,
         page: 0,
-        url: '/persistencia',
+        url: '',
           // o cache usa no indece o número da AÇÃO:
         cacheTimeout: {
           "5": -1 , // -1 para nunca expirar
@@ -544,7 +544,7 @@ Module.provider('Entidades',[function(){
     $http = inj$http;
     $q = inj$q;
 
-    that.defaults.url = path('root','') + that.defaults.url;
+    that.defaults.url = path('p', that.defaults.url) ;
     var ref = {
       query: function( ent ){
         if( typeof ent === 'string' ) ent = ref.entidade(ent);
@@ -870,11 +870,11 @@ Module.provider('LoginInter',[function(state){ // '$state'
       var pathFunc = function( pathName, path, fullPath ){
         if( !pathName ) pathName = 'r';
         if( !path ) path = '';
-        var str = (that.context+that[pathName] + path).replace(/\/+/g,'/') ;
+        var str = (that.context+that[pathName] + path) ;
         if( that.hasHost || fullPath ){
-          str = that.protocol + (that.host+':'+that.port+str).replace(/\/+/g,'/');
+          str = that.protocol + (that.host+':'+that.port+str);
         }
-        return str;
+        return str.replace(/\/+/g,'/');
       };
       
       pathFunc.get = function( pathName ){

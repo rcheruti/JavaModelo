@@ -570,7 +570,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
         dataPath: 'data.0',
         size: 20,
         page: 0,
-        url: '/persistencia',
+        url: '',
           // o cache usa no indece o número da AÇÃO:
         cacheTimeout: {
           "5": -1 , // -1 para nunca expirar
@@ -939,7 +939,7 @@ Module.provider('Entidades',[function(){
     $http = inj$http;
     $q = inj$q;
 
-    that.defaults.url = path('root','') + that.defaults.url;
+    that.defaults.url = path('p', that.defaults.url) ;
     var ref = {
       query: function( ent ){
         if( typeof ent === 'string' ) ent = ref.entidade(ent);
@@ -1265,11 +1265,11 @@ Module.provider('LoginInter',[function(state){ // '$state'
       var pathFunc = function( pathName, path, fullPath ){
         if( !pathName ) pathName = 'r';
         if( !path ) path = '';
-        var str = (that.context+that[pathName] + path).replace(/\/+/g,'/') ;
+        var str = (that.context+that[pathName] + path) ;
         if( that.hasHost || fullPath ){
-          str = that.protocol + (that.host+':'+that.port+str).replace(/\/+/g,'/');
+          str = that.protocol + (that.host+':'+that.port+str);
         }
-        return str;
+        return str.replace(/\/+/g,'/');
       };
       
       pathFunc.get = function( pathName ){
@@ -1310,9 +1310,20 @@ Module.controller('LoginForm',['$scope','$http','$timeout','path','$window',
   $scope.msg = '';
   $scope.msgClasses = 'fade right';
   var timeOut = null;
+  
+  
+  $scope.cancelar = function(){		 
+    $scope.login = '';		
+    $scope.senha = '';		 
+  };
+  $scope.keydown = function( ev ){		 
+    if( ev.which === 13 )$scope.entrar();		
+  };
+  
+  
+  
   $scope.entrar = function(){
     $http
-      //.post( context.services+ '/seguranca/login', { login: $scope.login, senha: $scope.senha } )
       .post( path('s','/seguranca/login'), { login: $scope.login, senha: $scope.senha } )
       .then(function(data){
         $timeout.cancel( timeOut );
@@ -1333,4 +1344,7 @@ Module.controller('LoginForm',['$scope','$http','$timeout','path','$window',
         }
       });
   };
+  
+  
+  
 }]);

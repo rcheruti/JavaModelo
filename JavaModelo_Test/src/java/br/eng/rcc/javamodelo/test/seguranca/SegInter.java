@@ -1,10 +1,10 @@
 
-package br.eng.rcc.javamodelo.seguranca;
+package br.eng.rcc.javamodelo.test.seguranca;
 
 import br.eng.rcc.framework.interfaces.SegurancaPersistenciaInterceptador;
 import br.eng.rcc.framework.jaxrs.MsgException;
 import br.eng.rcc.framework.utils.BuscaInfo;
-import br.eng.rcc.javamodelo.entidades.Carro;
+import br.eng.rcc.javamodelo.test.entidades.Carro;
 
 public class SegInter implements SegurancaPersistenciaInterceptador<Carro>{
   
