@@ -10,7 +10,6 @@ import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.seguranca.entidades.ChaveAcesso;
 import br.eng.rcc.framework.seguranca.entidades.Credencial;
 import br.eng.rcc.framework.seguranca.entidades.Grupo;
-import br.eng.rcc.framework.seguranca.entidades.Permissao;
 import br.eng.rcc.framework.seguranca.entidades.SegUsuario;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;

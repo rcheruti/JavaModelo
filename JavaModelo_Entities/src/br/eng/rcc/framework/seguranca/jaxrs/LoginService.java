@@ -21,9 +21,10 @@ import javax.transaction.Transactional;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
-import org.apache.commons.codec.digest.DigestUtils;
 import br.eng.rcc.framework.interfaces.IUsuario;
 import br.eng.rcc.framework.seguranca.entidades.Grupo;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Objetos desta classe são usados para "logar" e "deslogar" usuários no sistema.
@@ -166,12 +167,17 @@ public class LoginService {
         .setParameter("chave", tempString)
         .getResultList();
       if( (long)lista.get(0) < 1 ){
-        criarCom = DigestUtils.sha1Hex( tempString );
-        ChaveAcesso chave = new ChaveAcesso();
-        chave.setChave(criarCom);
-        chave.setCredencial( ((SegUsuario)uService.getUsuario()).getCredencial() );
-        em.persist(chave);
-        break;
+        try{
+          criarCom = new String( MessageDigest.getInstance("SHA-512")
+                  .digest( tempString.getBytes() ) );
+          ChaveAcesso chave = new ChaveAcesso();
+          chave.setChave(criarCom);
+          chave.setCredencial( ((SegUsuario)uService.getUsuario()).getCredencial() );
+          em.persist(chave);
+          break;
+        }catch(NoSuchAlgorithmException ex){
+          ex.printStackTrace();
+        }
       }
     }
     return criarCom ;
