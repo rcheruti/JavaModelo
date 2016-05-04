@@ -9,7 +9,18 @@ import javax.persistence.metamodel.Metamodel;
 
 /**
  * As configurações do sistema poderão ser carregadas a partir de um arquivo 
- * localizado em "/META-INF/"
+ * localizado em "/META-INF/" ou do arquivo "web.xml".
+ * <br><br>
+ * 
+ * Abaixo está um exemplo de como configurar a partir do "web.xml":
+ * <pre>
+<context-param>
+  <param-name>Configuracoes.persistenceUnit</param-name>
+  <param-value>JavaModelo_Test_PU</param-value>
+</context-param>
+ * </pre>
+ * <br><br>
+ * 
  * 
  * @author rcheruti
  */

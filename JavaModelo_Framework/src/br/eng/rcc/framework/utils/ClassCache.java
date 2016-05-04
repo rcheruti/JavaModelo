@@ -1,6 +1,7 @@
 package br.eng.rcc.framework.utils;
 
 import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.produtores.DependentEM;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -25,7 +26,7 @@ import javax.persistence.metamodel.PluralAttribute;
 @ApplicationScoped
 public class ClassCache {
 
-  @Inject
+  @Inject @DependentEM
   private EntityManager emInj;
 
   private SoftReference< Map<String, Class<?>>> ref;

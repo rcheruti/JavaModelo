@@ -20,7 +20,7 @@ insert into seg_fk_credencial_permissao( credenciais_id, permissoes_id ) values(
 
 insert into seg_fk_grupo_permissao(grupos_id, permissoes_id) values(1,2);
 insert into seg_fk_grupo_permissao(grupos_id, permissoes_id) values(1,3);
-insert into seg_fk_grupo_permissao(grupos_id, permissoes_id) values(3,2);
+insert into seg_fk_grupo_permissao(grupos_id, permissoes_id) values(2,2);
 
 
 

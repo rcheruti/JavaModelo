@@ -11,4 +11,9 @@
   </session-config>
   
   
+  <context-param>
+    <param-name>Configuracoes.persistenceUnit</param-name>
+    <param-value>JavaModelo_Test_PU</param-value>
+  </context-param>
+  
 </web-app>

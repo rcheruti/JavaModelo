@@ -1,6 +1,8 @@
 
 package br.eng.rcc.javamodelo.test;
 
+import br.eng.rcc.framework.produtores.DependentEM;
+import br.eng.rcc.framework.produtores.Transacional;
 import br.eng.rcc.framework.seguranca.entidades.Credencial;
 import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
 import java.util.List;
@@ -22,16 +24,16 @@ import javax.transaction.Transactional;
 @Priority(Integer.MAX_VALUE)
 public class DBLoaderListener implements ServletContextListener{
   
-  @Inject
+  @Inject @DependentEM
   private EntityManager em;
   @Inject
   private UsuarioServico uServ;
   
   
-  @Transactional
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     System.out.printf("---  Corrigindo senhas do banco de dados \n");
+    Transacional.open(em);
     
     List<Credencial> lista = em.createQuery("SELECT x FROM Credencial x WHERE LENGTH(x.senha) < 60").getResultList();
     for( Credencial x : lista ){
@@ -42,6 +44,7 @@ public class DBLoaderListener implements ServletContextListener{
     em.flush();
     em.clear();
     
+    Transacional.close(em);
   }
 
   @Override

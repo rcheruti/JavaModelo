@@ -5,59 +5,74 @@ import br.eng.rcc.framework.config.Configuracoes;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
 
 @ApplicationScoped
 public class EMProducer {
   
-  @PersistenceContext
-  @Produces
-  private EntityManager em;
-  
-  
   //@PersistenceUnit
   private EntityManagerFactory emf;
   private boolean myEMF;
-
-  //@PostConstruct
-  public void postConstruct(){
-    if( Configuracoes.persistenceUnit != null && !Configuracoes.persistenceUnit.isEmpty() ){
-      myEMF = true;
-      emf = Persistence.createEntityManagerFactory(Configuracoes.persistenceUnit);
-    }
-  }
   
-  //@PreDestroy
-  public void preDestroy(){
-    if( myEMF && emf.isOpen() ){
-      emf.close();
-    }
+  
+  
+  @Produces
+  @RequestScoped
+  public EntityManager getEntityManager(){
+    return emf.createEntityManager();
   }
-
-  //@Produces
-  public EntityManager produceEM(){
+  @Produces
+  @DependentEM
+  @Dependent
+  public EntityManager getEntityManager_Dependent(){
     return emf.createEntityManager();
   }
   
-            // @Disposes
-  public void disposeEM( EntityManager em){
-    if( em.isOpen() ){
-      em.flush();
-      try{
-        if( em.getTransaction().isActive() ){
-          em.getTransaction().commit();
-        }
-      }catch(IllegalStateException ex){
-        
+  public void closeEntityManager( @Disposes @Any EntityManager em ){
+    System.out.printf("---  @Disposes EntityManager \n");
+    try{
+      if( em.isOpen() ){
+          em.flush();
+          if( em.getTransaction().isActive() ){
+            em.getTransaction().commit();
+          }
+        em.close();
       }
-      em.close();
+    }catch(IllegalStateException ex){
+      System.out.printf("--- EX.: %s \n", ex.getMessage() );
     }
   }
+  
+  
+  @PostConstruct
+  public void postContruct(){
+    System.out.printf("---  EMProducer: postContruct. \n");
     
+    if( Configuracoes.persistenceUnit == null || Configuracoes.persistenceUnit.isEmpty() ){
+      
+      throw new RuntimeException("Configure o nome da PU em 'web.xml', no parametro 'Configuracoes.persistenceUnit'.");
+    }
+    System.out.printf("---  Criando novo EMF com a PU: %s \n", Configuracoes.persistenceUnit );
+    myEMF = true;
+    emf = Persistence.createEntityManagerFactory(Configuracoes.persistenceUnit);
+  }
+  @PreDestroy
+  public void preDestroy(){
+    System.out.printf("---  EMProducer: preDestroy. \n");
+    if( myEMF && emf.isOpen() ){
+      System.out.printf("---  Fechando EMF. \n");
+      emf.close();
+    }
+  }
+  
+  
+  
 }
