@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" 
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence 
-                 http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+<persistence  xmlns="http://xmlns.jcp.org/xml/ns/persistence" 
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+              version="2.1" >
   <persistence-unit name="JavaModelo_Test_PU" transaction-type="RESOURCE_LOCAL">
     <!-- <provider>org.hibernate.ejb.HibernatePersistence</provider> -->
     <jta-data-source>java:jboss/datasources/JavaModelo_Test</jta-data-source>
@@ -20,7 +20,6 @@
     <class>br.eng.rcc.javamodelo.test.entidades.Porta</class>
     <class>br.eng.rcc.javamodelo.test.entidades.Usuario</class>
     <class>br.eng.rcc.javamodelo.test.entidades.Valor</class>
-    
     
     <properties>
       <property name="hibernate.max_fetch_depth" value="1"/>

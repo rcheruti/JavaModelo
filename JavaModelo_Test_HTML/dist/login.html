@@ -6,7 +6,22 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>JavaModelo Test: Login</title>
     
-    <style>*{border:none;background:0 0;margin:0;padding:0;opacity:1;box-sizing:border-box}body,html{width:100%;height:100%;font-size:16px;font-family:"Lucida Sans Unicode"}</style>
+    <style>* {
+  border: none;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  opacity: 1;
+  box-sizing: border-box;
+}
+html,
+body {
+  width: 100%;
+  height: 100%;
+  font-size: 16px;
+  font-family: "Lucida Sans Unicode";
+}
+</style>
     
   </head>
   <body ng-app="Module" ng-strict-di="true">
@@ -39,10 +54,206 @@
     
     
     
-    <script>!function(a,b){function c(){h=b.getElementsByTagName("body")[0]}function d(a,b){if("function"==typeof a)return a();if(a instanceof Array)switch(a[0]){case"!=":return b!==a[1];case"=":return b===a[1];case"<":return b<a[1];case"<=":return b<=a[1];case">":return b>a[1];case">=":return b>=a[1]}return!1}function e(b){var c=b.predicates;b._inserted&&!b.remove||(c.innerWidth&&!d(c.innerWidth,a.innerWidth)||c.innerHeight&&!d(c.innerHeight,a.innerHeight)||c.f&&!d(c.f,null)?p.remove(b.name):p.insert(b.name))}function f(a){for(var b in a){var c=a[b];c&&c.predicates&&e(c)}}function g(){q&&clearTimeout(q),q=setTimeout(function(){f(i),f(j)},50)}var h=null,i={},j={},k="LazyLoader: ",l="text/javascript",m="text/css",n="script",o="stylesheet",p={};p.load=function(a){if(a instanceof Array){h||c();for(var b=0;b<a.length;b++)h.appendChild(a[b])}},p.script=function(a,c,d){"undefined"==typeof c&&(c=!0),d||(d=l);for(var e=[],f=0;f<a.length;f++){var g=b.createElement("script");g.type=d,g.async=c,g.src=a[f],e.push(g)}return e},p.css=function(a,c,d){c||(c=o),d||(d=m);for(var e=[],f=0;f<a.length;f++){var g=b.createElement("link");g.type=d,g.rel=c,g.href=a[f],e.push(g)}return e},p.insert=function(a){var b=j[a];b&&(h||c(),h.appendChild(b._tag),b._inserted=!0,i[a]=b,j[a]=null)},p.remove=function(a,b){var c=i[a];if(c){var d=c._tag.parentElement;d&&d.removeChild(c._tag),c._inserted=!1,b||(j[a]=c),i[a]=null}},p.clearRemoved=function(){j={}},p.add=function(b){if("object"==typeof b){if(b.name||(b.name=b.src),i[b.name]||j[b.name])return void a.console.error(k+'The config with name "'+b.name+'" already exists! Call "remove( <name>, true )" to remove it.');b.type||(b.type="css"),b.tag||(b.tag={}),"undefined"==typeof b.tag.async&&(b.tag.async=!0),b.tag.rel||(b.tag.rel="js"===b.type?n:o),b.tag.type||(b.tag.type="js"===b.type?l:m);var c=null;if("js"===b.type?c=p.script([b.src],b.tag.async,b.tag.type):"css"===b.type&&(c=p.css([b.src],b.tag.rel,b.tag.type)),!c||!c.length)return void a.console.error(k+'Config the "type" with "js" or "css".');void 0===b.remove&&(b.remove=!0),b._tag=c[0],i[b.name]=b,b.predicates?(j[b.name]=b,e(b)):p.load(c)}},p.refresh=function(){g()};var q=null;a.addEventListener("resize",g,!1),a.LazyLoader=p}(window,document);</script>
+    <script>(function(window, document){
+  /*
+   * Detectar monitores:
+   * - window.screen:
+   *  - height
+   *  - width
+   *  - colorDepth
+   *  - pixelDepth (Firefox / Chrome)
+   *  - availWidth : width menos elementos da janela
+   *  - availHeight : height menos elementos da janela
+   *  
+   * - window.innerHeight
+   * - window.innerWidth
+   * 
+   * Estrutura de configuração ao registrar/adicionar um objeto ao Carregador:
+   * config: {
+   *  name: 'string' : nome desse objeto de configuração, para remover ele depois
+   *    // se não for informado, a string usada em "src" será usada como nome
+   *  remove: 'boolean' true : informa se a tag pode ser removida após colocada na página,
+   *    // isso acontecerá quando uma das restrições/predicados informar falso para essa tag
+   *  type : 'string' 'css' : informa o tipo de tag que será usado
+   *    // valores disponíveis: 'js', 'css'
+   *  src: 'string' : o link a ser carregado
+   *  
+   *  predicates: 'object' {} : informa as restrições dessa configuração
+   *    {
+   *      innerHeight: 'array|function' [ 'string', 'number' ] : verifica com o valor de "window.innerHeight"
+   *      innerWidth: 'array|function' [ 'string', 'number' ] : verifica com o valor de "window.innerWidth"
+   *      f: 'function' : função para ser executada para verificar, deve retornar um 'boolean'
+   *      colorDepth: 'array|function' [ 'string', 'number' ] : verifica com o valor de "window.screen.colorDepth"
+   *    }
+   *  
+   *  tag: 'object' : informações da tag que será usada, a configuração da tag que será usada não é possível
+   *    {
+   *      rel: 'string' 'stylesheet' : para css, informa o campo "rel" da tag "link"
+   *      type: 'string' 'text/css|text/javascript': informa o campo "type" da tag
+   *      async: 'boolean' true : para script, informa o campo "async" (html5) da tag "script"
+   *    }
+   *  _tag: 'DomNode' : criado pelo Carregador, aqui ficará o elemento da tag que foi 
+   *    // colocado no DOM
+   *  _inserted: 'boolean' : criado pelo Carregador, informa se o elemento está inserido no DOM
+   *  
+   * }
+   */
+  var body = null,
+      configCache = {},
+      configCacheRemoved = {},
+      logPrefix = 'LazyLoader: ',
+      dJsType = 'text/javascript',
+      dCssType = 'text/css',
+      dJsRel = 'script',
+      dCssRel = 'stylesheet';
+  
+  
+  function _loadBody(){ 
+    body = document.getElementsByTagName('body')[0]; 
+  };
+  
+  //=====================  LazyLoader object  ======================
+  var LazyLoader = {};
+  
+  LazyLoader.load = function( arr ){
+    if( !(arr instanceof Array) ) return;
+    if( !body ) _loadBody();
+    for( var i = 0; i < arr.length; i++ ){
+      body.appendChild( arr[i] );
+    }
+  };
+  LazyLoader.script = function( scriptsArr, async, type ){
+    if( typeof async === 'undefined' ) async = true;
+    if( !type ) type = dJsType;
+    var arr = [];
+    for( var i = 0; i < scriptsArr.length; i++ ){
+      var tag = document.createElement('script');
+      tag.type = type;
+      tag.async = async;
+      tag.src = scriptsArr[i];
+      arr.push( tag );
+    }
+    return arr;
+  };
+  LazyLoader.css = function( scriptsArr, rel, type ){
+    if( !rel ) rel = dCssRel;
+    if( !type ) type = dCssType;
+    var arr = [];
+    for( var i = 0; i < scriptsArr.length; i++ ){
+      var tag = document.createElement('link');
+      tag.type = type;
+      tag.rel = rel;
+      tag.href = scriptsArr[i];
+      arr.push( tag );
+    }
+    return arr;
+  };
+  
+  LazyLoader.insert = function( name ){
+    var config = configCacheRemoved[name];
+    if( !config ) return;
+    if( !body ) _loadBody();
+    body.appendChild( config._tag );
+    config._inserted = true;
+    configCache[name] = config;
+    configCacheRemoved[name] = null;
+  };
+  LazyLoader.remove = function( name, clear ){
+    var config = configCache[name];
+    if( !config ) return;
+    var parent = config._tag.parentElement;
+    if( parent ) parent.removeChild( config._tag );
+    config._inserted = false;
+    if( !clear ) configCacheRemoved[name] = config;
+    configCache[name] = null;
+  };
+  LazyLoader.clearRemoved = function(){
+    configCacheRemoved = {};
+  };
+  LazyLoader.add = function( config ){
+    if( !(typeof config === 'object') ) return;
+    if( !config.name ) config.name = config.src;
+    if( configCache[config.name] || configCacheRemoved[config.name] ){
+      window.console.error(logPrefix+'The config with name "'+ config.name +'" already exists! Call "remove( <name>, true )" to remove it.');
+      return;
+    }
+    if( !config.type ) config.type = 'css';
+    if( !config.tag ) config.tag = { };
+    if( typeof config.tag.async === 'undefined' ) config.tag.async = true;
+    if( !config.tag.rel ) config.tag.rel = config.type === 'js'? dJsRel : dCssRel;
+    if( !config.tag.type ) config.tag.type = config.type === 'js'? dJsType : dCssType;
+    var tags = null;
+    if( config.type === 'js' ) tags = LazyLoader.script( [config.src ], config.tag.async, config.tag.type );
+    else if( config.type === 'css' ) tags = LazyLoader.css( [config.src ], config.tag.rel, config.tag.type );
+    if( !tags || !tags.length ){
+      window.console.error(logPrefix+'Config the "type" with "js" or "css".');
+      return;
+    }
+    if( config.remove === undefined ) config.remove = true;
+    config._tag = tags[0];
+    configCache[config.name] = config;
+    if( config.predicates ){
+      configCacheRemoved[config.name] = config;
+      _check( config );
+    }else LazyLoader.load( tags );
+  };
+  
+  LazyLoader.refresh = function(){
+    _listener();
+  };
+  
+  //=====================  window resize listener  ======================
+  function _comp( arrComp, systemValue ){
+    if( typeof arrComp === 'function' ) return arrComp(  );
+    else if ( arrComp instanceof Array ) switch( arrComp[0] ){
+      case '!=': return systemValue !== arrComp[1]; break;
+      case '=' : return systemValue === arrComp[1]; break;
+      case '<' : return systemValue <   arrComp[1]; break;
+      case '<=': return systemValue <=  arrComp[1]; break;
+      case '>' : return systemValue >   arrComp[1]; break;
+      case '>=': return systemValue >=  arrComp[1]; break;
+    }
+    return false;
+  }
+  function _check( config ){
+    var pred = config.predicates;
+    if( config._inserted && !config.remove ) return;
+    if( 
+         ( !pred.innerWidth || _comp(pred.innerWidth, window.innerWidth) )
+      && ( !pred.innerHeight || _comp(pred.innerHeight, window.innerHeight) )
+      && ( !pred.f || _comp(pred.f, null) )
+    ){
+      LazyLoader.insert( config.name );
+    }else{
+      LazyLoader.remove( config.name );
+    }
+  }
+  function _listenerFor( arrObj ){
+    for( var g in arrObj ){
+      var obj = arrObj[g];
+      if( !obj || !obj.predicates ) continue;
+      _check(obj);
+    }
+  }
+  
+  var timeout = null;
+  function _listener(  ){
+    if( timeout ) clearTimeout( timeout );
+    timeout = setTimeout(function(){
+      _listenerFor( configCache );
+      _listenerFor( configCacheRemoved );
+    }, 50);
     
-    <link href="cssNormal.min.css" rel="stylesheet" type="text/css"/>
-    <script src="jsNormalLogin.min.js"></script>
+  }
+  window.addEventListener('resize', _listener, false);
+  
+  //=====================  public LazyLoader object  ======================
+  window.LazyLoader = LazyLoader;
+})(window, document);
+</script>
+    
+    <link href="cssNormal.css" rel="stylesheet" type="text/css"/>
+    <script src="jsNormalLogin.js"></script>
     
   </body>
 </html>
