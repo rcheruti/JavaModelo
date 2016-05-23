@@ -22,7 +22,10 @@
       -->
     </target>
     
-    <target name="-post-dist" if="j2ee.server.domain">
+    <target name="-post-dist" > <!--  if="j2ee.server.domain"  -->
+      <!--  "if not", propriedades não podem mudar de valor  -->
+      <property name="j2ee.server.domain" value="C:/Apache/apache-tomcat-8.0.35/webapps"/>
+      
       <!-- <echoproperties /> -->
       <delete file="${j2ee.server.domain}/deployments/${dist.ear.war}" />
       <copy file="${dist.ear.war}" todir="${j2ee.server.domain}/deployments" />

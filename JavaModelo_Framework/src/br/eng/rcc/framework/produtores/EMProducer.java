@@ -12,12 +12,13 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceUnit;
+import org.hibernate.cfg.Configuration;
 
 @ApplicationScoped
 public class EMProducer {
   
-  @PersistenceContext
-  @Produces
+  //@PersistenceContext
+  //@Produces
   private EntityManager em;
   
   
@@ -25,15 +26,19 @@ public class EMProducer {
   private EntityManagerFactory emf;
   private boolean myEMF;
 
-  //@PostConstruct
+  @PostConstruct
   public void postConstruct(){
-    if( Configuracoes.persistenceUnit != null && !Configuracoes.persistenceUnit.isEmpty() ){
-      myEMF = true;
-      emf = Persistence.createEntityManagerFactory(Configuracoes.persistenceUnit);
-    }
+    
+    Configuration cfg = new Configuration()
+        .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLInnoDBDialect")
+        .setProperty("hibernate.connection.datasource", "java:comp/env/JavaModelo_Test")
+        ;
+    
+    cfg.buildSessionFactory();
+    
   }
   
-  //@PreDestroy
+  @PreDestroy
   public void preDestroy(){
     if( myEMF && emf.isOpen() ){
       emf.close();

@@ -17,6 +17,7 @@ Instalação:
     - weld-servlet.jar
   + Hibernate (na aplicação)
     - arquivos da pasta "required" do projeto Hibernate, excluindo o "jandex"!
+    - arquivos da pasta "jpa"
   + JAX-RS (na aplicação) (RestEasy) arquivos da pasta "lib" do projeto:
     - resteasy-...-client.jar
     - resteasy-...-jackson2.jar
@@ -43,3 +44,5 @@ Instalação do DataSource JPA nos servidores:
 
   + Tomcat:
     - 
+
+
