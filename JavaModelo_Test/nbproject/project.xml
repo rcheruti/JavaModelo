@@ -10,10 +10,28 @@
             <minimum-ant-version>1.6.5</minimum-ant-version>
             <web-module-libraries>
                 <library dirs="200">
-                    <file>${libs.javaee-web-api-7.0.classpath}</file>
+                    <file>${libs.Lombok_1.16.6.classpath}</file>
                 </library>
                 <library dirs="200">
-                    <file>${libs.Lombok_1.16.6.classpath}</file>
+                    <file>${libs.JavaxTransaction_1.2.classpath}</file>
+                </library>
+                <library dirs="200">
+                    <file>${libs.JavaxWebsocket_1.1.classpath}</file>
+                </library>
+                <library dirs="200">
+                    <file>${libs.Servlet_API_3.1.classpath}</file>
+                </library>
+                <library dirs="200">
+                    <file>${libs.JAX-RS__RestEase_3.0.13___Required_Only__.classpath}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library dirs="200">
+                    <file>${libs.Hibernate_5__Required_Only_.classpath}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
+                <library dirs="200">
+                    <file>${libs.Weld__Required_Only_.classpath}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
                     <file>${libs.Jackson_2.5.classpath}</file>
