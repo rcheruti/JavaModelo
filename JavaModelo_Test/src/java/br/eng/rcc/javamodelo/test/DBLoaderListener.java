@@ -18,7 +18,7 @@ import javax.transaction.Transactional;
  * @author rcheruti
  */
 
-@WebListener
+//@WebListener
 @Priority(Integer.MAX_VALUE)
 public class DBLoaderListener implements ServletContextListener{
   

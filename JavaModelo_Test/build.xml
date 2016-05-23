@@ -22,7 +22,7 @@
       -->
     </target>
     
-    <target name="-post-dist">
+    <target name="-post-dist" if="j2ee.server.domain">
       <!-- <echoproperties /> -->
       <delete file="${j2ee.server.domain}/deployments/${dist.ear.war}" />
       <copy file="${dist.ear.war}" todir="${j2ee.server.domain}/deployments" />

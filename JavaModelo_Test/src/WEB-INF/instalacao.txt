@@ -1,0 +1,45 @@
+
+================    Informações de Instalação    ================
+
+Para instalar a aplicação em um servdor Servlet (Tomcat, Jetty) é necessário
+as bibliotecas:
+  - CDI (testado com Weld)
+  - Hibernate (obrigatório!) (JPA)
+  - JAX-RS (testado com RestEasy)
+  - Jandex (para o Weld e para o Hibernate, vem junto com o projeto Hibernate)
+  - Jackson 2.x.x (para JSON)
+  - JavaMail
+  - Apache POI (para exportar Excel)
+
+Instalação:
+  + Weld (no servidor)
+    - jandex.vXXX.jar (versão >= 2.0.1)
+    - weld-servlet.jar
+  + Hibernate (na aplicação)
+    - arquivos da pasta "required" do projeto Hibernate, excluindo o "jandex"!
+  + JAX-RS (na aplicação) (RestEasy) arquivos da pasta "lib" do projeto:
+    - resteasy-...-client.jar
+    - resteasy-...-jackson2.jar
+    - resteasy-...-jaxrs.jar
+    - resteasy-...-initializer.jar
+  + Jackson (na aplicação)
+    - jackson-core.jar
+    - jackson-annotations.jar
+    - jackson-databind.jar
+  + JavaMail (na aplicação)
+    - javamail.jar
+  + Apache POI
+    - ooxml-lib/xmlbeans.jar
+    - poi.*.jar (exceto "poi-examples-...")
+
+
+Instalação do DataSource JPA nos servidores:
+  + WildFly (JBoss):
+    - A instalação pode ser feita pela GUI do servidor
+    - A instalação deve ser feita copiando o driver JDBC para a pasta "modules",
+    e alterando o arquivo "standalone/configuration/standalone.xml" na parte
+    "profile/subsystem:datasources", adicionando um novo driver e um 
+    novo datasource (copie os que ja existem como exemplo)
+
+  + Tomcat:
+    - 
