@@ -13,9 +13,6 @@
                     <file>${libs.Lombok_1.16.6.classpath}</file>
                 </library>
                 <library dirs="200">
-                    <file>${libs.JavaxTransaction_1.2.classpath}</file>
-                </library>
-                <library dirs="200">
                     <file>${libs.JavaxWebsocket_1.1.classpath}</file>
                 </library>
                 <library dirs="200">
@@ -29,6 +26,10 @@
                 </library>
                 <library dirs="200">
                     <file>${libs.Jandex_2.0.1.classpath}</file>
+                </library>
+                <library dirs="200">
+                    <file>${libs.JavaxTransaction_1.2.classpath}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
                     <file>${libs.JAX-RS__RestEase_3.0.13___Required_Only__.classpath}</file>

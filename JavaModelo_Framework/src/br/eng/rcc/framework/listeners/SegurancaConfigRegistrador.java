@@ -1,7 +1,7 @@
 
 package br.eng.rcc.framework.listeners;
 
-import br.eng.rcc.framework.config.SegurancaConfig;
+import br.eng.rcc.framework.config.PersistenciaConfig;
 import java.io.IOException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -24,7 +24,7 @@ public class SegurancaConfigRegistrador implements ServletContextListener{
   @Override
   public void contextInitialized(ServletContextEvent sce) {
     try{
-      SegurancaConfig.init();
+      PersistenciaConfig.init();
     }catch(IOException ex){
       throw new RuntimeException("------ Problemas ao tentar carregar as configuracoes de seguranca!", ex);
     }

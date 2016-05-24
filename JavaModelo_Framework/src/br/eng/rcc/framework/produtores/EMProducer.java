@@ -2,17 +2,18 @@
 package br.eng.rcc.framework.produtores;
 
 import br.eng.rcc.framework.config.Configuracoes;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
-import org.hibernate.cfg.Configuration;
+import org.hibernate.SessionFactory;
+import org.hibernate.jpa.boot.internal.EntityManagerFactoryBuilderImpl;
+import org.hibernate.jpa.boot.internal.PersistenceUnitInfoDescriptor;
 
 @ApplicationScoped
 public class EMProducer {
@@ -21,6 +22,8 @@ public class EMProducer {
   //@Produces
   private EntityManager em;
   
+  private SessionFactory sf;
+  
   
   //@PersistenceUnit
   private EntityManagerFactory emf;
@@ -28,13 +31,24 @@ public class EMProducer {
 
   @PostConstruct
   public void postConstruct(){
+    System.out.printf("---  Iniciando config de banco \n");
     
-    Configuration cfg = new Configuration()
-        .setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLInnoDBDialect")
-        .setProperty("hibernate.connection.datasource", "java:comp/env/JavaModelo_Test")
-        ;
+    Properties prop = new Properties();
+    for(String key : Configuracoes.hibernate.keySet()){
+      prop.put(key, Configuracoes.hibernate.get(key));
+    }
     
-    cfg.buildSessionFactory();
+    PersistenceUnitInfoImpl puInfo = 
+            new PersistenceUnitInfoImpl("PersistenciaPU", new ArrayList<>(), prop);
+    
+    EntityManagerFactoryBuilderImpl emFB = 
+      new EntityManagerFactoryBuilderImpl(
+        new PersistenceUnitInfoDescriptor(puInfo), Collections.emptyMap());
+    
+    
+    emf = emFB.build();
+    
+    System.out.printf("---  Config de banco pronta! \n");
     
   }
   
@@ -45,7 +59,7 @@ public class EMProducer {
     }
   }
 
-  //@Produces
+  @Produces
   public EntityManager produceEM(){
     return emf.createEntityManager();
   }

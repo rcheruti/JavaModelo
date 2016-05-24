@@ -4,6 +4,10 @@ package br.eng.rcc.framework.config;
 import br.eng.rcc.framework.filtros.RewriteFiltro;
 import br.eng.rcc.framework.seguranca.filtros.SegurancaFiltro;
 import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.Metamodel;
 
@@ -50,7 +54,7 @@ public class Configuracoes {
    * {@link loginPath}.
    */
   public static String segurancaRegExp = 
-      "(?i:^/?(?:img/|css/|js/|s/seguranca/login|persistencia/context|utils|.*\\.js$|.*\\.css$))" ;
+      "(?i:^/?(?:img/|css/|js/|seguranca/login|persistencia/context|utils|.*\\.js$|.*\\.css$))" ;
   
   
   /**
@@ -158,5 +162,80 @@ public class Configuracoes {
    * 
    */
   public static String[] carregarDB = {  };
+  
+  
+  /**
+   * Configurações que serão usadas pelo hibernate quando uma nova Sessão for criada.
+   * <br><br>
+   * Essas confogurações serão substituidas por novas configurações quando
+   * a primeira execução da aplicação acontecer. Essas novas configurações serão
+   * guardadas em um arquivo fora do arquivo ".war" ou ".jar", pois serão 
+   * informadas só após a 1ª execução (pelo usuário final).
+   * <br><br>
+   * As configurações de banco de dados serão descartadas temporariamente
+   * caso uma tentativa de conexão (com as configurações informadas) tenha
+   * falhado. <br>
+   * Nesse caso, a aplicação deve iniciar para que seja possível corrigir (ou 
+   * informar) as configurações em uma GUI.
+   * 
+   */
+  public static final Map<String, String> hibernate = new HashMap<>(10);
+  static{
+    hibernate.put("hibernate.c3p0.min_size", "5");
+    hibernate.put("hibernate.c3p0.max_size", "30");
+    hibernate.put("hibernate.c3p0.timeout", "300");
+    hibernate.put("hibernate.c3p0.max_statements", "50");
+    hibernate.put("hibernate.c3p0.idle_test_period", "3000");
+    hibernate.put("hibernate.archive.autodetection", "hbm,class");
+  }
+  
+  //==========================================================================
+  //==========================================================================
+  //==========================================================================
+  
+  public static void load(Map<String,String> props){
+    String str;
+    int mods;
+    int mask = Modifier.PUBLIC | Modifier.STATIC;
+    
+    for (Field field : Configuracoes.class.getFields()){
+      mods = field.getModifiers();
+      if ((mods ^ mask) != 0) continue;
+      str = props.get(field.getName());
+      if( str == null ) continue;
+      try {
+
+        Class<?> t = field.getType();
+        if (field.getType().isPrimitive()) {
+          if (t.equals(boolean.class)) {
+            field.setBoolean(Configuracoes.class, Boolean.parseBoolean(str));
+          } else if (t.equals(byte.class)) {
+            field.setByte(Configuracoes.class, Byte.parseByte(str));
+          } else if (t.equals(char.class)) {
+            field.setChar(Configuracoes.class, str.charAt(0));
+          } else if (t.equals(short.class)) {
+            field.setShort(Configuracoes.class, Short.parseShort(str));
+          } else if (t.equals(int.class)) {
+            field.setInt(Configuracoes.class, Integer.parseInt(str));
+          } else if (t.equals(long.class)) {
+            field.setLong(Configuracoes.class, Long.parseLong(str));
+          } else if (t.equals(float.class)) {
+            field.setFloat(Configuracoes.class, Float.parseFloat(str));
+          } else if (t.equals(double.class)) {
+            field.setDouble(Configuracoes.class, Double.parseDouble(str));
+          }
+        } else if(t.isArray()){
+          field.set(Configuracoes.class, str.split("[,;\\s]+") );
+        } else if(t.isAssignableFrom(str.getClass())){
+          field.set(Configuracoes.class, str);
+        }
+
+      } catch (IllegalAccessException ex) {
+        System.err.println(String
+                .format("--->>  Não é possível fazer reflexão nos atributos da classe 'Configuracoes': %s\n",
+                        ex.getMessage()));
+      }
+    }
+  }
   
 }

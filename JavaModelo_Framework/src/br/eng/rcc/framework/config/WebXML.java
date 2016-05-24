@@ -2,6 +2,8 @@ package br.eng.rcc.framework.config;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Map;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -24,56 +26,17 @@ public class WebXML implements ServletContextListener {
 
     String str;
     String prefix = "Configuracoes.";
-    int mods;
-    int mask = Modifier.PUBLIC | Modifier.STATIC;
-
+    Map<String,String> props = new HashMap<>(12);
+    
     for (Field field : Configuracoes.class.getFields()) {
-      mods = field.getModifiers();
-      if ((mods ^ mask) != 0) {
-        continue;
-      }
-
       str = ctx.getInitParameter(prefix + field.getName());
-      if (str == null) {
-        continue;
-      }
-      str = str.trim();
-      try {
-
-        Class<?> t = field.getType();
-        if (field.getType().isPrimitive()) {
-          if (t.equals(boolean.class)) {
-            field.setBoolean(Configuracoes.class, Boolean.parseBoolean(str));
-          } else if (t.equals(byte.class)) {
-            field.setByte(Configuracoes.class, Byte.parseByte(str));
-          } else if (t.equals(char.class)) {
-            field.setChar(Configuracoes.class, str.charAt(0));
-          } else if (t.equals(short.class)) {
-            field.setShort(Configuracoes.class, Short.parseShort(str));
-          } else if (t.equals(int.class)) {
-            field.setInt(Configuracoes.class, Integer.parseInt(str));
-          } else if (t.equals(long.class)) {
-            field.setLong(Configuracoes.class, Long.parseLong(str));
-          } else if (t.equals(float.class)) {
-            field.setFloat(Configuracoes.class, Float.parseFloat(str));
-          } else if (t.equals(double.class)) {
-            field.setDouble(Configuracoes.class, Double.parseDouble(str));
-          }
-        } else if(t.isArray()){
-          field.set(Configuracoes.class, str.split("[,;\\s]+") );
-        } else {
-          field.set(Configuracoes.class, str);
-        }
-
-      } catch (IllegalAccessException ex) {
-        System.err.println(String
-                .format("--->>  Não é possível fazer reflexão nos atributos da classe 'Configuracoes': %s\n",
-                        ex.getMessage()));
+      if (str != null) {
+        props.put(field.getName(), str);
       }
     }
+    Configuracoes.load(props);
     
     System.out.printf("---  Configurações de WebXML finalizado. \n");
-    
   }
 
   @Override

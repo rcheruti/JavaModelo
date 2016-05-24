@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
-@WebServlet("/seguranca")
+@WebServlet("/seguranca/*")
 public class LoginService extends HttpServlet{
   
   

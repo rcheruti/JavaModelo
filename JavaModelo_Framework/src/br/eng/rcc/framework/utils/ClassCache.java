@@ -267,7 +267,7 @@ public class ClassCache {
       Metamodel metamodel = em.getMetamodel();
       Map<String, Class<?>> map = new HashMap<>(metamodel.getManagedTypes().size() + 2);
       for (ManagedType<?> entity : metamodel.getManagedTypes()) {
-        //System.out.printf("---  Carregando do Metamodel: %s [%s] \n", entity.getName(), entity.getJavaType() );
+        System.out.printf("---  Carregando do Metamodel: %s [%s] \n", entity.getJavaType().getSimpleName(), entity.getJavaType() );
         map.put(entity.getJavaType().getSimpleName(), entity.getJavaType());
       }
       ref = new SoftReference(map);
