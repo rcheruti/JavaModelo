@@ -179,8 +179,9 @@ public class Configuracoes {
    * informar) as configurações em uma GUI.
    * 
    */
-  public static final Map<String, String> hibernate = new HashMap<>(10);
+  public static Map<String, String> hibernate ;
   static{
+    hibernate = new HashMap<>(10);
     hibernate.put("hibernate.c3p0.min_size", "5");
     hibernate.put("hibernate.c3p0.max_size", "30");
     hibernate.put("hibernate.c3p0.timeout", "300");
@@ -193,42 +194,54 @@ public class Configuracoes {
   //==========================================================================
   //==========================================================================
   
-  public static void load(Map<String,String> props){
-    String str;
+  public static void load(Map<String,Object> props){
+    Object obj;
     int mods;
     int mask = Modifier.PUBLIC | Modifier.STATIC;
     
     for (Field field : Configuracoes.class.getFields()){
       mods = field.getModifiers();
       if ((mods ^ mask) != 0) continue;
-      str = props.get(field.getName());
-      if( str == null ) continue;
+      obj = props.get(field.getName());
+      if( obj == null ) continue;
       try {
 
         Class<?> t = field.getType();
-        if (field.getType().isPrimitive()) {
-          if (t.equals(boolean.class)) {
-            field.setBoolean(Configuracoes.class, Boolean.parseBoolean(str));
-          } else if (t.equals(byte.class)) {
-            field.setByte(Configuracoes.class, Byte.parseByte(str));
-          } else if (t.equals(char.class)) {
-            field.setChar(Configuracoes.class, str.charAt(0));
-          } else if (t.equals(short.class)) {
-            field.setShort(Configuracoes.class, Short.parseShort(str));
-          } else if (t.equals(int.class)) {
-            field.setInt(Configuracoes.class, Integer.parseInt(str));
-          } else if (t.equals(long.class)) {
-            field.setLong(Configuracoes.class, Long.parseLong(str));
-          } else if (t.equals(float.class)) {
-            field.setFloat(Configuracoes.class, Float.parseFloat(str));
-          } else if (t.equals(double.class)) {
-            field.setDouble(Configuracoes.class, Double.parseDouble(str));
+        if( obj instanceof String ){
+          String str = (String)obj;
+          if (field.getType().isPrimitive() ) {
+            if (t.equals(boolean.class)) {
+              field.setBoolean(Configuracoes.class, Boolean.parseBoolean(str));
+            } else if (t.equals(byte.class)) {
+              field.setByte(Configuracoes.class, Byte.parseByte(str));
+            } else if (t.equals(char.class)) {
+              field.setChar(Configuracoes.class, str.charAt(0));
+            } else if (t.equals(short.class)) {
+              field.setShort(Configuracoes.class, Short.parseShort(str));
+            } else if (t.equals(int.class)) {
+              field.setInt(Configuracoes.class, Integer.parseInt(str));
+            } else if (t.equals(long.class)) {
+              field.setLong(Configuracoes.class, Long.parseLong(str));
+            } else if (t.equals(float.class)) {
+              field.setFloat(Configuracoes.class, Float.parseFloat(str));
+            } else if (t.equals(double.class)) {
+              field.setDouble(Configuracoes.class, Double.parseDouble(str));
+            }
+          } else if(t.isArray()){
+            field.set(Configuracoes.class, str.split("[,;\\s]+") );
+          } else if(t.isAssignableFrom(str.getClass())){
+            field.set(Configuracoes.class, str);
           }
-        } else if(t.isArray()){
-          field.set(Configuracoes.class, str.split("[,;\\s]+") );
-        } else if(t.isAssignableFrom(str.getClass())){
-          field.set(Configuracoes.class, str);
+        }else{
+          if(t.isArray()){
+            
+          } else if(t.isAssignableFrom(Map.class)){
+            
+          }else{
+            field.set(Configuracoes.class, obj);
+          }
         }
+        
 
       } catch (IllegalAccessException ex) {
         System.err.println(String

@@ -1,7 +1,6 @@
 package br.eng.rcc.framework.config;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.ServletContext;
@@ -26,7 +25,7 @@ public class WebXML implements ServletContextListener {
 
     String str;
     String prefix = "Configuracoes.";
-    Map<String,String> props = new HashMap<>(12);
+    Map<String,Object> props = new HashMap<>(12);
     
     for (Field field : Configuracoes.class.getFields()) {
       str = ctx.getInitParameter(prefix + field.getName());

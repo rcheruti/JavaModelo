@@ -1,7 +1,6 @@
 package br.eng.rcc.framework.produtores;
 
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -21,7 +20,8 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
           = PersistenceUnitTransactionType.RESOURCE_LOCAL;
 
   private final List<String> managedClassNames;
-
+  private final List<URL> jarUrls;
+  
   private final Properties properties;
 
   private DataSource jtaDataSource;
@@ -31,10 +31,12 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
   public PersistenceUnitInfoImpl(
           String persistenceUnitName,
           List<String> managedClassNames,
-          Properties properties) {
+          Properties properties,
+          List<URL> jarUrls) {
     this.persistenceUnitName = persistenceUnitName;
-    this.managedClassNames = managedClassNames;
-    this.properties = properties;
+    this.managedClassNames = managedClassNames != null? managedClassNames : Collections.emptyList();
+    this.properties = properties != null? properties : new Properties();
+    this.jarUrls = jarUrls != null? jarUrls : Collections.emptyList();
   }
 
   @Override
@@ -83,10 +85,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
 
   @Override
   public List<URL> getJarFileUrls() {
-    URL url = this.getClass().getClassLoader().getResource("JavaModelo_Entities.jar");
-    System.out.printf("---  URL do arquivo JAR: %s \n", url );
-    if( url != null ) return Arrays.asList(url);
-    return Arrays.asList();
+    return jarUrls;
   }
 
   @Override
@@ -114,6 +113,7 @@ public class PersistenceUnitInfoImpl implements PersistenceUnitInfo {
     return ValidationMode.AUTO;
   }
 
+  @Override
   public Properties getProperties() {
     return properties;
   }
