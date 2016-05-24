@@ -1324,7 +1324,7 @@ Module.controller('LoginForm',['$scope','$http','$timeout','path','$window',
   
   $scope.entrar = function(){
     $http
-      .post( path('s','/seguranca/login'), { login: $scope.login, senha: $scope.senha } )
+      .post( path('r','/seguranca/login'), { login: $scope.login, senha: $scope.senha } )
       .then(function(data){
         $timeout.cancel( timeOut );
         data = data.data;

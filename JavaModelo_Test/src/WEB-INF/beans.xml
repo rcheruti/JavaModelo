@@ -6,7 +6,7 @@
   
   <!--
   <interceptors>
-    <class>br.eng.rcc.framework.produtores.Transacional</class>
+    <class>br.eng.rcc.framework.produtores.TransactionalInter</class>
   </interceptors>
   -->
    

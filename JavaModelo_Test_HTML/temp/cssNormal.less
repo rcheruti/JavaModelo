@@ -123,14 +123,14 @@
 /*  ==================   Sombras   =====================  */
 @shadowColor: rgba(0,0,0,.3);
 .shadow(@i: 2){
-  box-shadow: 0px (@i*1.5/2px) (@i*1/2px) @shadowColor;
+  box-shadow: 0px (@i*3/2px) (@i*4/2px) @shadowColor;
 }
 .shadowi(@i: 2){
-  box-shadow: 0px (@i*0.5/2px) (@i*1/2px) @shadowColor inset;
+  box-shadow: 0px (@i*1/2px) (@i*4/2px) @shadowColor inset;
 }
 .shadowMix(@i,@j){
-  box-shadow: 0px (@i*1.5/2px) (@i*1/2px) @shadowColor, 
-              0px (@j*0.5/2px) (@j*1/2px) @shadowColor inset;
+  box-shadow: 0px (@i*3/2px) (@i*4/2px) @shadowColor, 
+              0px (@j*1/2px) (@j*4/2px) @shadowColor inset;
 }
 .shadowLoop(@i: 0) when (@i > -1){
   .shadow@{i}{
@@ -173,6 +173,7 @@ ul li{
 button{
   .borderRadius;
   .shadow2;
+  .trans;
   border: 1px solid #ccc;
   padding: 2px 6px;
   cursor: pointer;
@@ -187,6 +188,7 @@ button{
     .circulo;
   }
 }
+
 
 
 /*  =========  Inputs  =========  */

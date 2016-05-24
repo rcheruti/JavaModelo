@@ -10,16 +10,18 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+//import javax.ws.rs.ext.ContextResolver;
+//import javax.ws.rs.ext.Provider;
 
-@Provider
+//implements ContextResolver<ObjectMapper>
+
+//@Provider
 @ApplicationScoped
-public class JacksonObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
+public class JacksonObjectMapperContextResolver  {
   
   private ObjectMapper omCache;
   
-  @Override
+  //@Override
   public ObjectMapper getContext(Class<?> type) {
     if( omCache == null ){
       omCache = criar();

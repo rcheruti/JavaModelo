@@ -2,12 +2,9 @@ package br.eng.rcc.framework.config;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Set;
-import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebListener;
 
 /**
@@ -16,14 +13,8 @@ import javax.servlet.annotation.WebListener;
  *
  * @author rcheruti
  */
-//@WebListener
-public class WebXML implements ServletContextListener, ServletContainerInitializer {
-  
-  
-  @Override
-  public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
-    contextInitialized( new ServletContextEvent(ctx) );
-  }
+@WebListener
+public class WebXML implements ServletContextListener {
   
   
   @Override
@@ -32,7 +23,7 @@ public class WebXML implements ServletContextListener, ServletContainerInitializ
     ServletContext ctx = sce.getServletContext();
 
     String str;
-    String prefix =  Configuracoes.class.getSimpleName() + ".";
+    String prefix = "Configuracoes.";
     int mods;
     int mask = Modifier.PUBLIC | Modifier.STATIC;
 
@@ -41,14 +32,12 @@ public class WebXML implements ServletContextListener, ServletContainerInitializ
       if ((mods ^ mask) != 0) {
         continue;
       }
-      
-      String paramName = prefix + field.getName();
-      str = ctx.getInitParameter(paramName);
+
+      str = ctx.getInitParameter(prefix + field.getName());
       if (str == null) {
         continue;
       }
       str = str.trim();
-      System.out.printf("---  Carregando config '%s' com '%s' \n", paramName, str);
       try {
 
         Class<?> t = field.getType();
@@ -91,6 +80,5 @@ public class WebXML implements ServletContextListener, ServletContainerInitializ
   public void contextDestroyed(ServletContextEvent sce) {
 
   }
-
 
 }

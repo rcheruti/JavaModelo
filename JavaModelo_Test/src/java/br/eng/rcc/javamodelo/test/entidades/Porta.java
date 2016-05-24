@@ -3,7 +3,6 @@ package br.eng.rcc.javamodelo.test.entidades;
 
 import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -29,7 +28,7 @@ public class Porta implements Serializable{
   
   protected String cor;
   
-  @OneToMany(mappedBy = "porta", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "porta")
   protected Set<Janela> janelas;
   
 }
