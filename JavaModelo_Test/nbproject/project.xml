@@ -29,27 +29,21 @@
                 </library>
                 <library dirs="200">
                     <file>${libs.JavaxTransaction_1.2.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
                     <file>${libs.JAX-RS__RestEase_3.0.13___Required_Only__.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
                     <file>${libs.Hibernate_5__Required_Only_.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
                     <file>${libs.Jackson_2.5.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
                     <file>${libs.Apache_POI_3.13.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
                     <file>${libs.JavaMail_1.5.5.classpath}</file>
-                    <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
                 <library dirs="200">
                     <file>${reference.JavaModelo_Framework.jar}</file>
