@@ -1192,7 +1192,7 @@ Module.provider('LoginInter',[function(state){ // '$state'
       if( promise._recarregar ) return promise;
       promise.$$state.status = 0;
       promise._recarregar = true;
-      $http.get( path('servico','/seguranca/usuario') ).then(function(data){
+      $http.get( path('r','/seguranca/usuario') ).then(function(data){
         if( data.data.codigo === 200 && data.data.data ) resolve( data.data.data );
         else reject( {} );
       },function(err){

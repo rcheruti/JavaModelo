@@ -1192,7 +1192,7 @@ Module.provider('LoginInter',[function(state){ // '$state'
       if( promise._recarregar ) return promise;
       promise.$$state.status = 0;
       promise._recarregar = true;
-      $http.get( path('servico','/seguranca/usuario') ).then(function(data){
+      $http.get( path('r','/seguranca/usuario') ).then(function(data){
         if( data.data.codigo === 200 && data.data.data ) resolve( data.data.data );
         else reject( {} );
       },function(err){
@@ -1358,7 +1358,7 @@ Module.controller('Menu',['$scope','$http','$window','path',
   
   $scope.logout = function(){
     //$http.post( context.services+ '/seguranca/logout').then(function(data){
-    $http.post( path('s', '/seguranca/logout') ).then(function(data){
+    $http.post( path('r', '/seguranca/logout') ).then(function(data){
       if( data.data.status ){
         //var url = $window.location.origin + context.root ;
         //$window.location = url;

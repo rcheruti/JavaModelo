@@ -6,6 +6,7 @@ import br.eng.rcc.framework.interfaces.IUsuario;
 import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
 import br.eng.rcc.framework.jaxrs.JsonResponse;
 import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.produtores.TransactionalInter;
 import br.eng.rcc.framework.seguranca.entidades.ChaveAcesso;
 import br.eng.rcc.framework.seguranca.entidades.Credencial;
 import br.eng.rcc.framework.seguranca.entidades.Grupo;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.List;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -77,6 +79,8 @@ public class LoginService extends HttpServlet{
   @Transactional
   public Object loginDB( HttpServletRequest req, HttpServletResponse resp, 
             String login,  String senha ){
+    TransactionalInter.open(em);
+    
     if( !uService.checkLogin( true ) ){
       if( login == null || senha == null ){
         throw new MsgException("Informe o usuário e a senha para fazer a autenticação");
@@ -114,11 +118,13 @@ public class LoginService extends HttpServlet{
       }
     }
     
+    TransactionalInter.commit(em);
     return new JsonResponse(true,"Logado");
   }
   
   @Transactional
   public Object logout(HttpServletRequest req, HttpServletResponse resp){
+    TransactionalInter.open(em);
     
     SegUsuario u = null;
     HttpSession session = req.getSession(false);
@@ -139,7 +145,8 @@ public class LoginService extends HttpServlet{
           .executeUpdate();
       }
     }
-
+    
+    TransactionalInter.commit(em);
     return new JsonResponse(true,"Logout");
   }
   
@@ -156,7 +163,7 @@ public class LoginService extends HttpServlet{
         .getResultList();
       if( (long)lista.get(0) < 1 ){
         try{
-          criarCom = new String( MessageDigest.getInstance("SHA-512")
+          criarCom = Base64.getEncoder().encodeToString( MessageDigest.getInstance("SHA-512")
                   .digest( tempString.getBytes() ) );
           ChaveAcesso chave = new ChaveAcesso();
           chave.setChave(criarCom);
@@ -168,6 +175,7 @@ public class LoginService extends HttpServlet{
         }
       }
     }
+    if( criarCom == null ) throw new MsgException("Não é possível criar uma nova ChaveAcesso! Não podemos fazer login!");
     return criarCom ;
   }
   
