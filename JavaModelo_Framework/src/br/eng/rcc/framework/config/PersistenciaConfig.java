@@ -7,7 +7,6 @@ import br.eng.rcc.framework.seguranca.config.SegurancaNode;
 import br.eng.rcc.framework.seguranca.config.SegurancaRootNode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -20,7 +19,6 @@ import java.util.Map;
  * Essa classe faz a leitura dos arquivos de configuraçao de segurança, que 
  * pode ser escrito em <strong>JSON</strong> ou <i>XML (este ainda está pendente!!!)</i>
  * 
- * @author Rafael
  */
 public class PersistenciaConfig {
     
@@ -39,7 +37,22 @@ public class PersistenciaConfig {
       ObjectMapper mapper = new JacksonObjectMapperContextResolver().getContext(null);
       JsonNode json = mapper.readValue(url, JsonNode.class);
       
-      Configuracoes.load( mapper.convertValue(json, Map.class) );
+      Map<String,Object> mapaCarregado = mapper.readValue(url, Map.class);
+      for(String s : mapaCarregado.keySet()){
+        if( Configuracoes.Key.hibernate.name().equals(s) ) continue;
+        Configuracoes.getInstance().configs.put(s, mapaCarregado.get(s));
+      }
+      Map<String,Object> hbnMap = (Map<String,Object>)mapaCarregado.get(Configuracoes.Key.hibernate.name());
+      if( hbnMap != null ){
+        Configuracoes.getInstance().hibernate().putAll(hbnMap);
+      }
+      /*
+      for(String s : Configuracoes.getInstance().configs.keySet()){
+        System.out.printf("---  %s <%s>: %s \n", s, 
+                Configuracoes.getInstance().configs.get(s).getClass(),
+                Configuracoes.getInstance().configs.get(s));
+      }
+      /* */
       
         // ===  Carregando segurança:
       segurancas = new SegurancaRootNode();
@@ -89,47 +102,5 @@ public class PersistenciaConfig {
     System.out.printf("---  Configurações de 'persistencia.json' finalizado. \n");
   }
   
-  
-  
-  private static Map<String,Object> loadConfig(JsonNode json){
-    
-    
-    Map<String,Object> mapConfigs = new HashMap<>(16);
-    Iterator<String> itN = json.fieldNames();
-    while( itN.hasNext() ){
-      String s = itN.next();
-      JsonNode node = json.get(s);
-      if( node.isArray() ){
-        
-      }else if( node.isObject() ){
-        
-      }else{
-        mapConfigs.put(s, node.asText() );
-      }
-      
-      /*
-      }else if( node.isDouble() || node.isFloat() ){
-        mapConfigs.put(s, node.asDouble() );
-      }else if( node.isInt() ){
-        mapConfigs.put(s, node.asInt() );
-      }else if( node.isLong() ){
-        mapConfigs.put(s, node.asLong() );
-      */
-      
-    }
-    
-
-      // ===  Carregando configs do Hibernate:
-    if( json.path("hibernate").isObject() ){
-      JsonNode jsonHibernate = json.path("hibernate");
-      Iterator<String> itNames = jsonHibernate.fieldNames();
-      while( itNames.hasNext() ){
-        String s = itNames.next();
-        Configuracoes.hibernate.put(s, jsonHibernate.get(s).asText());
-      }
-    }
-    
-    return mapConfigs;
-  }
   
 }

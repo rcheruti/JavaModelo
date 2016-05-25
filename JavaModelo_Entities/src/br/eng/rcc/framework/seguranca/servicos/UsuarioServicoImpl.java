@@ -42,27 +42,27 @@ public class UsuarioServicoImpl extends UsuarioServico{
   
   @Override
   public byte[] criptografar(String str){
-    if( !Configuracoes.criptografiaAtivo ) return str.getBytes();
+    if( !Configuracoes.getInstance().criptografiaAtivo() ) return str.getBytes();
     
     byte[] bytes = str.getBytes();
     char[] chars = new char[ str.length() ];
     str.getChars(0, str.length(), chars, 0);
-    byte[] salt = Configuracoes.criptografiaSalt.getBytes();
-    int iteration = Configuracoes.criptografiaIteration;
-    int keyLength = Configuracoes.criptografiaKeyLength;
+    byte[] salt = Configuracoes.getInstance().criptografiaSalt().getBytes();
+    int iteration = Configuracoes.getInstance().criptografiaIteration();
+    int keyLength = Configuracoes.getInstance().criptografiaKeyLength();
     
     try{
-      SecretKeyFactory skf = SecretKeyFactory.getInstance( Configuracoes.criptografia );
+      SecretKeyFactory skf = SecretKeyFactory.getInstance( Configuracoes.getInstance().criptografia() );
       KeySpec scs = new PBEKeySpec( chars, salt, iteration, keyLength );
       return skf.generateSecret(scs).getEncoded();
     }catch(NoSuchAlgorithmException | InvalidKeySpecException ex1){
       try{
-        Mac mac = Mac.getInstance( Configuracoes.criptografia );
-        mac.init( new SecretKeySpec( bytes, Configuracoes.criptografia ) );
+        Mac mac = Mac.getInstance( Configuracoes.getInstance().criptografia() );
+        mac.init( new SecretKeySpec( bytes, Configuracoes.getInstance().criptografia() ) );
         return mac.doFinal( bytes );
       }catch(NoSuchAlgorithmException | InvalidKeyException ex2){
         try{
-          MessageDigest mDigest = MessageDigest.getInstance( Configuracoes.criptografia );
+          MessageDigest mDigest = MessageDigest.getInstance( Configuracoes.getInstance().criptografia() );
           return mDigest.digest( bytes );
         }catch(NoSuchAlgorithmException ex3){
           
@@ -80,7 +80,7 @@ public class UsuarioServicoImpl extends UsuarioServico{
     if( usuario != null ) return true;
     
     if( this.req.getCookies() != null ) for( Cookie cookie : this.req.getCookies() ){
-      if( !cookie.getName().equals( Configuracoes.loginCookieName ) )continue;
+      if( !cookie.getName().equals( Configuracoes.getInstance().loginCookieName() ) )continue;
       List<ChaveAcesso> oo = em.createQuery("SELECT x FROM ChaveAcesso x WHERE x.chave = :chave")
               .setParameter("chave", cookie.getValue())
               .setMaxResults(1)
@@ -107,7 +107,7 @@ public class UsuarioServicoImpl extends UsuarioServico{
     SegUsuario u = (SegUsuario)super.getUsuario();
     if( u == null ){
       if( this.req.getCookies() != null ) for( Cookie cookie : this.req.getCookies() ){
-        if( !cookie.getName().equals( Configuracoes.loginCookieName ) )continue;
+        if( !cookie.getName().equals( Configuracoes.getInstance().loginCookieName() ) )continue;
         List<ChaveAcesso> oo = em.createQuery("SELECT x FROM ChaveAcesso x WHERE x.chave = :chave")
                 .setParameter("chave", cookie.getValue())
                 .setMaxResults(1)

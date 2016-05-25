@@ -31,7 +31,7 @@ public class SegurancaFiltro implements Filter{
   
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
-    pattern = Pattern.compile( Configuracoes.segurancaRegExp );
+    pattern = Pattern.compile( Configuracoes.getInstance().segurancaRegExp() );
     mapper = new JacksonObjectMapperContextResolver().getContext(null);
   }
 
@@ -65,7 +65,7 @@ public class SegurancaFiltro implements Filter{
         mapper.writeValue(resp.getOutputStream(), res);
         return;
       }
-      req.getRequestDispatcher( Configuracoes.loginPath ).forward(request, response);
+      req.getRequestDispatcher( Configuracoes.getInstance().loginPath() ).forward(request, response);
       //resp.sendRedirect( req.getContextPath() + Configuracoes.loginPath );
       return; 
     }

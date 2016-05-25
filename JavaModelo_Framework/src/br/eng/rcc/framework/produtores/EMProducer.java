@@ -38,22 +38,14 @@ public class EMProducer {
     System.out.printf("---  Iniciando config de banco \n");
     
     Properties prop = new Properties();
-    for(String key : Configuracoes.hibernate.keySet()){
-      prop.put(key, Configuracoes.hibernate.get(key));
-    }
+    prop.putAll(Configuracoes.getInstance().hibernate());
     
     List<URL> jarUrls = new ArrayList<>();
-    jarUrls.add( this.getClass().getClassLoader().getResource("../lib/JavaModelo_Entities.jar") );
+    //jarUrls.add( this.getClass().getClassLoader().getResource("../lib/JavaModelo_Entities.jar") );
     
     PersistenceUnitInfoImpl puInfo = 
             new PersistenceUnitInfoImpl("PersistenciaPU", 
-                    Arrays.asList(
-                            //"br.eng.rcc.framework.seguranca.entidades.Credencial",
-                            //"br.eng.rcc.framework.seguranca.entidades.ChaveAcesso",
-                            //"br.eng.rcc.framework.seguranca.entidades.Grupo",
-                            //"br.eng.rcc.framework.seguranca.entidades.Permissao",
-                            //"br.eng.rcc.framework.seguranca.entidades.SegUsuario",
-                            "br.eng.rcc.framework.seguranca.jaxrs.LoginService")
+                    Configuracoes.getInstance().entidadesClasses()
                     , prop, jarUrls);
     
     EntityManagerFactoryBuilder emFB = 

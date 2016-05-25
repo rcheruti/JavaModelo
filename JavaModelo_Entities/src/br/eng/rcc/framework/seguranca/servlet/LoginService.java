@@ -108,7 +108,7 @@ public class LoginService extends HttpServlet{
       em.clear();
       String cookieValue = createChaveAcesso();
       if( cookieValue != null ){
-        Cookie cook = new Cookie(Configuracoes.loginCookieName, cookieValue);
+        Cookie cook = new Cookie(Configuracoes.getInstance().loginCookieName(), cookieValue);
         cook.setPath("/");
         resp.addCookie( cook );
       }
@@ -133,7 +133,7 @@ public class LoginService extends HttpServlet{
         .executeUpdate();
     }else{
       if( req.getCookies() != null ) for( Cookie cookie : req.getCookies() ){
-        if( !cookie.getName().equals( Configuracoes.loginCookieName ) ) continue;
+        if( !cookie.getName().equals( Configuracoes.getInstance().loginCookieName() ) ) continue;
         em.createQuery("DELETE FROM ChaveAcesso x WHERE x.chave = :chave")
           .setParameter("chave", cookie.getValue() )
           .executeUpdate();

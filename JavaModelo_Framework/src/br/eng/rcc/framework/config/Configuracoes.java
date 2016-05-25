@@ -2,11 +2,14 @@
 package br.eng.rcc.framework.config;
 
 import br.eng.rcc.framework.filtros.RewriteFiltro;
+import br.eng.rcc.framework.persistencia.EntidadesService;
 import br.eng.rcc.framework.seguranca.filtros.SegurancaFiltro;
 import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.Metamodel;
@@ -19,15 +22,50 @@ import javax.persistence.metamodel.Metamodel;
  */
 public class Configuracoes {
   
-  // constantes do sistema
-  public static final String JSON_PERSISTENCIA = "application/json";
+  private Configuracoes(){
+    configs.put( Key.JSON_PERSISTENCIA.name(), "application/json");
+    configs.put( Key.loginCookieName.name(), "JMLC");
+    configs.put( Key.rewriteRegExp.name(), 
+      "(?i:^/?(s/|css/|js/|img/|persistencia/context|exportar|utils|.*\\.js$|.*\\.css$|$))");
+    configs.put( Key.segurancaRegExp.name(), 
+      "(?i:^/?(?:img/|css/|js/|seguranca/login|persistencia/context|utils|.*\\.js$|.*\\.css$))");
+    configs.put( Key.loginPath.name(), "/login.html");
+    configs.put( Key.indexPath.name(), "/");
+    configs.put( Key.criptografia.name(), "PBKDF2WithHmacSHA1");
+    configs.put( Key.criptografiaSalt.name(), "Persistencia");
+    configs.put( Key.criptografiaIteration.name(), 100);
+    configs.put( Key.criptografiaKeyLength.name(), 512);
+    configs.put( Key.criptografiaAtivo.name(), true);
+    configs.put( Key.limiteEntidadesSize.name(), 200);
+    configs.put( Key.sizeEntidadeDefault.name(), 50);
+    configs.put( Key.pageEntidadeDefault.name(), 0);
+    configs.put( Key.preCarregarCache.name(), false);
+    configs.put( Key.persistenceUnit.name(), "");
+    configs.put( Key.carregarDB.name(), null);
+    configs.put( Key.hibernate.name(), new HashMap<>(30));
+    configs.put( Key.entidadesClasses.name(), new ArrayList<>(50));
+    
+    // Carregar padrões:
+    Map<String,Object> hibernate = hibernate();
+    hibernate.put("hibernate.c3p0.min_size", "5");
+    hibernate.put("hibernate.c3p0.max_size", "30");
+    hibernate.put("hibernate.c3p0.timeout", "300");
+    hibernate.put("hibernate.c3p0.max_statements", "50");
+    hibernate.put("hibernate.c3p0.idle_test_period", "3000");
+    hibernate.put("hibernate.archive.autodetection", "hbm,class");
+  }
   
-  /*
-    Todas as propriedades/atributos colocados nesta classe que forem "public static" serão
-    carregados automaticamente dos arquivos de configuração. Não é necessário manutenção
-    em nenhuma outra parte do sistema para ter as configurações disponíveis.
-  */
+  private static Configuracoes instance = null;
+  public static Configuracoes getInstance(){
+    if( instance == null ){
+      instance = new Configuracoes();
+    }
+    return instance;
+  }
   
+  public static enum Key{
+    JSON_PERSISTENCIA,
+    
   /**
    * Nome do Cookie que será inserido na resposta do Login no sistema, esse tem a ChaveAcesso
    * para ser feito o login por cookie (ex.: quando o servidor for reiniciado, o navegador e o banco
@@ -35,17 +73,16 @@ public class Configuracoes {
    * 
    * JMCL: JavaModelo Login Cookie
    */
-  public static String loginCookieName = "JMLC";
-  
+    loginCookieName,
+    
   /**
    * Expressão Regular que será usada por {@link RewriteFiltro} para a reescrita de URLs.
    * Caso alguma página que seja validada por esse expressão seja acessa sem que a requisição
    * tenha o cabeçalho de AJAX ("X-Requested-With: XMLHttpRequest"), o filtro irá redirecionar
    * o usuário para a página configurada em {@link indexPath}.
    */
-  public static String rewriteRegExp = 
-      "(?i:^/?(s/|css/|js/|img/|persistencia/context|exportar|utils|.*\\.js$|.*\\.css$|$))" ;
-  
+    rewriteRegExp,
+    
   /**
    * Expressão Regular que será usada por {@link SegurancaFiltro} proteger o sistema de tentativas
    * de acesso sem login.
@@ -53,86 +90,86 @@ public class Configuracoes {
    * não estiver logado, o Filtro irá enviar o usuário para o endereço configurado em 
    * {@link loginPath}.
    */
-  public static String segurancaRegExp = 
-      "(?i:^/?(?:img/|css/|js/|seguranca/login|persistencia/context|utils|.*\\.js$|.*\\.css$))" ;
-  
-  
+    segurancaRegExp,
+    
   /**
    * Endereço da página de login do sistema.
    * (Atenção: não incluir o Contexto do sistema nesse valor)
    */
-  public static String loginPath = "/login.html";
+    loginPath,
   
   /**
    * Endereço da página inicial do sistema, após o login ser efetuado.
    * (Atenção: não incluir o Contexto do sistema nesse valor)
    */
-  public static String indexPath = "/";
+    indexPath,
   
   /**
-   * Nome do script de criptografia que será passado para o "Apache Codec Commons" para fazer a 
-   * criptografia das senhas dos usuários no serviço {@link UsuarioServico}
-   * 
+   * Nome do script de criptografia que será usado para fazer a 
+   * criptografia das senhas dos usuários no serviço {@link UsuarioServico}.
+   * <br><br>
    * <a href="http://docs.oracle.com/javase/6/docs/technotes/guides/security/StandardNames.html">
    *  Está página
    * </a> contém a lista dos scripts padrão da JVM (de implementação obrigatória para as JVMs). 
    * 
    */
-  public static String criptografia = "PBKDF2WithHmacSHA1";
+    criptografia,
   
   /**
    * SALT para ser usado junto com a senha do usuário no momento que for criada a
    * criptografia da senha.
    */
-  public static String criptografiaSalt = "Persistencia";
+    criptografiaSalt,
   
   /**
    * Quantidade de iterações da chave quando uma chave de "SecretKey" for usavada.
    * <br><br>
    * Ex.: "PBKDF2WithHmacSHA1"
    */
-  public static int criptografiaIteration = 100;
+    criptografiaIteration,
   
   /**
    * Tamanho da chave quando uma chave de "SecretKey" for usavada.
    * <br><br>
    * Ex.: "PBKDF2WithHmacSHA1"
    */
-  public static int criptografiaKeyLength = 512;
+    criptografiaKeyLength,
   
   /**
    * Informa se é necessário fazer a criptografia das senhas dos usuários.
-   * (Atenção: apenas configure esta opção durante testes!)
+   * <br><br>
+   * <b>(Atenção: apenas configure esta opção durante testes!)</b>
    */
-  public static boolean criptografiaAtivo = true;
-  
-  
+    criptografiaAtivo,
   
   /**
    * Informa qual o limite de entidades que podem ser retornadas nas requisições
-   * de Entidades_Service.
-   * 
+   * de {@link EntidadesService}.
+   * <br><br>
    * Esse limite é usado por proteção, para não buscar informações demais do 
    * banco em uma única requisição.
    */
-  public static int limiteEntidadesSize = 100;
+    limiteEntidadesSize,
+    
   /**
    * Informa qual é o tamanho padrão de uma busca (cláusula LIMIT do banco de dados).
    */
-  public static int sizeEntidadeDefault = 30;
+    sizeEntidadeDefault,
+    
   /**
    * Informa qual a página inicial padrão de uma busca (para encontrar a 
    * cláusula OFFSET do banco de dados).
    */
-  public static int pageEntidadeDefault = 0;
-  
-  // configurações do filtro de CORS
+    pageEntidadeDefault,
   
   /**
    * Informa se o cache de classes, carregado usando o {@link Metamodel} do
    * {@link EntityManager}, deve ser preenchido logo que o sistema iniciar.
+   * <br><br>
+   * <b>Atenção: a implementação ainda está pendente e as classes serão sempre
+   * carregadas apenas quando for necessário (no primeiro uso)!</b>
    */
-  public static boolean preCarregarCache = false;
+    preCarregarCache,
   
   /**
    * Informa o nome da unidade de persistência que deve ser usada para criar
@@ -143,9 +180,12 @@ public class Configuracoes {
    * <br><br>
    * Caso haja apenas 1 unidade disponível, a seleção aleatória irá selecionar 
    * essa unidade.
+   * 
+   * <br><br>
+   * <b>Atenção: um novo modelo de conexão está sendo criado (usando apenas o
+   * hibernate). Essa configuração irá mudar no futuro!</b>
    */
-  public static String persistenceUnit = "";
-  
+    persistenceUnit,
   
   /**
    * Informa se o carregador do banco de dados deve buscar os arquivos de configurações
@@ -160,9 +200,10 @@ public class Configuracoes {
    * Os nomes infrmados aqui serão os nomes das chaves do arquivo de configuração (um JSON)
    * que serão usados para carregador o banco de dados.
    * 
+   * <br><br>
+   * <b>Atenção: a implementação ainda está pendente!</b>
    */
-  public static String[] carregarDB = {  };
-  
+    carregarDB,
   
   /**
    * Configurações que serão usadas pelo hibernate quando uma nova Sessão for criada.
@@ -179,16 +220,24 @@ public class Configuracoes {
    * informar) as configurações em uma GUI.
    * 
    */
-  public static Map<String, String> hibernate ;
-  static{
-    hibernate = new HashMap<>(10);
-    hibernate.put("hibernate.c3p0.min_size", "5");
-    hibernate.put("hibernate.c3p0.max_size", "30");
-    hibernate.put("hibernate.c3p0.timeout", "300");
-    hibernate.put("hibernate.c3p0.max_statements", "50");
-    hibernate.put("hibernate.c3p0.idle_test_period", "3000");
-    hibernate.put("hibernate.archive.autodetection", "hbm,class");
+    hibernate,
+    
+  /**
+   * Nome das classes que deverão ser carregadas par a unidade de persistência.
+   * <br>
+   * Essas serão as entidades do sistema, que o hibernate irá administratar.
+   */
+    entidadesClasses,
   }
+  
+  //==========================================================================
+  //==========================================================================
+  //==========================================================================
+  
+  
+  // constantes do sistema
+  public static final String JSON_PERSISTENCIA = "application/json";
+  
   
   //==========================================================================
   //==========================================================================
@@ -235,8 +284,13 @@ public class Configuracoes {
         }else{
           if(t.isArray()){
             
-          } else if(t.isAssignableFrom(Map.class)){
-            
+          }else if(t.isAssignableFrom(List.class)){
+            List para = (List)field.get(Configuracoes.class);
+            List from = (List)props.get(field.getName());
+            para.addAll( from );
+          }else if(t.isAssignableFrom(Map.class)){
+            Map mapa = (Map)field.get(Configuracoes.class);
+            //mapa.put(obj, obj);
           }else{
             field.set(Configuracoes.class, obj);
           }
@@ -249,6 +303,83 @@ public class Configuracoes {
                         ex.getMessage()));
       }
     }
+  }
+  
+  
+  protected final Map<String,Object> configs = new HashMap<>(40);
+  
+  
+  
+  public Object get(Key key){
+    return get(key.name());
+  }
+  public Object get(String key){
+    return configs.get(key);
+  }
+  
+  
+  
+  public String JSON_PERSISTENCIA(){
+    return (String) configs.get(Key.JSON_PERSISTENCIA.name());
+  }
+  public String loginCookieName(){
+    return (String) configs.get(Key.loginCookieName.name());
+  }
+  public String rewriteRegExp(){
+    return (String) configs.get(Key.rewriteRegExp.name());
+  }
+  public String segurancaRegExp(){
+    return (String) configs.get(Key.segurancaRegExp.name());
+  }
+  public String loginPath(){
+    return (String) configs.get(Key.loginPath.name());
+  }
+  public String indexPath(){
+    return (String) configs.get(Key.indexPath.name());
+  }
+  
+  
+  public String criptografia(){
+    return (String) configs.get(Key.criptografia.name());
+  }
+  public String criptografiaSalt(){
+    return (String) configs.get(Key.criptografiaSalt.name());
+  }
+  public Integer criptografiaIteration(){
+    return (Integer) configs.get(Key.criptografiaIteration.name());
+  }
+  public Integer criptografiaKeyLength(){
+    return (Integer) configs.get(Key.criptografiaKeyLength.name());
+  }
+  public Boolean criptografiaAtivo(){
+    return (Boolean) configs.get(Key.criptografiaAtivo.name());
+  }
+  
+  
+  public Integer limiteEntidadesSize(){
+    return (Integer) configs.get(Key.limiteEntidadesSize.name());
+  }
+  public Integer sizeEntidadeDefault(){
+    return (Integer) configs.get(Key.sizeEntidadeDefault.name());
+  }
+  public Integer pageEntidadeDefault(){
+    return (Integer) configs.get(Key.pageEntidadeDefault.name());
+  }
+  public Boolean preCarregarCache(){
+    return (Boolean) configs.get(Key.preCarregarCache.name());
+  }
+  public String persistenceUnit(){
+    return (String) configs.get(Key.persistenceUnit.name());
+  }
+  public List<String> carregarDB(){
+    return (List<String>) configs.get(Key.carregarDB.name());
+  }
+  public Map<String,Object> hibernate(){
+    return (Map<String,Object>) configs.get(Key.hibernate.name());
+  }
+  
+  public List<String> entidadesClasses(){
+    return (List<String>) configs.get(Key.entidadesClasses.name());
   }
   
 }

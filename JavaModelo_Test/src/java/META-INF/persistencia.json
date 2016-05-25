@@ -6,6 +6,21 @@
     "hibernate.connection.username":"root",
     "hibernate.connection.password":"root"
   },
+  "entidadesClasses":[
+    "br.eng.rcc.framework.seguranca.entidades.ChaveAcesso",
+    "br.eng.rcc.framework.seguranca.entidades.Credencial",
+    "br.eng.rcc.framework.seguranca.entidades.Grupo",
+    "br.eng.rcc.framework.seguranca.entidades.Permissao",
+    "br.eng.rcc.framework.seguranca.entidades.SegUsuario",
+    "br.eng.rcc.javamodelo.test.entidades.Carro",
+    "br.eng.rcc.javamodelo.test.entidades.Cor",
+    "br.eng.rcc.javamodelo.test.entidades.Janela",
+    "br.eng.rcc.javamodelo.test.entidades.MensagemCorreio",
+    "br.eng.rcc.javamodelo.test.entidades.Porta",
+    "br.eng.rcc.javamodelo.test.entidades.Usuario",
+    "br.eng.rcc.javamodelo.test.entidades.Valor",
+    "br.eng.rcc.javamodelo.test.entidades.embutidos.RegistroUsuario"
+  ],
   "entidades":{
     
   }

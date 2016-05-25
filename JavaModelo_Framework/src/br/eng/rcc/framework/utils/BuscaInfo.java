@@ -31,12 +31,12 @@ public class BuscaInfo implements Cloneable{
   /**
    * Indica qual é a página atual.
    */
-  public int page = Configuracoes.pageEntidadeDefault;
+  public int page = Configuracoes.getInstance().pageEntidadeDefault();
   /**
    * Indica a quantidade de itens que devem ser carregados 
    * para a página atual, no máximo.
    */
-  public int size = Configuracoes.sizeEntidadeDefault;
+  public int size = Configuracoes.getInstance().sizeEntidadeDefault();
   /**
    * A lista dos atributos que devem ser carregados para a resposta, que
    * provavelmente são <b>"Lazy"</b>.

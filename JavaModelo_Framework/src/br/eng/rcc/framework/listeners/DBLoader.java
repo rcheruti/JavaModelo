@@ -42,7 +42,8 @@ public class DBLoader implements ServletContextListener{
   public void loadDB(){
     System.out.printf("---  Executando 'DBLoader' para preencher o banco de dados. \n");
     
-    if( Configuracoes.carregarDB != null && Configuracoes.carregarDB.length > 0 ){
+    if( Configuracoes.getInstance().carregarDB() != null 
+            && Configuracoes.getInstance().carregarDB().size() > 0 ){
       URL url = DBLoader.class.getClassLoader().getResource("META-INF/dbloader.json");
       if( url == null ) url = DBLoader.class.getClassLoader().getResource("dbloader.json");
       
@@ -51,7 +52,7 @@ public class DBLoader implements ServletContextListener{
           ObjectMapper mapper = new JacksonObjectMapperContextResolver().getContext(null);
           JsonNode json = mapper.readTree(url);
           
-          for( String key : Configuracoes.carregarDB ){
+          for( String key : Configuracoes.getInstance().carregarDB() ){
             JsonNode entJson = json.get(key);
             if( entJson == null ) continue;
             

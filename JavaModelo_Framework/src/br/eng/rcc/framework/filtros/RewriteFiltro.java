@@ -18,7 +18,7 @@ public class RewriteFiltro implements Filter {
 
   @Override
   public void init(FilterConfig fc) throws ServletException {
-    regexp = Pattern.compile(Configuracoes.rewriteRegExp);
+    regexp = Pattern.compile(Configuracoes.getInstance().rewriteRegExp());
   }
 
   @Override
@@ -42,7 +42,7 @@ public class RewriteFiltro implements Filter {
       fc.doFilter(sr, sr1);
     } else {
       //req.getRequestDispatcher(Configuracoes.indexPath).forward(sr, sr1);
-      resp.sendRedirect( req.getContextPath()+Configuracoes.indexPath );
+      resp.sendRedirect( req.getContextPath()+Configuracoes.getInstance().indexPath() );
     }
   }
 
