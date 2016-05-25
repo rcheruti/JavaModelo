@@ -15,8 +15,8 @@ import lombok.ToString;
 
 @Entity
 @Data
-@ToString(exclude = {"carro"}) 
-@EqualsAndHashCode(exclude={"cor", "carro"})
+@ToString(exclude = {"carro","janelas"}) 
+@EqualsAndHashCode(exclude={"cor", "carro","janelas"})
 public class Porta implements Serializable{
   
   @Id

@@ -5,6 +5,7 @@ import br.eng.rcc.framework.filtros.RewriteFiltro;
 import br.eng.rcc.framework.persistencia.EntidadesService;
 import br.eng.rcc.framework.seguranca.filtros.SegurancaFiltro;
 import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class Configuracoes {
     configs.put( Key.persistenceUnit.name(), "");
     configs.put( Key.carregarDB.name(), null);
     configs.put( Key.hibernate.name(), new HashMap<>(30));
+    configs.put( Key.hibernateAutoLoad.name(), true);
     configs.put( Key.entidadesClasses.name(), new ArrayList<>(50));
     
     // Carregar padrões:
@@ -56,11 +58,24 @@ public class Configuracoes {
   }
   
   private static Configuracoes instance = null;
+  private static boolean carregado;
+  
   public static Configuracoes getInstance(){
     if( instance == null ){
       instance = new Configuracoes();
     }
     return instance;
+  }
+  
+  public static void carregar(){
+    if(carregado) return;
+    getInstance(); // Criar instância (se precisar)
+    try{
+      PersistenciaConfig.init();
+    }catch(IOException ex){
+      throw new RuntimeException("------ Problemas ao tentar carregar as configuracoes de seguranca!", ex);
+    }
+    carregado = true;
   }
   
   public static enum Key{
@@ -223,6 +238,13 @@ public class Configuracoes {
     hibernate,
     
   /**
+   * Informa se é necessário carregar as classes de persistência automaticamente.
+   * <br><br>
+   * Por padrão é <code>true</code>.
+   */
+    hibernateAutoLoad,
+    
+  /**
    * Nome das classes que deverão ser carregadas par a unidade de persistência.
    * <br>
    * Essas serão as entidades do sistema, que o hibernate irá administratar.
@@ -376,6 +398,10 @@ public class Configuracoes {
   }
   public Map<String,Object> hibernate(){
     return (Map<String,Object>) configs.get(Key.hibernate.name());
+  }
+  
+  public Boolean hibernateAutoLoad(){
+    return (Boolean) configs.get(Key.hibernateAutoLoad.name());
   }
   
   public List<String> entidadesClasses(){

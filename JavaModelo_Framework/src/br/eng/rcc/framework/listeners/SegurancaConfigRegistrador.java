@@ -1,6 +1,7 @@
 
 package br.eng.rcc.framework.listeners;
 
+import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.config.PersistenciaConfig;
 import java.io.IOException;
 import javax.servlet.ServletContextEvent;
@@ -16,18 +17,13 @@ import javax.servlet.annotation.WebListener;
  * Essa classe inicia a leitura dos arquivos de configuração das seguranças
  * principalmente para permitir a segunraça de endereços (URLs).
  * 
- * @author Rafael
  */
 @WebListener
 public class SegurancaConfigRegistrador implements ServletContextListener{
 
   @Override
   public void contextInitialized(ServletContextEvent sce) {
-    try{
-      PersistenciaConfig.init();
-    }catch(IOException ex){
-      throw new RuntimeException("------ Problemas ao tentar carregar as configuracoes de seguranca!", ex);
-    }
+    Configuracoes.carregar();
   }
 
   @Override

@@ -14,6 +14,10 @@ public class HibernateAutoLoad implements ServletContainerInitializer{
 
   @Override
   public void onStartup(Set<Class<?>> set, ServletContext sc) throws ServletException {
+    Configuracoes.carregar();
+    
+    if( !Configuracoes.getInstance().hibernateAutoLoad() ) return;
+    
     if( set != null && !set.isEmpty() ){
       System.out.printf("---  HibernateAutoLoad: carregando classes: \n");
       List<String> classes = Configuracoes.getInstance().entidadesClasses();

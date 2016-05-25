@@ -185,6 +185,9 @@ module.exports = function (grunt) {
     
     //-------------  minimizando os arquivos
     cssmin:{
+      options:{
+        roundingPrecision: -1
+      },
       cssCritico:{
         files:[{
           src: p.temp+'cssCritico.css' ,

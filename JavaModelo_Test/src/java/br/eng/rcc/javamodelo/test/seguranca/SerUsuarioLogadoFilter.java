@@ -19,7 +19,7 @@ public class SerUsuarioLogadoFilter implements SegurancaPersistenciaInterceptado
   
   @Override
   public void filter(BuscaInfo busca) {
-    //System.out.printf("---  Seguranca:SerUsuarioLogadoFilter:filter(BuscaInfo) \n");
+    System.out.printf("---  Seguranca:SerUsuarioLogadoFilter:filter(BuscaInfo) \n");
     Usuario u = (Usuario)uServ.getUsuario();
     busca.where.add( new String[]{"registroUsuario.usuario.id","=", ""+u.getId() ,"&"} );
     
@@ -27,7 +27,7 @@ public class SerUsuarioLogadoFilter implements SegurancaPersistenciaInterceptado
 
   @Override
   public List<Usuario> filter(List<Usuario> objs) {
-    //System.out.printf("---  Seguranca:SerUsuarioLogadoFilter:filter(List<Usuario>) \n");
+    System.out.printf("---  Seguranca:SerUsuarioLogadoFilter:filter(List<Usuario>) \n");
     return objs;
   }
   

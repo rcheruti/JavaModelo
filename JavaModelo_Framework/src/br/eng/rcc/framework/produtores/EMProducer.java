@@ -11,10 +11,10 @@ import java.util.Properties;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import org.hibernate.SessionFactory;
 import org.hibernate.jpa.boot.internal.PersistenceUnitInfoDescriptor;
 import org.hibernate.jpa.boot.spi.Bootstrap;
 import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
@@ -22,14 +22,6 @@ import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
 @ApplicationScoped
 public class EMProducer {
   
-  //@PersistenceContext
-  //@Produces
-  private EntityManager em;
-  
-  private SessionFactory sf;
-  
-  
-  //@PersistenceUnit
   private EntityManagerFactory emf;
   private boolean myEMF;
 
@@ -70,6 +62,7 @@ public class EMProducer {
   }
 
   @Produces
+  @RequestScoped
   public EntityManager produceEM(){
     return emf.createEntityManager();
   }
