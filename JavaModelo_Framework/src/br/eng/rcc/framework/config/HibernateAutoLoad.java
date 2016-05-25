@@ -1,7 +1,7 @@
 
 package br.eng.rcc.framework.config;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 import javax.persistence.Entity;
 import javax.servlet.ServletContainerInitializer;
@@ -20,11 +20,12 @@ public class HibernateAutoLoad implements ServletContainerInitializer{
     
     if( set != null && !set.isEmpty() ){
       System.out.printf("---  HibernateAutoLoad: carregando classes: \n");
-      List<String> classes = Configuracoes.getInstance().entidadesClasses();
+      Collection<String> classes = Configuracoes.getInstance().entidadesClasses();
       for(Class<?> k : set){
         System.out.printf("---  Classe: %s \n", k.getCanonicalName() );
         classes.add( k.getCanonicalName() );
       }
+      Configuracoes.salvar();
     }
   }
   

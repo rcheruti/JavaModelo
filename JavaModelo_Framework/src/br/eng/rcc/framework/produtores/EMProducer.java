@@ -4,7 +4,6 @@ package br.eng.rcc.framework.produtores;
 import br.eng.rcc.framework.config.Configuracoes;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -35,9 +34,12 @@ public class EMProducer {
     List<URL> jarUrls = new ArrayList<>();
     //jarUrls.add( this.getClass().getClassLoader().getResource("../lib/JavaModelo_Entities.jar") );
     
+    List<String> entidadesClasses = new ArrayList<>(40);
+    entidadesClasses.addAll(Configuracoes.getInstance().entidadesClasses());
+    
     PersistenceUnitInfoImpl puInfo = 
             new PersistenceUnitInfoImpl("PersistenciaPU", 
-                    Configuracoes.getInstance().entidadesClasses()
+                    entidadesClasses
                     , prop, jarUrls);
     
     EntityManagerFactoryBuilder emFB = 

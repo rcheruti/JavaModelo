@@ -5,11 +5,19 @@ import br.eng.rcc.framework.filtros.RewriteFiltro;
 import br.eng.rcc.framework.persistencia.EntidadesService;
 import br.eng.rcc.framework.seguranca.filtros.SegurancaFiltro;
 import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.common.io.Files;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
@@ -45,7 +53,8 @@ public class Configuracoes {
     configs.put( Key.carregarDB.name(), null);
     configs.put( Key.hibernate.name(), new HashMap<>(30));
     configs.put( Key.hibernateAutoLoad.name(), true);
-    configs.put( Key.entidadesClasses.name(), new ArrayList<>(50));
+    configs.put( Key.entidadesClasses.name(), new HashSet<>(50));
+    configs.put( Key.configDir.name(), System.getProperty("user.home"));
     
     // Carregar padrões:
     Map<String,Object> hibernate = hibernate();
@@ -57,8 +66,14 @@ public class Configuracoes {
     hibernate.put("hibernate.archive.autodetection", "hbm,class");
   }
   
+  protected Map<String,Object> configs = new HashMap<>(40);
+  
+  
+  //===============   Statics   ==================
+  
   private static Configuracoes instance = null;
   private static boolean carregado;
+  private static String nomeArq = "persistencia.json";
   
   public static Configuracoes getInstance(){
     if( instance == null ){
@@ -71,12 +86,60 @@ public class Configuracoes {
     if(carregado) return;
     getInstance(); // Criar instância (se precisar)
     try{
-      PersistenciaConfig.init();
+      File file = new File(getInstance().configDir(), nomeArq);
+      System.out.printf("---  Carregando arquivo de configuracao em: %s \n", file.getAbsolutePath());
+      Map<String,Object> mapLoad = arqMapper().readValue(
+        Files.newReader(file, Charset.forName("UTF-8")) , Map.class);
+      if( mapLoad != null && mapLoad.size() > 0 ){
+        getInstance().configs = mapLoad;
+      }else{
+        System.out.printf("---  Não foi encontrado nenhuma informacao no arquivo de configuracao, carregaremos os padroes. \n");
+        PersistenciaConfig.init();
+      }
     }catch(IOException ex){
-      throw new RuntimeException("------ Problemas ao tentar carregar as configuracoes de seguranca!", ex);
+      System.out.printf("---  Não foi encontrado nenhuma informacao no arquivo de configuracao, carregaremos os padroes. \n");
+      try{
+        PersistenciaConfig.init();
+      }catch(IOException ex2){
+        throw new RuntimeException("------ Problemas ao tentar carregar as configuracoes!", ex);
+      }
     }
     carregado = true;
+    salvar();
   }
+  public static void salvar(){
+    try{
+      File file = new File(getInstance().configDir(), nomeArq);
+      System.out.printf("---  Gravando arquivo de configuracao em: %s \n", file.getAbsolutePath());
+      arqMapper().writeValue(
+        Files.newWriter(file, Charset.forName("UTF-8")) , getInstance().configs);
+    }catch(IOException ex){
+      System.out.printf("---  Não foi possível gravar as configurações neste computador! \n");
+    }
+  }
+  private static ObjectMapper arqMapper(){
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
+    mapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+    mapper.enable(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS);
+    mapper.enable(SerializationFeature.WRITE_NULL_MAP_VALUES);
+    
+    mapper.disable(SerializationFeature.WRITE_SINGLE_ELEM_ARRAYS_UNWRAPPED);
+    
+    mapper.enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
+    mapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+    mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+    
+    mapper.disable(DeserializationFeature.ADJUST_DATES_TO_CONTEXT_TIME_ZONE);
+    mapper.disable(DeserializationFeature.USE_JAVA_ARRAY_FOR_JSON_ARRAY);
+    
+    return mapper;
+  }
+  
+  
+  
+  
+  
   
   public static enum Key{
     JSON_PERSISTENCIA,
@@ -250,6 +313,15 @@ public class Configuracoes {
    * Essas serão as entidades do sistema, que o hibernate irá administratar.
    */
     entidadesClasses,
+    
+  /**
+   * Diretório externo a aplicação, onde será guardo os arquivos de configuração
+   * com informações fornecidades pelo usuário final.
+   * <br><br>
+   * O padrão é <code>System.getProperty("user.home")</code>.
+   */
+    configDir,
+    
   }
   
   //==========================================================================
@@ -258,7 +330,7 @@ public class Configuracoes {
   
   
   // constantes do sistema
-  public static final String JSON_PERSISTENCIA = "application/json";
+  //public static final String JSON_PERSISTENCIA = "application/json";
   
   
   //==========================================================================
@@ -306,9 +378,9 @@ public class Configuracoes {
         }else{
           if(t.isArray()){
             
-          }else if(t.isAssignableFrom(List.class)){
-            List para = (List)field.get(Configuracoes.class);
-            List from = (List)props.get(field.getName());
+          }else if(t.isAssignableFrom(Collection.class)){
+            Collection para = (Collection)field.get(Configuracoes.class);
+            Collection from = (Collection)props.get(field.getName());
             para.addAll( from );
           }else if(t.isAssignableFrom(Map.class)){
             Map mapa = (Map)field.get(Configuracoes.class);
@@ -327,8 +399,6 @@ public class Configuracoes {
     }
   }
   
-  
-  protected final Map<String,Object> configs = new HashMap<>(40);
   
   
   
@@ -393,8 +463,8 @@ public class Configuracoes {
   public String persistenceUnit(){
     return (String) configs.get(Key.persistenceUnit.name());
   }
-  public List<String> carregarDB(){
-    return (List<String>) configs.get(Key.carregarDB.name());
+  public Collection<String> carregarDB(){
+    return (Collection<String>) configs.get(Key.carregarDB.name());
   }
   public Map<String,Object> hibernate(){
     return (Map<String,Object>) configs.get(Key.hibernate.name());
@@ -404,8 +474,12 @@ public class Configuracoes {
     return (Boolean) configs.get(Key.hibernateAutoLoad.name());
   }
   
-  public List<String> entidadesClasses(){
-    return (List<String>) configs.get(Key.entidadesClasses.name());
+  public Collection<String> entidadesClasses(){
+    return (Collection<String>) configs.get(Key.entidadesClasses.name());
+  }
+  
+  public String configDir(){
+    return (String) configs.get(Key.configDir.name());
   }
   
 }
