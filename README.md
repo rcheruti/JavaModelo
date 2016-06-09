@@ -14,6 +14,7 @@ Tipos de dados que precisam ser tratados:
 
 O vetor de busca deve ser capaz de colocar um *objeto* representando as 
 respostas das buscas anteriores na linha de execução.
+
 O sistema de busca não fará subconsulta, mas será capaz de fazer uma comparação
 similar usando os dados de duas ou mais consultadas anteriores.
 
@@ -22,7 +23,9 @@ Um símbolo a mais nas buscas precisa ser criado: algumas buscas não precisarã
 retornar informações para fora do servidor, elas serão usadas apenas para
 completar a série de buscas na linha de execução (apenas como parâmetro de comparação
 para alguma outra busca na série).
+
 Esse novo símbolo é para informar que aquela busca não retornará valores.
+
 Esse símbolo será um número, informando:
 
 * 0 (ou ausente): a busca retorna valores normalmente (impl. padrão até então)
