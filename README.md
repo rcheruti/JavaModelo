@@ -1,5 +1,5 @@
 
-# Persistência (implementação em Java)
+# Persistência (impl. de Servidor em Java)
 
 
 
