@@ -1,9 +1,47 @@
 
 # Persistência (impl. de Servidor em Java)
 
+##### Lembretes de impl.
+
+Tipos de dados que precisam ser tratados:
+
+* Lógicos (boolean)
+* Números (double, int, long, short)
+* Texto (string)
+* Datas (Date)
+* Vetores de bytes (byte[], blob)
+
+
+O vetor de busca deve ser capaz de colocar um *objeto* representando as 
+respostas das buscas anteriores na linha de execução.
+O sistema de busca não fará subconsulta, mas será capaz de fazer uma comparação
+similar usando os dados de duas ou mais consultadas anteriores.
+
+
+Um símbolo a mais nas buscas precisa ser criado: algumas buscas não precisarão
+retornar informações para fora do servidor, elas serão usadas apenas para
+completar a série de buscas na linha de execução (apenas como parâmetro de comparação
+para alguma outra busca na série).
+Esse novo símbolo é para informar que aquela busca não retornará valores.
+Esse símbolo será um número, informando:
+
+* 0 (ou ausente): a busca retorna valores normalmente (impl. padrão até então)
+* 1: a busca não retorna valores, mas seu índice permanece na resposta com um objeto sem os 
+        dados (o formato do objeto deve seguir o formato padrão, a forma de informar que
+        esse é um objeto de uma busca sem resposta ainda será pensado)
+* 2: a busca não retorna valores, e não ocupa um índice na resposta
 
 
 
+
+
+
+
+
+
+
+# _______________________________________
+ 
 # Interface do servidor:
 
 ## Buscas:
