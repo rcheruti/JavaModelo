@@ -22,7 +22,7 @@ ser enviado um vetor JavaScript com vários objetos de busca dentro.
 As busca serão executadas na ordem que forem declaradas no vetor de buscas.
 
 Ex.: `{ /* infos da busca */ }` ou
-```
+```JSON
 [ 
   { /* infos da busca 1 */ } ,
   { /* infos da busca 2 */ } ,
@@ -36,7 +36,7 @@ A Classe que guarda essas informações é a `...utils.BuscaInfo`,
 nessa classe estão as constantes de **Ação** e alguns outros atributos
 para facilitar a programação de código para o sistema.
 
-```
+```JSON
 {
   entidade: "Carro",              // Nome da entidade que se refere esta busca
   page: 2,                        // Página que retornará na resposta (iniciando em zero)
@@ -94,7 +94,7 @@ impl. de hoje) no parâmetro HTTP `json`, que será usada para buscar as informa
 que serão retornadas no relatório.
 
 O valor de `data` no objeto de busca deve ser um JSON com as seguintes informações:
-```
+```JSON
 {
   ... ,
   data: {
