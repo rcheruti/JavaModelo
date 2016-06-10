@@ -156,7 +156,7 @@ public class LoginService extends HttpServlet{
     byte tentativas = 0;
     String criarCom = null;
     while( tentativas++ < 50 ){
-      long tempo = System.currentTimeMillis();
+      long tempo = System.nanoTime();
       String tempString = Long.toString(tempo);
       List lista = em.createQuery("SELECT COUNT(x) FROM ChaveAcesso x WHERE x.chave = :chave ")
         .setParameter("chave", tempString)

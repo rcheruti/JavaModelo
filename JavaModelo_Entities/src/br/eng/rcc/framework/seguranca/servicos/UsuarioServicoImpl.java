@@ -24,6 +24,8 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Specializes;
 import javax.servlet.http.Cookie;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Esta classe fornece funções para acessar o usuário que está disponível na
@@ -34,6 +36,8 @@ import javax.servlet.http.Cookie;
 @Specializes
 @ApplicationScoped
 public class UsuarioServicoImpl extends UsuarioServico{
+  
+  private static Logger log = LogManager.getLogger(UsuarioServicoImpl.class);
   
   @Inject
   protected EntityManager em;
@@ -47,25 +51,27 @@ public class UsuarioServicoImpl extends UsuarioServico{
     byte[] bytes = str.getBytes();
     char[] chars = new char[ str.length() ];
     str.getChars(0, str.length(), chars, 0);
+    
+    String criptoName = Configuracoes.getInstance().criptografia();
     byte[] salt = Configuracoes.getInstance().criptografiaSalt().getBytes();
     int iteration = Configuracoes.getInstance().criptografiaIteration();
     int keyLength = Configuracoes.getInstance().criptografiaKeyLength();
     
     try{
-      SecretKeyFactory skf = SecretKeyFactory.getInstance( Configuracoes.getInstance().criptografia() );
+      SecretKeyFactory skf = SecretKeyFactory.getInstance( criptoName );
       KeySpec scs = new PBEKeySpec( chars, salt, iteration, keyLength );
       return skf.generateSecret(scs).getEncoded();
     }catch(NoSuchAlgorithmException | InvalidKeySpecException ex1){
       try{
-        Mac mac = Mac.getInstance( Configuracoes.getInstance().criptografia() );
-        mac.init( new SecretKeySpec( bytes, Configuracoes.getInstance().criptografia() ) );
+        Mac mac = Mac.getInstance( criptoName );
+        mac.init( new SecretKeySpec( bytes, criptoName ) );
         return mac.doFinal( bytes );
       }catch(NoSuchAlgorithmException | InvalidKeyException ex2){
         try{
-          MessageDigest mDigest = MessageDigest.getInstance( Configuracoes.getInstance().criptografia() );
+          MessageDigest mDigest = MessageDigest.getInstance( criptoName );
           return mDigest.digest( bytes );
         }catch(NoSuchAlgorithmException ex3){
-          
+          log.warn("Não encontramos uma Impl. do script de criptografia: {}", criptoName);
         }
       }
     }

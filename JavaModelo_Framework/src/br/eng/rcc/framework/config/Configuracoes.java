@@ -14,14 +14,14 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.metamodel.Metamodel;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * As configurações do sistema poderão ser carregadas a partir de um arquivo 
@@ -30,6 +30,8 @@ import javax.persistence.metamodel.Metamodel;
  * @author rcheruti
  */
 public class Configuracoes {
+  
+  private static Logger log = LogManager.getLogger(Configuracoes.class);
   
   private Configuracoes(){
     configs.put( Key.JSON_PERSISTENCIA.name(), "application/json");
@@ -87,20 +89,21 @@ public class Configuracoes {
     getInstance(); // Criar instância (se precisar)
     try{
       File file = new File(getInstance().configDir(), nomeArq);
-      System.out.printf("---  Carregando arquivo de configuracao em: %s \n", file.getAbsolutePath());
+      log.info("Carregando arquivo de configuracao em: {}", file.getAbsolutePath());
       Map<String,Object> mapLoad = arqMapper().readValue(
         Files.newReader(file, Charset.forName("UTF-8")) , Map.class);
       if( mapLoad != null && mapLoad.size() > 0 ){
         getInstance().configs = mapLoad;
       }else{
-        System.out.printf("---  Não foi encontrado nenhuma informacao no arquivo de configuracao, carregaremos os padroes. \n");
+        log.warn("Não foi encontrado nenhuma informacao no arquivo de configuracao, carregaremos os padroes.");
         PersistenciaConfig.init();
       }
     }catch(IOException ex){
-      System.out.printf("---  Não foi encontrado nenhuma informacao no arquivo de configuracao, carregaremos os padroes. \n");
+      log.warn("Não foi encontrado nenhuma informacao no arquivo de configuracao, carregaremos os padroes.");
       try{
         PersistenciaConfig.init();
       }catch(IOException ex2){
+        log.error("Problemas ao tentar carregar as configuracoes!");
         throw new RuntimeException("------ Problemas ao tentar carregar as configuracoes!", ex);
       }
     }
@@ -110,11 +113,11 @@ public class Configuracoes {
   public static void salvar(){
     try{
       File file = new File(getInstance().configDir(), nomeArq);
-      System.out.printf("---  Gravando arquivo de configuracao em: %s \n", file.getAbsolutePath());
+      log.info("Gravando arquivo de configuracao em: {}", file.getAbsolutePath());
       arqMapper().writeValue(
         Files.newWriter(file, Charset.forName("UTF-8")) , getInstance().configs);
     }catch(IOException ex){
-      System.out.printf("---  Não foi possível gravar as configurações neste computador! \n");
+      log.error("Não foi possível gravar as configurações neste computador!");
     }
   }
   private static ObjectMapper arqMapper(){

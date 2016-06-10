@@ -14,6 +14,8 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.jpa.boot.internal.PersistenceUnitInfoDescriptor;
 import org.hibernate.jpa.boot.spi.Bootstrap;
 import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
@@ -21,12 +23,14 @@ import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
 @ApplicationScoped
 public class EMProducer {
   
+  private static Logger log = LogManager.getLogger(EMProducer.class);
+  
   private EntityManagerFactory emf;
   private boolean myEMF;
 
   @PostConstruct
   public void postConstruct(){
-    System.out.printf("---  Iniciando config de banco \n");
+    log.info("Iniciando config de banco");
     
     Properties prop = new Properties();
     prop.putAll(Configuracoes.getInstance().hibernate());
@@ -48,12 +52,11 @@ public class EMProducer {
               this.getClass().getClassLoader());
     
     URL url = this.getClass().getClassLoader().getResource("../lib/JavaModelo_Entities.jar");
-    System.out.printf("---  Res URL: %s \n", url );
+    log.debug("Resource URL: {}", url);
     
     emf = emFB.build();
     
-    System.out.printf("---  Config de banco pronta! \n");
-    
+    log.info("Config de banco pronta!");
   }
   
   @PreDestroy

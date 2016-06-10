@@ -2,8 +2,6 @@
 package br.eng.rcc.framework.listeners;
 
 import br.eng.rcc.framework.config.Configuracoes;
-import br.eng.rcc.framework.config.PersistenciaConfig;
-import java.io.IOException;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;

@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Essa classe faz a leitura dos arquivos de configuraçao de segurança, que 
@@ -21,6 +23,8 @@ import java.util.Map;
  * 
  */
 public class PersistenciaConfig {
+  
+  private static Logger log = LogManager.getLogger(PersistenciaConfig.class);
     
   private static SegurancaRootNode segurancas;
   
@@ -28,7 +32,7 @@ public class PersistenciaConfig {
   
   
   public static void init() throws IOException{
-    System.out.printf("---  Carregando configurações do arquivo 'persistencia.json'. \n");
+    log.info("Carregando configurações do arquivo 'persistencia.json'.");
     
     URL url = PersistenciaConfig.class.getClassLoader().getResource("META-INF/persistencia.json");
     if( url == null ) url = PersistenciaConfig.class.getClassLoader().getResource("persistencia.json");
@@ -99,7 +103,7 @@ public class PersistenciaConfig {
       
     }
 
-    System.out.printf("---  Configurações de 'persistencia.json' finalizado. \n");
+    log.info("Configurações de 'persistencia.json' finalizado.");
   }
   
   
