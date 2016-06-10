@@ -31,7 +31,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class Configuracoes {
   
-  private static Logger log = LogManager.getLogger(Configuracoes.class);
+  private static Logger log = LogManager.getLogger();
   
   private Configuracoes(){
     configs.put( Key.JSON_PERSISTENCIA.name(), "application/json");

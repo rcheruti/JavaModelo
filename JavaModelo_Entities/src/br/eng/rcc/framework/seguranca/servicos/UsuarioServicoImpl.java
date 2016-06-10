@@ -37,7 +37,7 @@ import org.apache.logging.log4j.Logger;
 @ApplicationScoped
 public class UsuarioServicoImpl extends UsuarioServico{
   
-  private static Logger log = LogManager.getLogger(UsuarioServicoImpl.class);
+  private static Logger log = LogManager.getLogger();
   
   @Inject
   protected EntityManager em;

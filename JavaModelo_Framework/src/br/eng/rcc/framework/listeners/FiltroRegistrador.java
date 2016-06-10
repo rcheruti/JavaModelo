@@ -22,7 +22,7 @@ import org.apache.logging.log4j.Logger;
 @WebListener
 public class FiltroRegistrador implements ServletContextListener {
   
-  private static Logger log = LogManager.getLogger(FiltroRegistrador.class);
+  private static Logger log = LogManager.getLogger();
 
   @Override
   public void contextInitialized(ServletContextEvent sce) {

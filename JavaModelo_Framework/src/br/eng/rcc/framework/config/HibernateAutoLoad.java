@@ -14,7 +14,7 @@ import org.apache.logging.log4j.Logger;
 @HandlesTypes({Entity.class})
 public class HibernateAutoLoad implements ServletContainerInitializer{
   
-  private static Logger log = LogManager.getLogger(HibernateAutoLoad.class);
+  private static Logger log = LogManager.getLogger();
   
   
   @Override

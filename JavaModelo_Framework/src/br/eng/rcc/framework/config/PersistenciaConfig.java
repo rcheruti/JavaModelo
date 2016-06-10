@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class PersistenciaConfig {
   
-  private static Logger log = LogManager.getLogger(PersistenciaConfig.class);
+  private static Logger log = LogManager.getLogger();
     
   private static SegurancaRootNode segurancas;
   

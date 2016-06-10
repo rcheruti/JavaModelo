@@ -16,7 +16,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ExceptionFiltro implements Filter {
   
-  private static Logger log = LogManager.getLogger(ExceptionFiltro.class);
+  private static Logger log = LogManager.getLogger();
   
   private ObjectMapper mapper;
 

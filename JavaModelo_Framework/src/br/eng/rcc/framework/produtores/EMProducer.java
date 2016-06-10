@@ -23,7 +23,7 @@ import org.hibernate.jpa.boot.spi.EntityManagerFactoryBuilder;
 @ApplicationScoped
 public class EMProducer {
   
-  private static Logger log = LogManager.getLogger(EMProducer.class);
+  private static Logger log = LogManager.getLogger();
   
   private EntityManagerFactory emf;
   private boolean myEMF;
