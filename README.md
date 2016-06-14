@@ -158,3 +158,27 @@ Ex.:
 | Carro2 | Mariana | Marca2 |
 
 
+
+#Fluxo de execução
+
+```
+  JS:
+      chamada de busca (HTTP/S)
+      
+  Servidor:
+      Borda (Servlet)
+      
+      for{
+        Segurança
+        Filtros (pré)
+        Busca
+        Filtros (pós)
+        Resposta
+      }
+      Resposta (final)
+      
+```
+
+
+
+
