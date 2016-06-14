@@ -1,6 +1,6 @@
 package br.eng.rcc.framework.utils;
 
-import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.persistencia.MsgException;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;

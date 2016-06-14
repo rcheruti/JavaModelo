@@ -22,7 +22,7 @@ Module.controller('Carro',['$scope','Entidades','Exportar',
   
   $scope.deleteCarro = function( carro ){
     var sim = confirm('Deletar?');
-    sim && Entidades.from('Carro').id().delete( carro ).then( recarregar );
+    sim && Entidades.from('Carro').chaves().delete( carro ).then( recarregar );
   };
   
   $scope.exportarCarros = function(){

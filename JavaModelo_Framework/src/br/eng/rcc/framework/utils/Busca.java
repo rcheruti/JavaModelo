@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Esta classe é usada para guadar as informações de uma requisição
@@ -14,7 +15,7 @@ import java.util.List;
  * decidam que caminho seguir no decorrer do script.
  * 
  */
-public class BuscaInfo implements Cloneable{
+public class Busca implements Cloneable{
   
   // Constantes de busca:
   public static final byte ACAO_BUSCAR =       1;
@@ -26,7 +27,33 @@ public class BuscaInfo implements Cloneable{
   public static final byte ACAO_REMOVER =      7;
   public static final byte ACAO_PAGINAR =      10;
   
+  public static final byte ACAO_REFS =         15;
+  
   //========================================================================
+  
+  /**
+   * Indica qual a identificação dessa busca na lista de referências.
+   * 
+   * 
+   */
+  public String id;
+  
+  /**
+   * Esse atributo irá guardar (se necessário) a estrutura de objetos que aparecem
+   * em mais de um lugar na resposta/requisição.
+   * 
+   * Quando as referências aparecem dentro do objeto de busca elas são válidas
+   * só para esse objeto de busca.
+   * 
+   * Quando aparecem como um objeto de busca, elas são válidas para todas as outras
+   * buscas que acompanham a resposta/requisição.
+   * 
+   * ! Atenção: como a lista de requisição/resposta é um vetor, e a ordem de execução
+   * é garantida, o objeto que for configurado como REFS só será interpretado
+   * por buscas que vierem depois da declaração da busca com as referências!
+   */
+  public Map<String, Object> refs;
+  
   
   /**
    * Indica qual é a página atual.
@@ -82,12 +109,11 @@ public class BuscaInfo implements Cloneable{
    * Esta busca irá sempre representar o modelo UM, e este campo indica se o
    * modelo UM é de ID ou não.
    */
-  public boolean id = false;
+  public boolean chaves = false;
   /**
    * Indica qual ação será aplicada a from.
    */
   public byte acao = ACAO_BUSCAR;
-  
   
   //=========================================================================
   
@@ -96,7 +122,7 @@ public class BuscaInfo implements Cloneable{
   //public List resultado;
   
   /**
-   * Este método irá criar um novo objeto {@link BuscaInfo}, copiando todos os atributos
+   * Este método irá criar um novo objeto {@link Busca}, copiando todos os atributos
    * do objeto original para que não haja ligação (referência) nenhuma entre o
    * novo objeto e o antigo objeto.
    * <br><br>
@@ -118,18 +144,19 @@ public class BuscaInfo implements Cloneable{
    *  </li>
    * </ul>
    * 
-   * @return Um novo objeto {@link BuscaInfo}
+   * @return Um novo objeto {@link Busca}
    */
   @Override
-  public BuscaInfo clone() {
-    //BuscaInfo x = (BuscaInfo)super.clone();
-    BuscaInfo x = new BuscaInfo();
+  public Busca clone() {
+    //BuscaInfo x = (Busca)super.clone();
+    Busca x = new Busca();
+    x.id = this.id;
     x.acao = this.acao;
     x.classe = this.classe;
     x.size = this.size;
     x.page = this.page;
     x.from = this.from;
-    x.id = this.id;
+    x.chaves = this.chaves;
     x.join = new ArrayList<>(this.join);
     x.order = new ArrayList<>(this.order);
     x.where = new ArrayList<>( this.where.size()+1 );

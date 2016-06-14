@@ -2,7 +2,7 @@
 package br.eng.rcc.framework.listeners;
 
 import br.eng.rcc.framework.config.Configuracoes;
-import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
+import br.eng.rcc.framework.jaxrs.JacksonOM;
 import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
 import br.eng.rcc.framework.utils.ClassCache;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -49,7 +49,7 @@ public class DBLoader implements ServletContextListener{
       
       if( url != null ){
         try{
-          ObjectMapper mapper = new JacksonObjectMapperContextResolver().getContext(null);
+          ObjectMapper mapper = new JacksonOM().getContext(null);
           JsonNode json = mapper.readTree(url);
           
           for( String key : Configuracoes.getInstance().carregarDB() ){

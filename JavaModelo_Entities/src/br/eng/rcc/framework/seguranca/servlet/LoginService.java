@@ -3,9 +3,9 @@ package br.eng.rcc.framework.seguranca.servlet;
 
 import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.interfaces.IUsuario;
-import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
-import br.eng.rcc.framework.jaxrs.JsonResponse;
-import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.jaxrs.JacksonOM;
+import br.eng.rcc.framework.persistencia.JsonResponse;
+import br.eng.rcc.framework.persistencia.MsgException;
 import br.eng.rcc.framework.produtores.TransactionalInter;
 import br.eng.rcc.framework.seguranca.entidades.ChaveAcesso;
 import br.eng.rcc.framework.seguranca.entidades.Credencial;
@@ -183,7 +183,7 @@ public class LoginService extends HttpServlet{
   
   @Override
   public void init(){
-    mapper = new JacksonObjectMapperContextResolver().getContext(this.getClass());
+    mapper = new JacksonOM().getContext(this.getClass());
   }
   
   @Override

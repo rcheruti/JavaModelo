@@ -1,7 +1,7 @@
 
 package br.eng.rcc.framework.interfaces;
 
-import br.eng.rcc.framework.utils.BuscaInfo;
+import br.eng.rcc.framework.utils.Busca;
 import java.util.List;
 
 /**
@@ -10,13 +10,13 @@ import java.util.List;
  * 
  * Esses métodos serão executados após ... fazer as configurações
  * iniciais da busca, qualquer alteração tem que ser feita com cuidado para não
- * quebrar as configurações que já foram adicionadas em {@link BuscaInfo}.
+ * quebrar as configurações que já foram adicionadas em {@link Busca}.
  * 
  * @param <T> O tipo da classe esperado (será desconsiderado durante a execução!)
  */
 public interface SegurancaPersistenciaInterceptador<T> {
   
-  default void filter(BuscaInfo busca){};
+  default void filter(Busca busca){};
   
   default List<T> filter(List<T> objs){ return objs; };
     

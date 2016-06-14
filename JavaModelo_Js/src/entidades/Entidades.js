@@ -60,8 +60,9 @@
     this._join = [];
     this._order = [];
     this._data = null;
-    this._id = false;
+    this._chaves = false;
     this._acao = 1;
+    this._id = null;
     
     this._url = this.entidade.url;
     this.$scope = null;
@@ -76,7 +77,8 @@
     
   __construirSetter( proto, 'page', '_page' );
   __construirSetter( proto, 'size', '_size' );
-  __construirSetter( proto, 'id', '_id', true );
+  __construirSetter( proto, 'id', '_id' );
+  __construirSetter( proto, 'chaves', '_chaves', true );
   __construirSetter( proto, 'data', '_data' );
   __construirSetter( proto, 'acao', '_acao' );
   proto.order = function (vals) {
@@ -144,6 +146,7 @@
     //if (queryStr) queryStr = '?' + queryStr;
     
     this._build = {
+      id: this._id,
       from: this.entidade.nome,
       page: this._page,
       size: this._size,
@@ -151,7 +154,7 @@
       join: this._join,
       order: this._order,
       data: this._data,
-      id: this._id,
+      chaves: this._chaves,
       acao: this._acao
     };
     return this;
@@ -394,7 +397,7 @@ Module.provider('Entidades',[function(){
     var ref = {
       from: function( ent ){
         if( ent instanceof Array ) new MuitosQuery( ent );
-        if( typeof ent === 'string' ) ent = ref.entidade(ent);
+        if( typeof ent === 'string' ) ent = ref.entidade.apply(ref, ent, arguments);
         return new Query( ent );
       },
       entidade: function( nome, config, override ){
@@ -435,6 +438,7 @@ Module.provider('Entidades',[function(){
     ref.ADICIONAR =   6;
     ref.REMOVER =     7;
     ref.PAGINACAO =   10;
+    ref.REFS =        15;
     
     return Entidades = ref;
   }];

@@ -2,10 +2,8 @@
 package br.eng.rcc.framework.persistencia;
 
 import br.eng.rcc.framework.utils.ClassCache;
-import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
-import br.eng.rcc.framework.jaxrs.JsonResponse;
-import br.eng.rcc.framework.jaxrs.MsgException;
-import br.eng.rcc.framework.utils.BuscaInfo;
+import br.eng.rcc.framework.jaxrs.JacksonOM;
+import br.eng.rcc.framework.utils.Busca;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,7 +27,7 @@ public class ServicoPersistencia extends HttpServlet{
   @Inject
   private EntidadesService entService;
   @Inject
-  private JacksonObjectMapperContextResolver resolver;
+  private JacksonOM resolver;
   
   private ObjectMapper mapper;
 
@@ -47,8 +45,8 @@ public class ServicoPersistencia extends HttpServlet{
     }
     JsonNode json = mapper.readTree( req.getInputStream() );
     
-    List<BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
-    List<Object> resposta = entService.processar(buscas);
+    List<Busca> buscas = PersistenciaUtils.parseBusca(json, cache);
+    List<Object> resposta = entService.processar(buscas, null);
     
     mapper.writeValue(resp.getWriter(), new JsonResponse(true, resposta, "") );
     

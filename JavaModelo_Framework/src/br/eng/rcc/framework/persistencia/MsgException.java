@@ -1,4 +1,4 @@
-package br.eng.rcc.framework.jaxrs;
+package br.eng.rcc.framework.persistencia;
 
 public class MsgException extends RuntimeException {
 

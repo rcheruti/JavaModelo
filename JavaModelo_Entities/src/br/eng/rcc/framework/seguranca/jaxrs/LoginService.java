@@ -3,8 +3,8 @@ package br.eng.rcc.framework.seguranca.jaxrs;
 
 import br.eng.rcc.framework.config.Configuracoes;
 import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
-import br.eng.rcc.framework.jaxrs.JsonResponse;
-import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.persistencia.JsonResponse;
+import br.eng.rcc.framework.persistencia.MsgException;
 import br.eng.rcc.framework.seguranca.entidades.ChaveAcesso;
 import br.eng.rcc.framework.seguranca.entidades.Credencial;
 import br.eng.rcc.framework.seguranca.entidades.SegUsuario;

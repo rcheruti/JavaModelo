@@ -1,7 +1,7 @@
 
 package br.eng.rcc.framework.seguranca.servicos;
 
-import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.persistencia.MsgException;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;

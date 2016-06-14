@@ -1,13 +1,13 @@
 package br.eng.rcc.framework.seguranca.servicos;
 
-import br.eng.rcc.framework.jaxrs.JsonResponse;
-import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.persistencia.JsonResponse;
+import br.eng.rcc.framework.persistencia.MsgException;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.anotacoes.Segurancas;
 import javax.inject.Inject;
 import br.eng.rcc.framework.interfaces.IUsuario;
 import br.eng.rcc.framework.interfaces.SegurancaPersistenciaInterceptador;
-import br.eng.rcc.framework.utils.BuscaInfo;
+import br.eng.rcc.framework.utils.Busca;
 import br.eng.rcc.framework.utils.CdiUtils;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
@@ -159,12 +159,12 @@ public class SegurancaServico {
   //===========================================================================
   
   
-  public void filterPersistencia(BuscaInfo busca){
+  public void filterPersistencia(Busca busca){
     for( SegurancaPersistenciaInterceptador x : _getCheckPersistencia( busca.classe ) ){
       x.filter( busca );
     }
   }
-  public <T> List<T> filterPersistencia(BuscaInfo busca, List<T> objs){
+  public <T> List<T> filterPersistencia(Busca busca, List<T> objs){
     for( SegurancaPersistenciaInterceptador x : _getCheckPersistencia( busca.classe ) ){
       objs = x.filter( objs );
     }

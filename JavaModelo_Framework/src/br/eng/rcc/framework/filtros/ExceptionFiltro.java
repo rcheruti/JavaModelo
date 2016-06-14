@@ -1,8 +1,8 @@
 package br.eng.rcc.framework.filtros;
 
-import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
-import br.eng.rcc.framework.jaxrs.JsonResponse;
-import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.jaxrs.JacksonOM;
+import br.eng.rcc.framework.persistencia.JsonResponse;
+import br.eng.rcc.framework.persistencia.MsgException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import javax.servlet.Filter;
@@ -23,7 +23,7 @@ public class ExceptionFiltro implements Filter {
   //======================================================
   @Override
   public void init(FilterConfig fc) throws ServletException {
-    mapper = new JacksonObjectMapperContextResolver().getContext(null);
+    mapper = new JacksonOM().getContext(null);
   }
 
   @Override

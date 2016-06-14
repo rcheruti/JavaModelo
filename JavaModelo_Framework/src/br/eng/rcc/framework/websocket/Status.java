@@ -1,7 +1,7 @@
 
 package br.eng.rcc.framework.websocket;
 
-import br.eng.rcc.framework.jaxrs.JsonResponse;
+import br.eng.rcc.framework.persistencia.JsonResponse;
 import javax.websocket.RemoteEndpoint;
 
 

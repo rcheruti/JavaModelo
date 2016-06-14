@@ -1,7 +1,7 @@
 
 package br.eng.rcc.framework.seguranca.filtros;
 
-import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.persistencia.MsgException;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.anotacoes.Segurancas;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;

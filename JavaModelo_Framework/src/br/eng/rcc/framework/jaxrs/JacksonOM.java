@@ -17,7 +17,7 @@ import javax.enterprise.context.ApplicationScoped;
 
 //@Provider
 @ApplicationScoped
-public class JacksonObjectMapperContextResolver  {
+public class JacksonOM  {
   
   private ObjectMapper omCache;
   

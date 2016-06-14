@@ -2,11 +2,11 @@
 package br.eng.rcc.framework.seguranca.servicos;
 
 import br.eng.rcc.framework.config.Configuracoes;
-import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.persistencia.MsgException;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import br.eng.rcc.framework.interfaces.IUsuario;
-import br.eng.rcc.framework.jaxrs.JsonResponse;
+import br.eng.rcc.framework.persistencia.JsonResponse;
 import br.eng.rcc.framework.seguranca.entidades.ChaveAcesso;
 import br.eng.rcc.framework.seguranca.entidades.Credencial;
 import br.eng.rcc.framework.seguranca.entidades.Grupo;

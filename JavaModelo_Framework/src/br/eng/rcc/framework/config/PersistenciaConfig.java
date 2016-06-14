@@ -2,7 +2,7 @@
 package br.eng.rcc.framework.config;
 
 import br.eng.rcc.framework.interfaces.SegurancaPersistenciaInterceptador;
-import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
+import br.eng.rcc.framework.jaxrs.JacksonOM;
 import br.eng.rcc.framework.seguranca.config.SegurancaNode;
 import br.eng.rcc.framework.seguranca.config.SegurancaRootNode;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -49,7 +49,7 @@ public class PersistenciaConfig {
   
   private static void load(URL url) throws IOException{
     if( url != null ){
-      ObjectMapper mapper = new JacksonObjectMapperContextResolver().getContext(null);
+      ObjectMapper mapper = new JacksonOM().getContext(null);
       JsonNode json = mapper.readValue(url, JsonNode.class);
       
       Map<String,Object> mapaCarregado = mapper.readValue(url, Map.class);

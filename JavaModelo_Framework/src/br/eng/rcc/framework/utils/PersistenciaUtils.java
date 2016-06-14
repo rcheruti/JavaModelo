@@ -1,6 +1,6 @@
 package br.eng.rcc.framework.utils;
 
-import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
+import br.eng.rcc.framework.jaxrs.JacksonOM;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -29,8 +29,21 @@ public class PersistenciaUtils {
        .compile("([\\w.]++)\\s*+(=|!=|<|>|<=|>=|(?:not)?like|is(?:not)?null)\\s*+((['\"]).*?\\4|[\\w\\.]++)\\s*+([&\\|]?)", Pattern.CASE_INSENSITIVE);
   private static final Pattern valorPattern = Pattern
        .compile("^(['\"]).*\\1$", Pattern.CASE_INSENSITIVE);
+  private static final Pattern refStrPattern = Pattern
+       .compile("^@[\\d\\w]");
+  private static final Pattern respStrPattern = Pattern
+       .compile("^#[\\d\\w]");
   
   private static ObjectMapper mapper;
+  
+  
+  public static boolean isRefString(String str){
+    return refStrPattern.matcher(str).find();
+  }
+  public static boolean isRespString(String str){
+    return respStrPattern.matcher(str).find();
+  }
+  
   
   
   
@@ -127,8 +140,8 @@ public class PersistenciaUtils {
   }
   
   
-  public static List<BuscaInfo> parseBusca(JsonNode json, ClassCache cache){
-    List<BuscaInfo> buscas = new ArrayList<>();
+  public static List<Busca> parseBusca(JsonNode json, ClassCache cache){
+    List<Busca> buscas = new ArrayList<>();
     Iterable<JsonNode> its;
     if( json.isArray() ) its = json;
     else{
@@ -137,12 +150,12 @@ public class PersistenciaUtils {
       its = itsArr;
     }
     for( JsonNode node : its ){
-      BuscaInfo busca = new BuscaInfo();
+      Busca busca = new Busca();
       busca.from = node.get("entidade").asText();
       busca.classe = cache.get(busca.from);
       if( !node.path("data").isArray() ){
         if( mapper == null ){
-          mapper = new JacksonObjectMapperContextResolver().getContext(null);
+          mapper = new JacksonOM().getContext(null);
         }
         busca.data = mapper.createArrayNode();
         busca.data.add( node.path("data") );
@@ -152,7 +165,7 @@ public class PersistenciaUtils {
       
       if( node.has("size") ) busca.size = node.get("size").intValue();
       if( node.has("page") ) busca.page = node.get("page").intValue();
-      if( node.has("id") ) busca.id = node.get("id").booleanValue();
+      if( node.has("chaves") ) busca.chaves = node.get("chaves").booleanValue();
       if( node.has("acao") ) busca.acao = (byte)node.get("acao").intValue();
       if( node.has("join") && node.get("join").isArray() ){
         busca.join = new ArrayList<>();

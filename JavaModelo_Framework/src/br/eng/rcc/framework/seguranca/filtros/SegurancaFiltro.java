@@ -2,8 +2,8 @@
 package br.eng.rcc.framework.seguranca.filtros;
 
 import br.eng.rcc.framework.config.Configuracoes;
-import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
-import br.eng.rcc.framework.jaxrs.JsonResponse;
+import br.eng.rcc.framework.jaxrs.JacksonOM;
+import br.eng.rcc.framework.persistencia.JsonResponse;
 import br.eng.rcc.framework.seguranca.servicos.UsuarioServico;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class SegurancaFiltro implements Filter{
   @Override
   public void init(FilterConfig filterConfig) throws ServletException {
     pattern = Pattern.compile( Configuracoes.getInstance().segurancaRegExp() );
-    mapper = new JacksonObjectMapperContextResolver().getContext(null);
+    mapper = new JacksonOM().getContext(null);
   }
 
   @Override

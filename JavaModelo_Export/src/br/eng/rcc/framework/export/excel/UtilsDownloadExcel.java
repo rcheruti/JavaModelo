@@ -1,11 +1,11 @@
 package br.eng.rcc.framework.export.excel;
 
-import br.eng.rcc.framework.jaxrs.JsonResponse;
-import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.persistencia.JsonResponse;
+import br.eng.rcc.framework.persistencia.MsgException;
 import br.eng.rcc.framework.utils.ClassCache;
 import br.eng.rcc.framework.persistencia.EntidadesService;
 import br.eng.rcc.framework.utils.ClasseAtributoUtil;
-import br.eng.rcc.framework.utils.BuscaInfo;
+import br.eng.rcc.framework.utils.Busca;
 import br.eng.rcc.framework.utils.ClasseUtil;
 import br.eng.rcc.framework.utils.IBeanUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -101,7 +101,7 @@ public class UtilsDownloadExcel {
    * @return XSSFWorkbook
    * @throws Exception
    */
-  public XSSFWorkbook exportarEntidade( BuscaInfo info ) throws Exception{
+  public XSSFWorkbook exportarEntidade( Busca info ) throws Exception{
     
     JsonNode node = info.data.path(0);
     JsonNode nodeAttr = node.path("atributos");
@@ -120,8 +120,8 @@ public class UtilsDownloadExcel {
     }
     
       // busca:
-    BuscaInfo clone = info.clone();
-    clone.acao = BuscaInfo.ACAO_BUSCAR;
+    Busca clone = info.clone();
+    clone.acao = Busca.ACAO_BUSCAR;
     List<String> joins = new ArrayList<>();
     for( JsonNode nodeString : nodeAttr ){
       String[] strs = nodeString.asText().split("\\.");

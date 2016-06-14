@@ -1,14 +1,12 @@
 package br.eng.rcc.framework.persistencia;
 
 import br.eng.rcc.framework.utils.ClassCache;
-import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
-import br.eng.rcc.framework.jaxrs.JsonResponse;
-import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.jaxrs.JacksonOM;
 import br.eng.rcc.framework.persistencia.builders.WhereBuilder;
 import br.eng.rcc.framework.seguranca.anotacoes.Seguranca;
 import br.eng.rcc.framework.seguranca.servicos.SegurancaServico;
 import br.eng.rcc.framework.utils.ClasseAtributoUtil;
-import br.eng.rcc.framework.utils.BuscaInfo;
+import br.eng.rcc.framework.utils.Busca;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -61,7 +59,7 @@ public class EntidadesService {
   @Inject
   protected SegurancaServico checker;
   @Inject
-  private JacksonObjectMapperContextResolver resolver;
+  private JacksonOM resolver;
   
   private ObjectMapper mapper;
   
@@ -110,59 +108,80 @@ public class EntidadesService {
     //=====================================================================
 /**
    * Este é o serviço princiopal, daqui a busca será encaminhada para o método 
-   * correto de acordo com os parâmetros do objeto {@link BuscaInfo}.
+   * correto de acordo com os parâmetros do objeto {@link Busca}.
    * <br><br>
    * 
    * @param busca Informações da busca que será executada
+   * @param scope O Escope de busca para processar a busca (pode ser null)
    * @return Object O resultado da resposta. Pode ser apenas um objeto ou uma lista
    * @throws Exception 
    */
   @Transactional
-  public Object processar(BuscaInfo busca) throws Exception{
+  public Object processar(Busca busca, BuscaReqScope scope) throws Exception{
     Object ooo = null;
+    if( scope == null ) scope = new BuscaReqScope();
+    
     switch( busca.acao ){
-      case BuscaInfo.ACAO_TIPO:
-        busca.id = false;
-        ooo = chamarBusca( busca, this::tipo ).get();
+      case Busca.ACAO_TIPO:
+        busca.chaves = false;
+        ooo = chamarBusca( busca, scope, this::tipo ).get();
         break;
-      case BuscaInfo.ACAO_BUSCAR:
-        ooo = chamarBusca( busca, this::buscar ).get();
+      case Busca.ACAO_BUSCAR:
+        ooo = chamarBusca( busca, scope, this::buscar ).get();
         break;
-      case BuscaInfo.ACAO_CRIAR:
-        if( busca.id ){
+      case Busca.ACAO_CRIAR:
+        if( busca.chaves ){
           throw new MsgException("Não é permitido criar entidades a partir do ID");
         }
-        ooo = chamarBusca( busca, this::criar ).get();
+        ooo = chamarBusca( busca, scope, this::criar ).get();
         break;
-      case BuscaInfo.ACAO_EDITAR:
-        ooo = chamarBusca( busca, this::editar ).get();
+      case Busca.ACAO_EDITAR:
+        ooo = chamarBusca( busca, scope, this::editar ).get();
         break;
-      case BuscaInfo.ACAO_DELETAR:
-        ooo = chamarBusca( busca, this::deletar ).get();
+      case Busca.ACAO_DELETAR:
+        ooo = chamarBusca( busca, scope, this::deletar ).get();
         break;
-      case BuscaInfo.ACAO_ADICIONAR:
+      case Busca.ACAO_ADICIONAR:
         //throw new MsgException("Ainda não existe impl. para ADICIONAR");
-        ooo = chamarBusca( busca, this::adicionar ).get();
+        ooo = chamarBusca( busca, scope, this::adicionar ).get();
         break;
-      case BuscaInfo.ACAO_REMOVER:
+      case Busca.ACAO_REMOVER:
         //throw new MsgException("Ainda não existe impl. para REMOVER");
-        ooo = chamarBusca( busca, this::remover ).get();
+        ooo = chamarBusca( busca, scope, this::remover ).get();
         break;
-      case BuscaInfo.ACAO_PAGINAR:
-        busca.id = false;
-        ooo = chamarBusca( busca, this::paginas ).get();
+      case Busca.ACAO_PAGINAR:
+        busca.chaves = false;
+        ooo = chamarBusca( busca, scope, this::paginas ).get();
+        break;
+      case Busca.ACAO_REFS:
+        if( busca.data != null )
+          for(JsonNode node : busca.data){
+            Iterator<String> nomes = node.fieldNames();
+            while(nomes.hasNext()){
+              String n = nomes.next();
+              scope.refs.put(n, node.get(n) );
+            }
+          }
         break;
     }
+    
+    String key = busca.id;
+    if( key == null ) key = "1";
+    scope.resps.put(key, ooo);
     return ooo; 
   }
   
   @Transactional
-  public List<Object> processar(Collection<BuscaInfo> buscas) {
+  public List<Object> processar(Collection<Busca> buscas, BuscaReqScope scope) {
     List<Object> resposta = new ArrayList<>( buscas.size() );
     Object ooo = null;
-    for( BuscaInfo busca : buscas ){
+    if( scope == null ) scope = new BuscaReqScope();
+    int keyInt = 1;
+    
+    for( Busca busca : buscas ){
       try{
-        ooo = processar(busca);
+        if( busca.id == null ) busca.id = ""+ keyInt++;
+        ooo = processar(busca, scope);
         resposta.add(ooo);
       }catch(MsgException ex){
         resposta.add( new JsonResponse(false, ex.getCodigo(),
@@ -178,7 +197,7 @@ public class EntidadesService {
   
   //=====================================================================
   
-  public Map<String, String> tipo( BuscaInfo info ) {
+  public Map<String, String> tipo( Busca info, BuscaReqScope scope ) {
     checker.check(info.classe, Seguranca.SELECT | Seguranca.INSERT
             | Seguranca.DELETE | Seguranca.UPDATE);
 
@@ -202,7 +221,7 @@ public class EntidadesService {
     return map;
   }
   
-  public int paginas(BuscaInfo info){
+  public int paginas(Busca info, BuscaReqScope scope){
     checker.check( info.classe, Seguranca.SELECT );
     if( info.size == 0 ) return 0;
     
@@ -224,7 +243,7 @@ public class EntidadesService {
   }
   
   @Transactional
-  public List<Object> buscar(BuscaInfo info) {
+  public List<Object> buscar(Busca info, BuscaReqScope scope) {
     checker.check( info.classe, Seguranca.SELECT );
     
     // ----  Criando a busca ao banco:
@@ -261,13 +280,15 @@ public class EntidadesService {
   }
   
   @Transactional
-  public List<Object> criar(BuscaInfo info){
+  public List<Object> criar(Busca info, BuscaReqScope scope){
     checker.check(info.classe, Seguranca.INSERT);
     List<Object> objs = new ArrayList<>();
     
     try{
-      for( JsonNode node : info.data )
+      for( JsonNode node : info.data ){
+          // Aqui tem uma verificação de referencias!!!
         objs.add( mapper.treeToValue( node, info.classe) );
+      }
     }catch( JsonProcessingException ex ){
       throw new RuntimeException("JsonProcessingException atirada!", ex);
     }
@@ -316,7 +337,7 @@ public class EntidadesService {
   }
   
   @Transactional
-  public int editar(BuscaInfo info) {
+  public int editar(Busca info, BuscaReqScope scope) {
     checker.check(info.classe, Seguranca.UPDATE);
     
     Map<String,Object> listaAtualizar = new HashMap<>();
@@ -405,7 +426,7 @@ public class EntidadesService {
   }
 
   @Transactional
-  public int deletar(BuscaInfo info) {
+  public int deletar(Busca info, BuscaReqScope scope) {
     checker.check( info.classe, Seguranca.DELETE);
     
     // ----  Criando a busca ao banco:
@@ -427,12 +448,12 @@ public class EntidadesService {
   }
   
   @Transactional
-  public int adicionar(BuscaInfo info) {
+  public int adicionar(Busca info, BuscaReqScope scope) {
     
     Map<String, ClasseAtributoUtil> map = cache.getInfo(info.from );
     int adds = 0;
     try{
-      List<Object> oooS = this.buscar(info);;
+      List<Object> oooS = this.buscar(info, scope);
       for( JsonNode node : info.data ){
         
         Iterator<String> itKeys = node.fieldNames();
@@ -463,7 +484,7 @@ public class EntidadesService {
   }
   
   @Transactional
-  public int remover(BuscaInfo info){
+  public int remover(Busca info, BuscaReqScope scope){
     throw new MsgException("Ainda não existe impl. para REMOVER");
   }
   
@@ -493,18 +514,18 @@ public class EntidadesService {
     query.orderBy(lista);
   }
   
-  private Optional chamarBusca( BuscaInfo busca, IChamadaBusca metodo ){
+  private Optional chamarBusca( Busca busca, BuscaReqScope scope, IChamadaBusca metodo ){
     Object ooo = null;
     
-    checker.check( busca.classe, 
-              busca.acao == BuscaInfo.ACAO_BUSCAR ? Seguranca.SELECT
-              : busca.acao == BuscaInfo.ACAO_CRIAR ? Seguranca.INSERT
-              : busca.acao == BuscaInfo.ACAO_EDITAR ? Seguranca.UPDATE
-              : busca.acao == BuscaInfo.ACAO_DELETAR ? Seguranca.DELETE
+    checker.check(busca.classe, 
+              busca.acao == Busca.ACAO_BUSCAR ? Seguranca.SELECT
+              : busca.acao == Busca.ACAO_CRIAR ? Seguranca.INSERT
+              : busca.acao == Busca.ACAO_EDITAR ? Seguranca.UPDATE
+              : busca.acao == Busca.ACAO_DELETAR ? Seguranca.DELETE
                       : 0
             );
     
-    if( busca.id ){
+    if( busca.chaves ){
       List lista = new ArrayList<>(); // para resposta em lista ;
       int resp = 0; // para respostas em número
       
@@ -531,7 +552,7 @@ public class EntidadesService {
         busca.data = arr ;
         
         checker.filterPersistencia(busca);
-        ooo = metodo.chamarBusca(busca);
+        ooo = metodo.chamarBusca(busca,scope);
         if( ooo instanceof List ){
           checker.filterPersistencia(busca, (List)ooo );
           for( Object x : (List)ooo ) lista.add(x);
@@ -544,7 +565,7 @@ public class EntidadesService {
       else ooo = resp;
     }else{
       checker.filterPersistencia(busca);
-      ooo = metodo.chamarBusca(busca);
+      ooo = metodo.chamarBusca(busca,scope);
       if( ooo instanceof List ){
         checker.filterPersistencia(busca, (List)ooo );
       }else{
@@ -555,7 +576,7 @@ public class EntidadesService {
   }
   
   private static interface IChamadaBusca {
-    Object chamarBusca( BuscaInfo busca );
+    Object chamarBusca( Busca busca, BuscaReqScope scope );
   }
   
 }

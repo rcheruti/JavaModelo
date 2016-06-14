@@ -1,10 +1,10 @@
 
 package br.eng.rcc.framework.export.excel;
 
-import br.eng.rcc.framework.jaxrs.JacksonObjectMapperContextResolver;
-import br.eng.rcc.framework.jaxrs.MsgException;
+import br.eng.rcc.framework.jaxrs.JacksonOM;
+import br.eng.rcc.framework.persistencia.MsgException;
 import br.eng.rcc.framework.utils.ClassCache;
-import br.eng.rcc.framework.utils.BuscaInfo;
+import br.eng.rcc.framework.utils.Busca;
 import br.eng.rcc.framework.utils.PersistenciaUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +26,7 @@ public class ExcelServlet extends HttpServlet{
   @Inject
   private UtilsDownloadExcel utilsExcel;
   @Inject
-  private JacksonObjectMapperContextResolver resolver;
+  private JacksonOM resolver;
   
   private ObjectMapper mapper;
 
@@ -47,9 +47,9 @@ public class ExcelServlet extends HttpServlet{
     
     JsonNode json = mapper.readTree( val );
     
-    List<BuscaInfo> buscas = PersistenciaUtils.parseBusca(json, cache);
+    List<Busca> buscas = PersistenciaUtils.parseBusca(json, cache);
     try{
-      BuscaInfo info = buscas.get(0);
+      Busca info = buscas.get(0);
       XSSFWorkbook book = utilsExcel.exportarEntidade( buscas.get(0) );
       
       String nome = info.data.path(0).path("nome").asText();
