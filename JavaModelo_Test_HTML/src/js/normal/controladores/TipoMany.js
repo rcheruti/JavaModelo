@@ -8,13 +8,13 @@ Module.controller('TipoMany',['$scope','Entidades',
     'Carro','Porta','Usuario','Valor','Cor'
   ];
   
-  var q = Entidades.queryMuitos();
+  var q = Entidades.from([]); // para pegar uma busca de muitos
   for(var g in $scope.entidadeLista){
-    q.add( Entidades.query($scope.entidadeLista[g])
+    q.add( Entidades.from($scope.entidadeLista[g])
       .in( $scope, 'tipo.'+g ).acao( Entidades.TIPO ) );
   }
   q.send();
-  console.log( 'Entidades::queryMuitos', q );
+  console.log( 'Entidades::from([...])', q );
   console.log( '$scope', $scope );
   
   $scope.mostrarTipo = function(x){

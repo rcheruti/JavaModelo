@@ -1,4 +1,5 @@
 /* Cores google */
+/*  Para remover o efeito de embaçado do Webkit quando um elemento tiver translação  */
 /*  =========  3D  =========  */
 .pers {
   -webkit-perspective: preserve-3d;

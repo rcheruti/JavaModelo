@@ -67,7 +67,7 @@ public class BuscaInfo implements Cloneable{
   /**
    * Nome simples da classe dessa entidade, como a JPA mapeia as entidades.
    */
-  public String entidade;
+  public String from;
   /**
    * Classe da entidade.
    */
@@ -84,7 +84,7 @@ public class BuscaInfo implements Cloneable{
    */
   public boolean id = false;
   /**
-   * Indica qual ação será aplicada a entidade.
+   * Indica qual ação será aplicada a from.
    */
   public byte acao = ACAO_BUSCAR;
   
@@ -128,7 +128,7 @@ public class BuscaInfo implements Cloneable{
     x.classe = this.classe;
     x.size = this.size;
     x.page = this.page;
-    x.entidade = this.entidade;
+    x.from = this.from;
     x.id = this.id;
     x.join = new ArrayList<>(this.join);
     x.order = new ArrayList<>(this.order);

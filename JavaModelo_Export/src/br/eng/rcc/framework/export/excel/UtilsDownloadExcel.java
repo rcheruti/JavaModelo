@@ -111,12 +111,12 @@ public class UtilsDownloadExcel {
       throw new MsgException(JsonResponse.ERROR_EXCECAO, null, 
             "Informe o objeto com as configs de exportação no atributo 'data'!");
     
-    ClasseUtil classUtil = cache.getUtil( info.entidade );
+    ClasseUtil classUtil = cache.getUtil(info.from );
     for( JsonNode nodeString : nodeAttr ){
       Object x = classUtil.path( nodeString.asText() );
       if( x == null ) throw new MsgException(JsonResponse.ERROR_EXCECAO, null,
             String.format("O atributo '%s' não existe na entidade %s.", 
-                    nodeString.asText(), info.entidade ));
+                    nodeString.asText(), info.from ));
     }
     
       // busca:

@@ -9,7 +9,7 @@ Module.controller('Tipo',['$scope','Entidades',
   ];
   
   $scope.mostrarTipo = function(x){
-    Entidades.query( $scope.entidade ).cache(true).clearCache( $scope.override )
+    Entidades.from( $scope.entidade ).cache(true).clearCache( $scope.override )
       .tipoIn( $scope, 'tipo' );
   };
   

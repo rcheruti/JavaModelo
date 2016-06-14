@@ -274,7 +274,7 @@ public class EntidadesService {
     
     // precisamos colocar o objeto no lado inverso da relação para que tudo entre
     // no banco com os valores corretos
-    Map<String, ClasseAtributoUtil> map = cache.getInfo( info.entidade );
+    Map<String, ClasseAtributoUtil> map = cache.getInfo(info.from );
     try {
       for (ClasseAtributoUtil util : map.values()) {
         if (util.isAssociacao()) {
@@ -429,7 +429,7 @@ public class EntidadesService {
   @Transactional
   public int adicionar(BuscaInfo info) {
     
-    Map<String, ClasseAtributoUtil> map = cache.getInfo( info.entidade );
+    Map<String, ClasseAtributoUtil> map = cache.getInfo(info.from );
     int adds = 0;
     try{
       List<Object> oooS = this.buscar(info);;
@@ -511,7 +511,7 @@ public class EntidadesService {
       List<String> ids = PersistenciaUtils.getIds(em, busca.classe);
       if (ids == null || ids.isEmpty()) {
         throw new MsgException(String
-          .format("Não encontramos os campos de Id dessa classe: '%s'", busca.entidade));
+          .format("Não encontramos os campos de Id dessa classe: '%s'", busca.from));
       }
       
       ArrayNode dataArray = busca.data;

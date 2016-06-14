@@ -298,7 +298,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     //if (queryStr) queryStr = '?' + queryStr;
     
     this._build = {
-      entidade: this.entidade.nome,
+      from: this.entidade.nome,
       page: this._page,
       size: this._size,
       where: queryStr,
@@ -546,12 +546,10 @@ Module.provider('Entidades',[function(){
 
     that.defaults.url = path('p', that.defaults.url) ;
     var ref = {
-      query: function( ent ){
+      from: function( ent ){
+        if( ent instanceof Array ) new MuitosQuery( ent );
         if( typeof ent === 'string' ) ent = ref.entidade(ent);
         return new Query( ent );
-      },
-      queryMuitos: function( arrQ ){
-        return new MuitosQuery( arrQ );
       },
       entidade: function( nome, config, override ){
         var ent = entidadesCache[nome];

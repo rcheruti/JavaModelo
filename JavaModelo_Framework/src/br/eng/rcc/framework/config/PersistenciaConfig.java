@@ -7,6 +7,7 @@ import br.eng.rcc.framework.seguranca.config.SegurancaNode;
 import br.eng.rcc.framework.seguranca.config.SegurancaRootNode;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -34,9 +35,19 @@ public class PersistenciaConfig {
   public static void init() throws IOException{
     log.info("Carregando configurações do arquivo 'persistencia.json'.");
     
-    URL url = PersistenciaConfig.class.getClassLoader().getResource("META-INF/persistencia.json");
-    if( url == null ) url = PersistenciaConfig.class.getClassLoader().getResource("persistencia.json");
+    load( PersistenciaConfig.class.getClassLoader().getResource("META-INF/persistencia.json") );
+    load( PersistenciaConfig.class.getClassLoader().getResource("persistencia.json") );
+    
+    File f = new File( Configuracoes.getInstance().configDir() );
+    if( f.exists() ) load( f.toURI().toURL() );
 
+
+    log.info("Configurações de 'persistencia.json' finalizado.");
+  }
+  
+  
+  
+  private static void load(URL url) throws IOException{
     if( url != null ){
       ObjectMapper mapper = new JacksonObjectMapperContextResolver().getContext(null);
       JsonNode json = mapper.readValue(url, JsonNode.class);
@@ -102,8 +113,6 @@ public class PersistenciaConfig {
       }
       
     }
-
-    log.info("Configurações de 'persistencia.json' finalizado.");
   }
   
   

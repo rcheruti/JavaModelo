@@ -138,8 +138,8 @@ public class PersistenciaUtils {
     }
     for( JsonNode node : its ){
       BuscaInfo busca = new BuscaInfo();
-      busca.entidade = node.get("entidade").asText();
-      busca.classe = cache.get(busca.entidade);
+      busca.from = node.get("entidade").asText();
+      busca.classe = cache.get(busca.from);
       if( !node.path("data").isArray() ){
         if( mapper == null ){
           mapper = new JacksonObjectMapperContextResolver().getContext(null);

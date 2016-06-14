@@ -693,7 +693,7 @@ Module.directive('segPermissao', ['Usuario',function(Usuario){
     //if (queryStr) queryStr = '?' + queryStr;
     
     this._build = {
-      entidade: this.entidade.nome,
+      from: this.entidade.nome,
       page: this._page,
       size: this._size,
       where: queryStr,
@@ -941,12 +941,10 @@ Module.provider('Entidades',[function(){
 
     that.defaults.url = path('p', that.defaults.url) ;
     var ref = {
-      query: function( ent ){
+      from: function( ent ){
+        if( ent instanceof Array ) new MuitosQuery( ent );
         if( typeof ent === 'string' ) ent = ref.entidade(ent);
         return new Query( ent );
-      },
-      queryMuitos: function( arrQ ){
-        return new MuitosQuery( arrQ );
       },
       entidade: function( nome, config, override ){
         var ent = entidadesCache[nome];
@@ -1311,11 +1309,11 @@ Module.controller('Carro',['$scope','Entidades','Exportar',
   $scope.carro = {};
   
   function recarregar(){
-    Entidades.query( 'Cor' ).order(['nome']).get().then(function(data){
+    Entidades.from( 'Cor' ).order(['nome']).get().then(function(data){
       console.log( 'data', data );
       $scope.cores = data.data[0];
     }) ; 
-    Entidades.query('Carro').join(['cores','portas','valor','portas.janelas',
+    Entidades.from('Carro').join(['cores','portas','valor','portas.janelas',
         'registroUsuario'])
       .order(['nome']).getIn( $scope, 'coisas.carros' );
   }
@@ -1323,16 +1321,16 @@ Module.controller('Carro',['$scope','Entidades','Exportar',
   
   
   $scope.postCarro = function(){
-    Entidades.query('Carro').post( $scope.carro ).then( recarregar );
+    Entidades.from('Carro').post( $scope.carro ).then( recarregar );
   };
   
   $scope.deleteCarro = function( carro ){
     var sim = confirm('Deletar?');
-    sim && Entidades.query('Carro').id().delete( carro ).then( recarregar );
+    sim && Entidades.from('Carro').id().delete( carro ).then( recarregar );
   };
   
   $scope.exportarCarros = function(){
-    Exportar.query('Carro').nome('Carros - Export')
+    Exportar.from('Carro').nome('Carros - Export')
       .titulos(['ID','Nome','Valor'])
       .dados(['id','nome','valor.valor'])
       .send();
@@ -1343,8 +1341,8 @@ Module.controller('Janela',['$scope','Entidades',
     function($scope,Entidades){
     
   function recarregar(){
-    Entidades.query( 'Janela' ).where('porta',Entidades.nnl).getIn($scope,'janelasPortas'); 
-    Entidades.query( 'Janela' ).where('porta',Entidades.nl).getIn($scope,'janelasSemPortas'); 
+    Entidades.from( 'Janela' ).where('porta',Entidades.nnl).getIn($scope,'janelasPortas'); 
+    Entidades.from( 'Janela' ).where('porta',Entidades.nl).getIn($scope,'janelasSemPortas'); 
   }
   recarregar();
   
@@ -1381,7 +1379,7 @@ Module.controller('Tipo',['$scope','Entidades',
   ];
   
   $scope.mostrarTipo = function(x){
-    Entidades.query( $scope.entidade ).cache(true).clearCache( $scope.override )
+    Entidades.from( $scope.entidade ).cache(true).clearCache( $scope.override )
       .tipoIn( $scope, 'tipo' );
   };
   
@@ -1396,13 +1394,13 @@ Module.controller('TipoMany',['$scope','Entidades',
     'Carro','Porta','Usuario','Valor','Cor'
   ];
   
-  var q = Entidades.queryMuitos();
+  var q = Entidades.from([]); // para pegar uma busca de muitos
   for(var g in $scope.entidadeLista){
-    q.add( Entidades.query($scope.entidadeLista[g])
+    q.add( Entidades.from($scope.entidadeLista[g])
       .in( $scope, 'tipo.'+g ).acao( Entidades.TIPO ) );
   }
   q.send();
-  console.log( 'Entidades::queryMuitos', q );
+  console.log( 'Entidades::from([...])', q );
   console.log( '$scope', $scope );
   
   $scope.mostrarTipo = function(x){
